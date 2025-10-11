@@ -4,22 +4,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TabelasDoBanco
 {
-    public abstract class Funcionario
-    {
-        [Key]
-        [Column("ID_TECNICO")]
-        public int Id { get; set; }
-
-        [Column("NOME")]
-        public string Nome { get; set; }
-
-        [Column("EMAIL")]
-        public string Email { get; set; }
-
-        [Column("SENHA")]
-        public string Senha { get; set; }
-    }
-
     [Table("DEPARTAMENTOS")]
     public class Departamento
     {
@@ -28,44 +12,44 @@ namespace TabelasDoBanco
         public int Id { get; set; }
 
         [Column("NOME_DEPARTAMENTO")]
-        public string Nome { get; set; }
+        public string Nome { get; set; } = string.Empty;
     }
 
     [Table("SOLICITANTES")]
-    public class Solicitante 
+    public class Solicitante
     {
         [Key]
         [Column("ID_SOLICITANTE")]
         public int Id { get; set; }
 
         [Column("NOME")]
-        public string Nome { get; set; }
+        public string Nome { get; set; } = string.Empty;
 
         [Column("EMAIL")]
-        public string Email { get; set; }
+        public string Email { get; set; } = string.Empty;
 
         [Column("SENHA")]
-        public string Senha { get; set; }
+        public string Senha { get; set; } = string.Empty;
 
         [Column("ID_DEPARTAMENTO")]
         public int IdDepartamento { get; set; }
     }
 
     [Table("TECNICOS")]
-    public class Tecnico 
+    public class Tecnico
     {
         [Key]
         [Column("ID_TECNICO")]
         public int Id { get; set; }
 
         [Column("NOME")]
-        public string Nome { get; set; }
+        public string Nome { get; set; } = string.Empty;
 
         [Column("EMAIL")]
-        public string Email { get; set; }
+        public string Email { get; set; } = string.Empty;
 
         [Column("SENHA")]
-        public string Senha { get; set; }
+        public string Senha { get; set; } = string.Empty;
 
         [Column("ID_ESPECIALIDADE")]
         public int IdEspecialidade { get; set; }
@@ -79,7 +63,7 @@ namespace TabelasDoBanco
         public int Id { get; set; }
 
         [Column("NOME_CATEGORIA")]
-        public string Nome { get; set; }
+        public string Nome { get; set; } = string.Empty;
     }
 
     [Table("SUBCATEGORIAS")]
@@ -90,7 +74,7 @@ namespace TabelasDoBanco
         public int Id { get; set; }
 
         [Column("NOME_SUBCATEGORIA")]
-        public string Nome { get; set; }
+        public string Nome { get; set; } = string.Empty;
 
         [Column("ID_CATEGORIA")]
         public int IdCategoria { get; set; }
@@ -104,7 +88,7 @@ namespace TabelasDoBanco
         public int Id { get; set; }
 
         [Column("DESCRICAO")]
-        public string Descricao { get; set; }
+        public string Descricao { get; set; } = string.Empty;
     }
 
     [Table("TICKETS")]
@@ -127,7 +111,7 @@ namespace TabelasDoBanco
         public int IdNivel { get; set; }
 
         [Column("DESCRICAO_PROBLEMA")]
-        public string DescricaoProblema { get; set; }
+        public string DescricaoProblema { get; set; } = string.Empty;
 
         [Column("ID_STATUS")]
         public int IdStatus { get; set; }
@@ -139,7 +123,7 @@ namespace TabelasDoBanco
         public DateTime? DataEncerramento { get; set; }
 
         [Column("SOLUCAO")]
-        public string Solucao { get; set; }
+        public string? Solucao { get; set; }
     }
 
     [Table("HISTORICO_UTIL")]
@@ -152,10 +136,10 @@ namespace TabelasDoBanco
         public int IdSolicitante { get; set; }
 
         [Column("PERGUNTA")]
-        public string Pergunta { get; set; }
+        public string Pergunta { get; set; } = string.Empty;
 
         [Column("RESPOSTA")]
-        public string Resposta { get; set; }
+        public string Resposta { get; set; } = string.Empty;
 
         [Column("DATAHORA")]
         public DateTime DataHora { get; set; }
@@ -172,19 +156,19 @@ namespace TabelasDoBanco
         public int IdSolicitante { get; set; }
 
         [Column("TITULO")]
-        public string Titulo { get; set; }
+        public string Titulo { get; set; } = string.Empty;
 
         [Column("PERGUNTA")]
-        public string Pergunta { get; set; }
+        public string Pergunta { get; set; } = string.Empty;
 
-        [Column("RESPOSTA")]    
-        public string Resposta { get; set; }
+        [Column("RESPOSTA")]
+        public string Resposta { get; set; } = string.Empty;
 
         [Column("DATA_HORA")]
         public DateTime DataHora { get; set; }
     }
 
-    [Table("AVALIACAO_RESPOSTA")] // Use o nome exato da tabela no banco
+    [Table("AVALIACAO_RESPOSTA")]
     public class AvaliacaoResposta
     {
         [Key]
@@ -194,12 +178,12 @@ namespace TabelasDoBanco
         public int IdSolicitante { get; set; }
 
         [Column("PERGUNTA")]
-        public string Pergunta { get; set; }
+        public string Pergunta { get; set; } = string.Empty;
 
         [Column("FOI_UTIL")]
         public bool FoiUtil { get; set; }
 
         [Column("DATAHORA")]
         public DateTime DataHora { get; set; }
-    }    
     }
+}
