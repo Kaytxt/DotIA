@@ -1,4 +1,5 @@
-using System;
+﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
 using DotIA.Desktop.Services;
 
@@ -10,7 +11,10 @@ namespace DotIA.Desktop.Forms
         private TextBox txtEmail;
         private TextBox txtSenha;
         private Button btnLogin;
-        private Label lblMensagem;
+        private Label lblTitulo;
+        private Label lblEmail;
+        private Label lblSenha;
+        private CheckBox chkMostrarSenha;
 
         public LoginForm()
         {
@@ -21,78 +25,111 @@ namespace DotIA.Desktop.Forms
         private void InitializeComponent()
         {
             this.Text = "DotIA - Login";
-            this.Size = new System.Drawing.Size(400, 300);
+            this.Size = new Size(400, 500);
             this.StartPosition = FormStartPosition.CenterScreen;
-            this.BackColor = System.Drawing.Color.FromArgb(26, 19, 47);
+            this.BackColor = Color.FromArgb(26, 19, 47);
+            this.FormBorderStyle = FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
+
+            // Logo/Título
+            lblTitulo = new Label
+            {
+                Text = "🤖 DotIA",
+                Font = new Font("Segoe UI", 24, FontStyle.Bold),
+                ForeColor = Color.FromArgb(162, 55, 240),
+                Location = new Point(120, 50),
+                Size = new Size(160, 50),
+                TextAlign = ContentAlignment.MiddleCenter
+            };
 
             // Label Email
-            Label lblEmail = new Label
+            lblEmail = new Label
             {
                 Text = "Email:",
-                Location = new System.Drawing.Point(50, 50),
-                Size = new System.Drawing.Size(300, 20),
-                ForeColor = System.Drawing.Color.White,
-                Font = new System.Drawing.Font("Segoe UI", 10, System.Drawing.FontStyle.Bold)
+                ForeColor = Color.White,
+                Font = new Font("Segoe UI", 10),
+                Location = new Point(50, 140),
+                Size = new Size(300, 20)
             };
 
             // TextBox Email
             txtEmail = new TextBox
             {
-                Location = new System.Drawing.Point(50, 75),
-                Size = new System.Drawing.Size(300, 25),
-                Font = new System.Drawing.Font("Segoe UI", 10)
+                Location = new Point(50, 165),
+                Size = new Size(300, 30),
+                Font = new Font("Segoe UI", 10),
+                Text = "teste@teste.com" // Valor padrão para testes
             };
 
             // Label Senha
-            Label lblSenha = new Label
+            lblSenha = new Label
             {
                 Text = "Senha:",
-                Location = new System.Drawing.Point(50, 110),
-                Size = new System.Drawing.Size(300, 20),
-                ForeColor = System.Drawing.Color.White,
-                Font = new System.Drawing.Font("Segoe UI", 10, System.Drawing.FontStyle.Bold)
+                ForeColor = Color.White,
+                Font = new Font("Segoe UI", 10),
+                Location = new Point(50, 210),
+                Size = new Size(300, 20)
             };
 
             // TextBox Senha
             txtSenha = new TextBox
             {
-                Location = new System.Drawing.Point(50, 135),
-                Size = new System.Drawing.Size(300, 25),
-                Font = new System.Drawing.Font("Segoe UI", 10),
-                UseSystemPasswordChar = true
+                Location = new Point(50, 235),
+                Size = new Size(300, 30),
+                Font = new Font("Segoe UI", 10),
+                PasswordChar = '●',
+                Text = "123456" // Valor padrão para testes
             };
+            txtSenha.KeyPress += TxtSenha_KeyPress;
 
-            // Bot�o Login
+            // CheckBox Mostrar Senha
+            chkMostrarSenha = new CheckBox
+            {
+                Text = "Mostrar senha",
+                ForeColor = Color.White,
+                Font = new Font("Segoe UI", 9),
+                Location = new Point(50, 270),
+                Size = new Size(120, 20)
+            };
+            chkMostrarSenha.CheckedChanged += ChkMostrarSenha_CheckedChanged;
+
+            // Botão Login
             btnLogin = new Button
             {
-                Text = "LOGIN",
-                Location = new System.Drawing.Point(125, 180),
-                Size = new System.Drawing.Size(150, 40),
-                BackColor = System.Drawing.Color.FromArgb(122, 31, 201),
-                ForeColor = System.Drawing.Color.White,
+                Text = "Entrar",
+                Location = new Point(50, 320),
+                Size = new Size(300, 45),
+                BackColor = Color.FromArgb(162, 55, 240),
+                ForeColor = Color.White,
                 FlatStyle = FlatStyle.Flat,
-                Font = new System.Drawing.Font("Segoe UI", 12, System.Drawing.FontStyle.Bold),
+                Font = new Font("Segoe UI", 12, FontStyle.Bold),
                 Cursor = Cursors.Hand
             };
+            btnLogin.FlatAppearance.BorderSize = 0;
             btnLogin.Click += BtnLogin_Click;
 
-            // Label Mensagem
-            lblMensagem = new Label
-            {
-                Location = new System.Drawing.Point(50, 230),
-                Size = new System.Drawing.Size(300, 20),
-                ForeColor = System.Drawing.Color.Red,
-                Font = new System.Drawing.Font("Segoe UI", 9),
-                TextAlign = System.Drawing.ContentAlignment.MiddleCenter,
-                Visible = false
-            };
-
+            // Adicionar controles
+            this.Controls.Add(lblTitulo);
             this.Controls.Add(lblEmail);
             this.Controls.Add(txtEmail);
             this.Controls.Add(lblSenha);
             this.Controls.Add(txtSenha);
+            this.Controls.Add(chkMostrarSenha);
             this.Controls.Add(btnLogin);
-            this.Controls.Add(lblMensagem);
+        }
+
+        private void ChkMostrarSenha_CheckedChanged(object sender, EventArgs e)
+        {
+            txtSenha.PasswordChar = chkMostrarSenha.Checked ? '\0' : '●';
+        }
+
+        private void TxtSenha_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char)Keys.Enter)
+            {
+                e.Handled = true;
+                BtnLogin_Click(sender, e);
+            }
         }
 
         private async void BtnLogin_Click(object sender, EventArgs e)
@@ -100,45 +137,70 @@ namespace DotIA.Desktop.Forms
             string email = txtEmail.Text.Trim();
             string senha = txtSenha.Text;
 
-            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(senha))
+            // Validações
+            if (string.IsNullOrEmpty(email))
             {
-                MostrarMensagem("Preencha todos os campos!");
+                MessageBox.Show("Por favor, informe o email.", "Atenção",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtEmail.Focus();
                 return;
             }
 
+            if (string.IsNullOrEmpty(senha))
+            {
+                MessageBox.Show("Por favor, informe a senha.", "Atenção",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtSenha.Focus();
+                return;
+            }
+
+            // Desabilitar botão durante requisição
             btnLogin.Enabled = false;
             btnLogin.Text = "Aguarde...";
+            this.Cursor = Cursors.WaitCursor;
 
-            var resultado = await _apiClient.LoginAsync(email, senha);
-
-            btnLogin.Enabled = true;
-            btnLogin.Text = "LOGIN";
-
-            if (resultado.Sucesso)
+            try
             {
-                if (resultado.TipoUsuario == "Solicitante")
+                var resposta = await _apiClient.LoginAsync(email, senha);
+
+                if (resposta.Sucesso)
                 {
-                    var chatForm = new ChatForm(resultado.UsuarioId, resultado.Nome);
-                    chatForm.Show();
-                    this.Hide();
+                    MessageBox.Show($"Bem-vindo, {resposta.Nome}!", "Sucesso",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    // Abrir tela correspondente
+                    if (resposta.TipoUsuario == "Solicitante")
+                    {
+                        var chatForm = new ChatForm(resposta.UsuarioId, resposta.Nome);
+                        chatForm.FormClosed += (s, args) => this.Show();
+                        chatForm.Show();
+                        this.Hide();
+                    }
+                    else if (resposta.TipoUsuario == "Tecnico")
+                    {
+                        MessageBox.Show("Tela de técnico em desenvolvimento.", "Info");
+                        // var tecnicoForm = new TecnicoForm(resposta.UsuarioId, resposta.Nome);
+                        // tecnicoForm.Show();
+                        // this.Hide();
+                    }
                 }
-                else if (resultado.TipoUsuario == "Tecnico")
+                else
                 {
-                    var tecnicoForm = new TecnicoForm();
-                    tecnicoForm.Show();
-                    this.Hide();
+                    MessageBox.Show(resposta.Mensagem ?? "Erro ao fazer login", "Erro",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
-            else
+            catch (Exception ex)
             {
-                MostrarMensagem(resultado.Mensagem ?? "Email ou senha inv�lidos");
+                MessageBox.Show($"Erro de conexão: {ex.Message}\n\nVerifique se a API está rodando.",
+                    "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-        }
-
-        private void MostrarMensagem(string mensagem)
-        {
-            lblMensagem.Text = mensagem;
-            lblMensagem.Visible = true;
+            finally
+            {
+                btnLogin.Enabled = true;
+                btnLogin.Text = "Entrar";
+                this.Cursor = Cursors.Default;
+            }
         }
     }
 }

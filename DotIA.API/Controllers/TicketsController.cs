@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DotIA.API.Data;
 using DotIA.API.Models;
-using TabelasDoBanco;
 
 namespace DotIA.API.Controllers
 {
@@ -20,40 +19,141 @@ namespace DotIA.API.Controllers
         [HttpGet("pendentes")]
         public async Task<ActionResult<List<TicketDTO>>> ObterTicketsPendentes()
         {
-            var tickets = await (from t in _context.Tickets
-                                 where t.IdStatus == 1
-                                 join s in _context.Solicitantes on t.IdSolicitante equals s.Id
-                                 join ch in _context.ChatsHistorico on t.DescricaoProblema equals ch.Pergunta into chatGroup
-                                 from chat in chatGroup.DefaultIfEmpty()
-                                 select new TicketDTO
-                                 {
-                                     Id = t.Id,
-                                     NomeSolicitante = s.Nome,
-                                     DescricaoProblema = t.DescricaoProblema,
-                                     RespostaIA = chat != null ? chat.Resposta : "",
-                                     Status = "Pendente",
-                                     DataAbertura = t.DataAbertura,
-                                     Solucao = t.Solucao
-                                 })
-                                .ToListAsync();
+            try
+            {
+                var tickets = await _context.Tickets
+                    .Where(t => t.IdStatus == 1) // Status "Pendente"
+                    .Join(_context.Solicitantes,
+                        ticket => ticket.IdSolicitante,
+                        solicitante => solicitante.Id,
+                        (ticket, solicitante) => new TicketDTO
+                        {
+                            Id = ticket.Id,
+                            NomeSolicitante = solicitante.Nome,
+                            DescricaoProblema = ticket.DescricaoProblema,
+                            Status = "Pendente",
+                            DataAbertura = ticket.DataAbertura,
+                            Solucao = ticket.Solucao
+                        })
+                    .OrderByDescending(t => t.DataAbertura)
+                    .ToListAsync();
 
-            return Ok(tickets);
+                return Ok(tickets);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { erro = $"Erro ao buscar tickets: {ex.Message}" });
+            }
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<TicketDTO>> ObterTicket(int id)
+        {
+            try
+            {
+                var ticket = await _context.Tickets
+                    .Where(t => t.Id == id)
+                    .Join(_context.Solicitantes,
+                        ticket => ticket.IdSolicitante,
+                        solicitante => solicitante.Id,
+                        (ticket, solicitante) => new TicketDTO
+                        {
+                            Id = ticket.Id,
+                            NomeSolicitante = solicitante.Nome,
+                            DescricaoProblema = ticket.DescricaoProblema,
+                            Status = ticket.IdStatus == 1 ? "Pendente" : "Resolvido",
+                            DataAbertura = ticket.DataAbertura,
+                            Solucao = ticket.Solucao
+                        })
+                    .FirstOrDefaultAsync();
+
+                if (ticket == null)
+                {
+                    return NotFound(new { mensagem = "Ticket não encontrado" });
+                }
+
+                return Ok(ticket);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { erro = $"Erro ao buscar ticket: {ex.Message}" });
+            }
         }
 
         [HttpPost("resolver")]
         public async Task<ActionResult> ResolverTicket([FromBody] ResolverTicketRequest request)
         {
-            var ticket = await _context.Tickets.FindAsync(request.TicketId);
+            try
+            {
+                var ticket = await _context.Tickets.FindAsync(request.TicketId);
 
-            if (ticket == null)
-                return NotFound(new { mensagem = "Ticket não encontrado" });
+                if (ticket == null)
+                {
+                    return NotFound(new { mensagem = "Ticket não encontrado" });
+                }
 
-            ticket.Solucao = request.Solucao;
-            ticket.IdStatus = 2;
-            ticket.DataEncerramento = DateTime.Now;
+                ticket.Solucao = request.Solucao;
+                ticket.IdStatus = 2; // Status "Resolvido"
+                ticket.DataEncerramento = DateTime.Now;
 
-            await _context.SaveChangesAsync();
-            return Ok(new { sucesso = true, mensagem = "Ticket resolvido com sucesso" });
+                await _context.SaveChangesAsync();
+
+                return Ok(new { sucesso = true, mensagem = "Ticket resolvido com sucesso" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { erro = $"Erro ao resolver ticket: {ex.Message}" });
+            }
         }
+
+        [HttpGet("usuario/{usuarioId}")]
+        public async Task<ActionResult<List<TicketDTO>>> ObterTicketsPorUsuario(int usuarioId)
+        {
+            try
+            {
+                var tickets = await _context.Tickets
+                    .Where(t => t.IdSolicitante == usuarioId)
+                    .Join(_context.Solicitantes,
+                        ticket => ticket.IdSolicitante,
+                        solicitante => solicitante.Id,
+                        (ticket, solicitante) => new TicketDTO
+                        {
+                            Id = ticket.Id,
+                            NomeSolicitante = solicitante.Nome,
+                            DescricaoProblema = ticket.DescricaoProblema,
+                            Status = ticket.IdStatus == 1 ? "Pendente" : "Resolvido",
+                            DataAbertura = ticket.DataAbertura,
+                            Solucao = ticket.Solucao
+                        })
+                    .OrderByDescending(t => t.DataAbertura)
+                    .ToListAsync();
+
+                return Ok(tickets);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { erro = $"Erro ao buscar tickets: {ex.Message}" });
+            }
+        }
+    }
+
+    // ???????????????????????????????????????????????????????????
+    // MODELS (adicionar em Models/TicketModels.cs)
+    // ???????????????????????????????????????????????????????????
+
+    public class TicketDTO
+    {
+        public int Id { get; set; }
+        public string NomeSolicitante { get; set; }
+        public string DescricaoProblema { get; set; }
+        public string Status { get; set; }
+        public DateTime DataAbertura { get; set; }
+        public string? Solucao { get; set; }
+    }
+
+    public class ResolverTicketRequest
+    {
+        public int TicketId { get; set; }
+        public string Solucao { get; set; }
     }
 }
