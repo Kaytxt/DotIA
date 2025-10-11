@@ -14,47 +14,42 @@ namespace DotIA.Web.Controllers
 
         public IActionResult Index()
         {
-            // Se já estiver logado, redireciona
-            var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
-            if (usuarioId.HasValue)
-            {
-                var tipoUsuario = HttpContext.Session.GetString("TipoUsuario");
-                if (tipoUsuario == "Tecnico")
-                    return RedirectToAction("Index", "Tecnico");
-                else
-                    return RedirectToAction("Index", "Chat");
-            }
-
             return View();
         }
 
         [HttpPost]
         public async Task<IActionResult> Entrar(string email, string senha)
         {
-            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(senha))
+            try
             {
-                ViewBag.Erro = "Email e senha são obrigatórios";
+                var resposta = await _apiClient.LoginAsync(email, senha);
+
+                if (resposta.Sucesso)
+                {
+                    // Salvar dados na sessão
+                    HttpContext.Session.SetInt32("UsuarioId", resposta.UsuarioId);
+                    HttpContext.Session.SetString("Nome", resposta.Nome);
+                    HttpContext.Session.SetString("TipoUsuario", resposta.TipoUsuario);
+
+                    // Redirecionar baseado no tipo de usuário
+                    if (resposta.TipoUsuario == "Solicitante")
+                    {
+                        return RedirectToAction("Index", "Chat");
+                    }
+                    else if (resposta.TipoUsuario == "Tecnico")
+                    {
+                        return RedirectToAction("Index", "Tecnico");
+                    }
+                }
+
+                ViewBag.Erro = resposta.Mensagem;
                 return View("Index");
             }
-
-            var resposta = await _apiClient.LoginAsync(email, senha);
-
-            if (resposta.Sucesso)
+            catch (Exception ex)
             {
-                // Salvar na sessão
-                HttpContext.Session.SetInt32("UsuarioId", resposta.UsuarioId);
-                HttpContext.Session.SetString("Nome", resposta.Nome);
-                HttpContext.Session.SetString("TipoUsuario", resposta.TipoUsuario);
-
-                // Redirecionar baseado no tipo
-                if (resposta.TipoUsuario == "Tecnico")
-                    return RedirectToAction("Index", "Tecnico");
-                else
-                    return RedirectToAction("Index", "Chat");
+                ViewBag.Erro = $"Erro ao conectar com a API: {ex.Message}";
+                return View("Index");
             }
-
-            ViewBag.Erro = resposta.Mensagem ?? "Email ou senha incorretos";
-            return View("Index");
         }
 
         public IActionResult Sair()
