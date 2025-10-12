@@ -10,7 +10,7 @@ namespace DotIA.API.Data
         {
         }
 
-        // DbSets para as tabelas do banco
+        // DbSets das tabelas
         public DbSet<Departamento> Departamentos { get; set; }
         public DbSet<Solicitante> Solicitantes { get; set; }
         public DbSet<Tecnico> Tecnicos { get; set; }
@@ -26,14 +26,7 @@ namespace DotIA.API.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // Configurações adicionais se necessário
-            modelBuilder.Entity<Solicitante>()
-                .HasIndex(s => s.Email)
-                .IsUnique();
-
-            modelBuilder.Entity<Tecnico>()
-                .HasIndex(t => t.Email)
-                .IsUnique();
+            // Configurações adicionais podem ser feitas aqui se necessário
         }
     }
 }

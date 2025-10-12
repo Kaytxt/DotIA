@@ -28,14 +28,14 @@ namespace DotIA.API.Services
 
                 if (string.IsNullOrEmpty(endpoint) || string.IsNullOrEmpty(apiKey))
                 {
-                    return "⚠️ Configuração da Azure OpenAI não encontrada. Verifique o appsettings.json";
+                    return "⚠️ Configuração da Azure OpenAI não encontrada.";
                 }
 
                 var requestBody = new
                 {
                     messages = new[]
                     {
-                        new { role = "system", content = "Você é um assistente técnico de TI especializado em ajudar usuários com problemas de tecnologia. Seja claro, objetivo e prestativo." },
+                        new { role = "system", content = "Você é um assistente de TI." },
                         new { role = "user", content = pergunta }
                     },
                     max_tokens = 800,
@@ -58,22 +58,14 @@ namespace DotIA.API.Services
                         .GetProperty("content")
                         .GetString();
 
-                    return resposta ?? "Desculpe, não consegui gerar uma resposta.";
+                    return resposta ?? "Não consegui gerar resposta.";
                 }
 
-                return $"❌ Erro na API da OpenAI: {response.StatusCode} - {result}";
-            }
-            catch (HttpRequestException ex)
-            {
-                return $"❌ Erro de conexão com a API: {ex.Message}";
-            }
-            catch (JsonException ex)
-            {
-                return $"❌ Erro ao processar resposta: {ex.Message}";
+                return $"❌ Erro API: {response.StatusCode}";
             }
             catch (Exception ex)
             {
-                return $"❌ Erro inesperado: {ex.Message}";
+                return $"❌ Erro: {ex.Message}";
             }
         }
     }

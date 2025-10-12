@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DotIA.API.Data;
-using DotIA.API.Models;
+using DotIA.API.Models;  
 using TabelasDoBanco;
 
 namespace DotIA.API.Controllers
@@ -22,7 +22,6 @@ namespace DotIA.API.Controllers
         {
             try
             {
-                // Validação básica
                 if (string.IsNullOrEmpty(request.Email) || string.IsNullOrEmpty(request.Senha))
                 {
                     return BadRequest(new LoginResponse
@@ -32,7 +31,6 @@ namespace DotIA.API.Controllers
                     });
                 }
 
-                // Verificar se é um solicitante
                 var solicitante = await _context.Solicitantes
                     .FirstOrDefaultAsync(s => s.Email == request.Email && s.Senha == request.Senha);
 
@@ -48,7 +46,6 @@ namespace DotIA.API.Controllers
                     });
                 }
 
-                // Verificar se é um técnico
                 var tecnico = await _context.Tecnicos
                     .FirstOrDefaultAsync(t => t.Email == request.Email && t.Senha == request.Senha);
 
@@ -64,7 +61,6 @@ namespace DotIA.API.Controllers
                     });
                 }
 
-                // Credenciais inválidas
                 return Unauthorized(new LoginResponse
                 {
                     Sucesso = false,

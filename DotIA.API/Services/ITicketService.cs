@@ -1,5 +1,12 @@
 namespace DotIA.API.Services
 {
-    public interface ITicketService { }
-    public class TicketService : ITicketService { }
+    public interface ITicketService
+    {
+        // Métodos futuros
+    }
+
+    public class TicketService : ITicketService
+    {
+        // Implementação futura
+    }
 }

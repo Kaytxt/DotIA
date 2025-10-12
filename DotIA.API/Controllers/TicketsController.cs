@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DotIA.API.Data;
 using DotIA.API.Models;
+using TabelasDoBanco;
 
 namespace DotIA.API.Controllers
 {
@@ -22,7 +23,7 @@ namespace DotIA.API.Controllers
             try
             {
                 var tickets = await _context.Tickets
-                    .Where(t => t.IdStatus == 1) // Status "Pendente"
+                    .Where(t => t.IdStatus == 1)
                     .Join(_context.Solicitantes,
                         ticket => ticket.IdSolicitante,
                         solicitante => solicitante.Id,
@@ -93,7 +94,7 @@ namespace DotIA.API.Controllers
                 }
 
                 ticket.Solucao = request.Solucao;
-                ticket.IdStatus = 2; // Status "Resolvido"
+                ticket.IdStatus = 2;
                 ticket.DataEncerramento = DateTime.Now;
 
                 await _context.SaveChangesAsync();
@@ -135,25 +136,5 @@ namespace DotIA.API.Controllers
                 return StatusCode(500, new { erro = $"Erro ao buscar tickets: {ex.Message}" });
             }
         }
-    }
-
-    // ???????????????????????????????????????????????????????????
-    // MODELS (adicionar em Models/TicketModels.cs)
-    // ???????????????????????????????????????????????????????????
-
-    public class TicketDTO
-    {
-        public int Id { get; set; }
-        public string NomeSolicitante { get; set; }
-        public string DescricaoProblema { get; set; }
-        public string Status { get; set; }
-        public DateTime DataAbertura { get; set; }
-        public string? Solucao { get; set; }
-    }
-
-    public class ResolverTicketRequest
-    {
-        public int TicketId { get; set; }
-        public string Solucao { get; set; }
     }
 }
