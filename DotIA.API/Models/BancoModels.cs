@@ -4,186 +4,188 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TabelasDoBanco
 {
-    [Table("DEPARTAMENTOS")]
+    [Table("departamentos")]
     public class Departamento
     {
         [Key]
-        [Column("ID_DEPARTAMENTO")]
+        [Column("id_departamento")]
         public int Id { get; set; }
 
-        [Column("NOME_DEPARTAMENTO")]
+        [Column("nome_departamento")]
         public string Nome { get; set; } = string.Empty;
     }
 
-    [Table("SOLICITANTES")]
+    [Table("solicitantes")]
     public class Solicitante
     {
         [Key]
-        [Column("ID_SOLICITANTE")]
+        [Column("id_solicitante")]
         public int Id { get; set; }
 
-        [Column("NOME")]
+        [Column("nome")]
         public string Nome { get; set; } = string.Empty;
 
-        [Column("EMAIL")]
+        [Column("email")]
         public string Email { get; set; } = string.Empty;
 
-        [Column("SENHA")]
+        [Column("senha")]
         public string Senha { get; set; } = string.Empty;
 
-        [Column("ID_DEPARTAMENTO")]
+        [Column("id_departamento")]
         public int IdDepartamento { get; set; }
     }
 
-    [Table("TECNICOS")]
+    [Table("tecnicos")]
     public class Tecnico
     {
         [Key]
-        [Column("ID_TECNICO")]
+        [Column("id_tecnico")]
         public int Id { get; set; }
 
-        [Column("NOME")]
+        [Column("nome")]
         public string Nome { get; set; } = string.Empty;
 
-        [Column("EMAIL")]
+        [Column("email")]
         public string Email { get; set; } = string.Empty;
 
-        [Column("SENHA")]
+        [Column("senha")]
         public string Senha { get; set; } = string.Empty;
 
-        [Column("ID_ESPECIALIDADE")]
+        [Column("id_especialidade")]
         public int IdEspecialidade { get; set; }
     }
 
-    [Table("CATEGORIAS")]
+    [Table("categorias")]
     public class Categoria
     {
         [Key]
-        [Column("ID_CATEGORIA")]
+        [Column("id_categoria")]
         public int Id { get; set; }
 
-        [Column("NOME_CATEGORIA")]
+        [Column("nome_categoria")]
         public string Nome { get; set; } = string.Empty;
     }
 
-    [Table("SUBCATEGORIAS")]
+    [Table("subcategorias")]
     public class Subcategoria
     {
         [Key]
-        [Column("ID_SUBCATEGORIA")]
+        [Column("id_subcategoria")]
         public int Id { get; set; }
 
-        [Column("NOME_SUBCATEGORIA")]
+        [Column("nome_subcategoria")]
         public string Nome { get; set; } = string.Empty;
 
-        [Column("ID_CATEGORIA")]
+        [Column("id_categoria")]
         public int IdCategoria { get; set; }
     }
 
-    [Table("NIVEIS_ATENDIMENTO")]
+    [Table("niveis_atendimento")]
     public class NivelAtendimento
     {
         [Key]
-        [Column("ID_NIVEL")]
+        [Column("id_nivel")]
         public int Id { get; set; }
 
-        [Column("DESCRICAO")]
+        [Column("descricao")]
         public string Descricao { get; set; } = string.Empty;
     }
 
-    [Table("TICKETS")]
+    [Table("tickets")]
     public class Ticket
     {
         [Key]
-        [Column("ID_TICKET")]
+        [Column("id_ticket")]
         public int Id { get; set; }
 
-        [Column("ID_SOLICITANTE")]
+        [Column("id_solicitante")]
         public int IdSolicitante { get; set; }
 
-        [Column("ID_TECNICO")]
+        [Column("id_tecnico")]
         public int IdTecnico { get; set; }
 
-        [Column("ID_SUBCATEGORIA")]
+        [Column("id_subcategoria")]
         public int IdSubcategoria { get; set; }
 
-        [Column("ID_NIVEL")]
+        [Column("id_nivel")]
         public int IdNivel { get; set; }
 
-        [Column("DESCRICAO_PROBLEMA")]
+        [Column("descricao_problema")]
         public string DescricaoProblema { get; set; } = string.Empty;
 
-        [Column("ID_STATUS")]
+        [Column("id_status")]
         public int IdStatus { get; set; }
 
-        [Column("DATA_ABERTURA")]
+        [Column("data_abertura")]
         public DateTime DataAbertura { get; set; }
 
-        [Column("DATA_ENCERRAMENTO")]
+        [Column("data_encerramento")]
         public DateTime? DataEncerramento { get; set; }
 
-        [Column("SOLUCAO")]
+        [Column("solucao")]
         public string? Solucao { get; set; }
     }
 
-    [Table("HISTORICO_UTIL")]
+    [Table("historico_util")]
     public class HistoricoUtil
     {
         [Key]
+        [Column("id")]
         public int Id { get; set; }
 
-        [Column("ID_SOLICITANTE")]
+        [Column("id_solicitante")]
         public int IdSolicitante { get; set; }
 
-        [Column("PERGUNTA")]
+        [Column("pergunta")]
         public string Pergunta { get; set; } = string.Empty;
 
-        [Column("RESPOSTA")]
+        [Column("resposta")]
         public string Resposta { get; set; } = string.Empty;
 
-        [Column("DATAHORA")]
+        [Column("datahora")]
         public DateTime DataHora { get; set; }
     }
 
-    [Table("CHAT_HISTORICO")]
+    [Table("chat_historico")]
     public class ChatHistorico
     {
         [Key]
-        [Column("ID")]
+        [Column("id")]
         public int Id { get; set; }
 
-        [Column("ID_SOLICITANTE")]
+        [Column("id_solicitante")]
         public int IdSolicitante { get; set; }
 
-        [Column("TITULO")]
+        [Column("titulo")]
         public string Titulo { get; set; } = string.Empty;
 
-        [Column("PERGUNTA")]
+        [Column("pergunta")]
         public string Pergunta { get; set; } = string.Empty;
 
-        [Column("RESPOSTA")]
+        [Column("resposta")]
         public string Resposta { get; set; } = string.Empty;
 
-        [Column("DATA_HORA")]
+        [Column("data_hora")]
         public DateTime DataHora { get; set; }
     }
 
-    [Table("AVALIACAO_RESPOSTA")]
+    [Table("avaliacao_resposta")]
     public class AvaliacaoResposta
     {
         [Key]
+        [Column("id")]
         public int Id { get; set; }
 
-        [Column("ID_SOLICITANTE")]
+        [Column("id_solicitante")]
         public int IdSolicitante { get; set; }
 
-        [Column("PERGUNTA")]
+        [Column("pergunta")]
         public string Pergunta { get; set; } = string.Empty;
 
-        [Column("FOI_UTIL")]
+        [Column("foi_util")]
         public bool FoiUtil { get; set; }
 
-        [Column("DATAHORA")]
+        [Column("datahora")]
         public DateTime DataHora { get; set; }
     }
 }
