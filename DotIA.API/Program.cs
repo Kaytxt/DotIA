@@ -83,7 +83,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
 app.UseCors("AllowAll");
 app.UseAuthorization();
 app.MapControllers();
@@ -93,7 +92,7 @@ app.MapControllers();
 // ═══════════════════════════════════════════════════════════════════
 
 Console.WriteLine("🚀 DotIA API iniciada!");
-Console.WriteLine($"📍 Swagger UI: https://localhost:5001/swagger");
-Console.WriteLine($"📍 API Base: https://localhost:5001/api");
+Console.WriteLine($"📍 Swagger UI: http://localhost:5100/swagger");
+Console.WriteLine($"📍 API Base: http://localhost:5100/api");
 
 app.Run();

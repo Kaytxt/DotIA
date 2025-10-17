@@ -10,7 +10,6 @@ namespace DotIA.API.Data
         {
         }
 
-        // DbSets das tabelas
         public DbSet<Departamento> Departamentos { get; set; }
         public DbSet<Solicitante> Solicitantes { get; set; }
         public DbSet<Tecnico> Tecnicos { get; set; }
@@ -26,7 +25,16 @@ namespace DotIA.API.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // Configurações adicionais podem ser feitas aqui se necessário
+            modelBuilder.Entity<Departamento>().ToTable("departamentos");
+            modelBuilder.Entity<Solicitante>().ToTable("solicitantes");
+            modelBuilder.Entity<Tecnico>().ToTable("tecnicos");
+            modelBuilder.Entity<Categoria>().ToTable("categorias");
+            modelBuilder.Entity<Subcategoria>().ToTable("subcategorias");
+            modelBuilder.Entity<NivelAtendimento>().ToTable("niveis_atendimento");
+            modelBuilder.Entity<Ticket>().ToTable("tickets");
+            modelBuilder.Entity<HistoricoUtil>().ToTable("historico_util");
+            modelBuilder.Entity<ChatHistorico>().ToTable("chat_historico");
+            modelBuilder.Entity<AvaliacaoResposta>().ToTable("avaliacao_resposta");
         }
     }
 }

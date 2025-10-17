@@ -24,7 +24,8 @@ namespace DotIA.API.Controllers
             {
                 var tickets = await _context.Tickets
                     .Where(t => t.IdStatus == 1)
-                    .Join(_context.Solicitantes,
+                    .Join(
+                        _context.Solicitantes,
                         ticket => ticket.IdSolicitante,
                         solicitante => solicitante.Id,
                         (ticket, solicitante) => new TicketDTO
@@ -47,54 +48,21 @@ namespace DotIA.API.Controllers
             }
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<TicketDTO>> ObterTicket(int id)
-        {
-            try
-            {
-                var ticket = await _context.Tickets
-                    .Where(t => t.Id == id)
-                    .Join(_context.Solicitantes,
-                        ticket => ticket.IdSolicitante,
-                        solicitante => solicitante.Id,
-                        (ticket, solicitante) => new TicketDTO
-                        {
-                            Id = ticket.Id,
-                            NomeSolicitante = solicitante.Nome,
-                            DescricaoProblema = ticket.DescricaoProblema,
-                            Status = ticket.IdStatus == 1 ? "Pendente" : "Resolvido",
-                            DataAbertura = ticket.DataAbertura,
-                            Solucao = ticket.Solucao
-                        })
-                    .FirstOrDefaultAsync();
-
-                if (ticket == null)
-                {
-                    return NotFound(new { mensagem = "Ticket não encontrado" });
-                }
-
-                return Ok(ticket);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { erro = $"Erro ao buscar ticket: {ex.Message}" });
-            }
-        }
-
         [HttpPost("resolver")]
         public async Task<ActionResult> ResolverTicket([FromBody] ResolverTicketRequest request)
         {
             try
             {
-                var ticket = await _context.Tickets.FindAsync(request.TicketId);
+                var ticket = await _context.Tickets
+                    .FirstOrDefaultAsync(t => t.Id == request.TicketId);
 
                 if (ticket == null)
                 {
-                    return NotFound(new { mensagem = "Ticket não encontrado" });
+                    return NotFound(new { sucesso = false, mensagem = "Ticket não encontrado" });
                 }
 
                 ticket.Solucao = request.Solucao;
-                ticket.IdStatus = 2;
+                ticket.IdStatus = 3;
                 ticket.DataEncerramento = DateTime.Now;
 
                 await _context.SaveChangesAsync();
@@ -103,37 +71,7 @@ namespace DotIA.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { erro = $"Erro ao resolver ticket: {ex.Message}" });
-            }
-        }
-
-        [HttpGet("usuario/{usuarioId}")]
-        public async Task<ActionResult<List<TicketDTO>>> ObterTicketsPorUsuario(int usuarioId)
-        {
-            try
-            {
-                var tickets = await _context.Tickets
-                    .Where(t => t.IdSolicitante == usuarioId)
-                    .Join(_context.Solicitantes,
-                        ticket => ticket.IdSolicitante,
-                        solicitante => solicitante.Id,
-                        (ticket, solicitante) => new TicketDTO
-                        {
-                            Id = ticket.Id,
-                            NomeSolicitante = solicitante.Nome,
-                            DescricaoProblema = ticket.DescricaoProblema,
-                            Status = ticket.IdStatus == 1 ? "Pendente" : "Resolvido",
-                            DataAbertura = ticket.DataAbertura,
-                            Solucao = ticket.Solucao
-                        })
-                    .OrderByDescending(t => t.DataAbertura)
-                    .ToListAsync();
-
-                return Ok(tickets);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { erro = $"Erro ao buscar tickets: {ex.Message}" });
+                return StatusCode(500, new { sucesso = false, erro = $"Erro ao resolver ticket: {ex.Message}" });
             }
         }
     }

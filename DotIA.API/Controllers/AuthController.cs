@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DotIA.API.Data;
-using DotIA.API.Models;  
+using DotIA.API.Models;
 using TabelasDoBanco;
 
 namespace DotIA.API.Controllers
@@ -42,7 +42,7 @@ namespace DotIA.API.Controllers
                         TipoUsuario = "Solicitante",
                         UsuarioId = solicitante.Id,
                         Nome = solicitante.Nome,
-                        Mensagem = "Login realizado com sucesso!"
+                        Mensagem = "Login realizado com sucesso"
                     });
                 }
 
@@ -57,7 +57,7 @@ namespace DotIA.API.Controllers
                         TipoUsuario = "Tecnico",
                         UsuarioId = tecnico.Id,
                         Nome = tecnico.Nome,
-                        Mensagem = "Login realizado com sucesso!"
+                        Mensagem = "Login realizado com sucesso"
                     });
                 }
 
@@ -72,7 +72,7 @@ namespace DotIA.API.Controllers
                 return StatusCode(500, new LoginResponse
                 {
                     Sucesso = false,
-                    Mensagem = $"Erro ao fazer login: {ex.Message}"
+                    Mensagem = $"Erro ao realizar login: {ex.Message}"
                 });
             }
         }
