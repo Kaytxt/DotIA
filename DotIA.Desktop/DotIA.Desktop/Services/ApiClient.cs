@@ -10,7 +10,7 @@ namespace DotIA.Desktop.Services
     public class ApiClient
     {
         private static readonly HttpClient _httpClient = new HttpClient();
-        private const string BASE_URL = "https://localhost:5001/api";
+        private const string BASE_URL = "https://localhost:5100/api";
 
         public ApiClient()
         {
