@@ -27,7 +27,7 @@ namespace DotIA.Web.Services
                 var json = JsonSerializer.Serialize(request);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                var response = await _httpClient.PostAsync("/Auth/login", content);
+                var response = await _httpClient.PostAsync("/api/Auth/login", content);
                 var result = await response.Content.ReadAsStringAsync();
 
                 if (response.IsSuccessStatusCode)
@@ -57,7 +57,7 @@ namespace DotIA.Web.Services
                 var json = JsonSerializer.Serialize(request);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                var response = await _httpClient.PostAsync("/Chat/enviar", content);
+                var response = await _httpClient.PostAsync("/api/Chat/enviar", content);
                 var result = await response.Content.ReadAsStringAsync();
 
                 if (response.IsSuccessStatusCode)
@@ -80,7 +80,7 @@ namespace DotIA.Web.Services
         {
             try
             {
-                var response = await _httpClient.GetAsync($"/Chat/historico/{usuarioId}");
+                var response = await _httpClient.GetAsync($"/api/Chat/historico/{usuarioId}");
                 var result = await response.Content.ReadAsStringAsync();
 
                 if (response.IsSuccessStatusCode)
@@ -107,7 +107,7 @@ namespace DotIA.Web.Services
                 var json = JsonSerializer.Serialize(request);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                var response = await _httpClient.PostAsync("/Chat/avaliar", content);
+                var response = await _httpClient.PostAsync("/api/Chat/avaliar", content);
                 return response.IsSuccessStatusCode;
             }
             catch
@@ -123,7 +123,7 @@ namespace DotIA.Web.Services
         {
             try
             {
-                var response = await _httpClient.GetAsync("/Tickets/pendentes");
+                var response = await _httpClient.GetAsync("/api/Tickets/pendentes");
                 var result = await response.Content.ReadAsStringAsync();
 
                 if (response.IsSuccessStatusCode)
@@ -150,7 +150,7 @@ namespace DotIA.Web.Services
                 var json = JsonSerializer.Serialize(request);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                var response = await _httpClient.PostAsync("/Tickets/resolver", content);
+                var response = await _httpClient.PostAsync("/api/Tickets/resolver", content);
                 return response.IsSuccessStatusCode;
             }
             catch
