@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using DotIA.Web.Services;
 
 namespace DotIA.Web.Controllers
@@ -31,7 +31,11 @@ namespace DotIA.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> ResolverTicket([FromBody] ResolverRequest request)
         {
-            var sucesso = await _apiClient.ResolverTicketAsync(request.TicketId, request.Solucao);
+            var sucesso = await _apiClient.ResolverTicketAsync(
+                request.TicketId,
+                request.Solucao,
+                request.MarcarComoResolvido // ✅ ADICIONADO
+            );
             return Json(new { sucesso });
         }
     }
@@ -39,6 +43,7 @@ namespace DotIA.Web.Controllers
     public class ResolverRequest
     {
         public int TicketId { get; set; }
-        public string Solucao { get; set; }
+        public string Solucao { get; set; } = string.Empty;
+        public bool MarcarComoResolvido { get; set; } // ✅ ADICIONADO
     }
 }

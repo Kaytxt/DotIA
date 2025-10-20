@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using DotIA.Web.Services;
 
 namespace DotIA.Web.Controllers
@@ -55,22 +55,36 @@ namespace DotIA.Web.Controllers
                 usuarioId.Value,
                 request.Pergunta,
                 request.Resposta,
-                request.FoiUtil
+                request.FoiUtil,
+                request.ChatId // ✅ ADICIONADO
             );
 
             return Json(new { sucesso });
+        }
+
+        // ✅ NOVO ENDPOINT
+        [HttpGet]
+        public async Task<IActionResult> VerificarResposta(int chatId)
+        {
+            var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
+            if (usuarioId == null)
+                return Unauthorized();
+
+            var resposta = await _apiClient.VerificarRespostaAsync(chatId);
+            return Json(resposta);
         }
     }
 
     public class PerguntaRequest
     {
-        public string Pergunta { get; set; }
+        public string Pergunta { get; set; } = string.Empty;
     }
 
     public class AvaliacaoRequest
     {
-        public string Pergunta { get; set; }
-        public string Resposta { get; set; }
+        public string Pergunta { get; set; } = string.Empty;
+        public string Resposta { get; set; } = string.Empty;
         public bool FoiUtil { get; set; }
+        public int ChatId { get; set; } // ✅ ADICIONADO
     }
 }

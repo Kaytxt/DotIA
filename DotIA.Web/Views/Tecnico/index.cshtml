@@ -211,14 +211,45 @@
             padding: 20px;
         }
 
-        .btn-resolve {
-            background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+        /* ✅ BOTÕES DE AÇÃO */
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-respond {
+            flex: 1;
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
             border: none;
-            padding: 12px 30px;
+            padding: 12px 20px;
             border-radius: 10px;
             color: white;
             font-weight: 600;
             transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+            .btn-respond:hover:not(:disabled) {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+            }
+
+        .btn-resolve {
+            flex: 1;
+            background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
             .btn-resolve:hover:not(:disabled) {
@@ -226,14 +257,22 @@
                 box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
             }
 
+            .btn-respond:disabled,
             .btn-resolve:disabled {
                 opacity: 0.5;
+                cursor: not-allowed;
             }
 
         .alert-success {
             background: rgba(16, 185, 129, 0.1);
             border: 1px solid var(--primary-green);
             color: var(--primary-green);
+        }
+
+        .alert-info {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid #3b82f6;
+            color: #3b82f6;
         }
 
         @@media (max-width: 768px) {
@@ -307,7 +346,7 @@
 
             <div class="solution-area" id="solutionArea" style="display: none;">
                 <div class="alert alert-success mb-3" id="successMessage" style="display: none;">
-                    <i class="bi bi-check-circle"></i> Ticket resolvido com sucesso!
+                    <i class="bi bi-check-circle"></i> <span id="successText"></span>
                 </div>
 
                 <div class="solution-container">
@@ -320,13 +359,27 @@
                               placeholder="Descreva a solução detalhada para o problema do usuário..."
                               style="background: var(--darker-bg); border: 1px solid var(--border-color); color: white;"></textarea>
 
-                    <div class="d-flex gap-2 justify-content-end">
+                    <div class="d-flex gap-2 justify-content-between">
                         <button class="btn btn-secondary" onclick="limparFormulario()">
                             <i class="bi bi-x-circle"></i> Limpar
                         </button>
-                        <button class="btn-resolve" id="resolveBtn" onclick="resolverTicket()">
-                            <i class="bi bi-check-circle"></i> Resolver Ticket
-                        </button>
+
+                        <div class="action-buttons">
+                            <button class="btn-respond" id="respondBtn" onclick="responderTicket(false)">
+                                <i class="bi bi-reply"></i>
+                                Responder
+                            </button>
+                            <button class="btn-resolve" id="resolveBtn" onclick="responderTicket(true)">
+                                <i class="bi bi-check-circle"></i>
+                                Resolver e Fechar
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="mt-3 text-muted small">
+                        <i class="bi bi-info-circle"></i>
+                        <strong>Responder:</strong> Envia a solução mas mantém o ticket em acompanhamento<br>
+                        <strong>Resolver e Fechar:</strong> Envia a solução e marca o ticket como resolvido
                     </div>
                 </div>
             </div>
@@ -426,8 +479,7 @@
                             <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 50%; display: flex; align-items: center; justify-content: center;">🤖</div>
                         </div>
                         <div class="flex-grow-1">
-                            A resposta automática não foi suficiente para resolver o problema do usuário.
-                            Por favor, forneça uma solução mais detalhada e específica.
+                            ${ticket.respostaIA || 'A resposta automática não foi suficiente para resolver o problema do usuário.'}
                         </div>
                     </div>
                 `;
@@ -437,7 +489,7 @@
             document.getElementById('successMessage').style.display = 'none';
         }
 
-        async function resolverTicket() {
+        async function responderTicket(marcarComoResolvido) {
             if (!ticketSelecionado) return;
 
             const solucao = document.getElementById('solutionInput').value.trim();
@@ -447,7 +499,9 @@
                 return;
             }
 
+            const respondBtn = document.getElementById('respondBtn');
             const resolveBtn = document.getElementById('resolveBtn');
+            respondBtn.disabled = true;
             resolveBtn.disabled = true;
 
             try {
@@ -456,24 +510,35 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         ticketId: ticketSelecionado.id,
-                        solucao: solucao
+                        solucao: solucao,
+                        marcarComoResolvido: marcarComoResolvido
                     })
                 });
 
-                if (response.ok) {
+                const data = await response.json();
+
+                if (data.sucesso) {
                     const successMessage = document.getElementById('successMessage');
+                    const successText = document.getElementById('successText');
+
+                    successText.textContent = data.mensagem;
                     successMessage.style.display = 'block';
 
                     setTimeout(() => {
                         limparFormulario();
                         carregarTickets();
 
+                        const statusText = marcarComoResolvido ? 'Resolvido' : 'Respondido';
+                        const icon = marcarComoResolvido ? '✓' : '💬';
+
                         document.getElementById('conversationArea').innerHTML = `
                                 <div class="empty-state">
-                                    <div class="empty-icon">✓</div>
-                                    <h3 class="mb-3">Ticket Resolvido!</h3>
+                                    <div class="empty-icon">${icon}</div>
+                                    <h3 class="mb-3">${statusText} com Sucesso!</h3>
                                     <p class="text-muted">
-                                        O usuário receberá sua solução. Selecione outro ticket para continuar.
+                                        ${marcarComoResolvido
+                                ? 'O ticket foi marcado como resolvido e o usuário foi notificado.'
+                                : 'Sua resposta foi enviada. O ticket continua em acompanhamento.'}
                                     </p>
                                 </div>
                             `;
@@ -483,12 +548,14 @@
                         ticketSelecionado = null;
                     }, 2000);
                 } else {
-                    alert('Erro ao resolver ticket.');
+                    alert('Erro ao processar ticket.');
+                    respondBtn.disabled = false;
                     resolveBtn.disabled = false;
                 }
             } catch (error) {
                 console.error('Erro:', error);
                 alert('Erro ao conectar com o servidor.');
+                respondBtn.disabled = false;
                 resolveBtn.disabled = false;
             }
         }
@@ -496,6 +563,8 @@
         function limparFormulario() {
             document.getElementById('solutionInput').value = '';
             document.getElementById('successMessage').style.display = 'none';
+            document.getElementById('respondBtn').disabled = false;
+            document.getElementById('resolveBtn').disabled = false;
         }
     </script>
 </body>

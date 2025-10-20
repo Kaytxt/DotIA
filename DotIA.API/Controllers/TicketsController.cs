@@ -22,22 +22,26 @@ namespace DotIA.API.Controllers
         {
             try
             {
-                var tickets = await _context.Tickets
-                    .Where(t => t.IdStatus == 1) // Status 1 = Pendente
-                    .Join(_context.Solicitantes,
-                        ticket => ticket.IdSolicitante,
-                        solicitante => solicitante.Id,
-                        (ticket, solicitante) => new TicketDTO
-                        {
-                            Id = ticket.Id,
-                            NomeSolicitante = solicitante.Nome,
-                            DescricaoProblema = ticket.DescricaoProblema,
-                            Status = "Pendente",
-                            DataAbertura = ticket.DataAbertura,
-                            Solucao = ticket.Solucao
-                        })
-                    .OrderByDescending(t => t.DataAbertura)
-                    .ToListAsync();
+                var tickets = await (
+                    from ticket in _context.Tickets
+                    join solicitante in _context.Solicitantes on ticket.IdSolicitante equals solicitante.Id
+                    join chat in _context.ChatsHistorico on ticket.Id equals chat.IdTicket into chatGroup
+                    from chat in chatGroup.DefaultIfEmpty()
+                    where ticket.IdStatus == 1 // Status 1 = Pendente
+                    orderby ticket.DataAbertura descending
+                    select new TicketDTO
+                    {
+                        Id = ticket.Id,
+                        NomeSolicitante = solicitante.Nome,
+                        DescricaoProblema = ticket.DescricaoProblema,
+                        Status = "Pendente",
+                        DataAbertura = ticket.DataAbertura,
+                        Solucao = ticket.Solucao,
+                        ChatId = chat != null ? chat.Id : 0,
+                        PerguntaOriginal = chat != null ? chat.Pergunta : "",
+                        RespostaIA = chat != null ? chat.Resposta : ""
+                    }
+                ).ToListAsync();
 
                 return Ok(tickets);
             }
@@ -59,13 +63,40 @@ namespace DotIA.API.Controllers
                     return NotFound(new { erro = "Ticket não encontrado" });
                 }
 
+                // Atualiza a solução do ticket
                 ticket.Solucao = request.Solucao;
-                ticket.IdStatus = 2; // Status 2 = Resolvido
-                ticket.DataEncerramento = DateTime.UtcNow; // ✅ CORRIGIDO: Era DateTime.Now
+
+                // Se marcar como resolvido
+                if (request.MarcarComoResolvido)
+                {
+                    ticket.IdStatus = 2; // Resolvido
+                    ticket.DataEncerramento = DateTime.UtcNow;
+
+                    // Atualiza o chat relacionado para status 4 (Resolvido pelo Técnico)
+                    var chat = await _context.ChatsHistorico
+                        .FirstOrDefaultAsync(c => c.IdTicket == ticket.Id);
+
+                    if (chat != null)
+                    {
+                        chat.Status = 4; // Resolvido pelo Técnico
+                    }
+                }
+                // Senão, apenas salva a solução mas mantém pendente
+                else
+                {
+                    ticket.IdStatus = 1; // Mantém pendente para acompanhamento
+                }
 
                 await _context.SaveChangesAsync();
 
-                return Ok(new { sucesso = true, mensagem = "Ticket resolvido com sucesso!" });
+                return Ok(new
+                {
+                    sucesso = true,
+                    mensagem = request.MarcarComoResolvido
+                        ? "Ticket resolvido com sucesso!"
+                        : "Resposta enviada! Ticket ainda em acompanhamento.",
+                    ticketStatus = ticket.IdStatus
+                });
             }
             catch (Exception ex)
             {
@@ -74,18 +105,38 @@ namespace DotIA.API.Controllers
         }
 
         [HttpGet("{ticketId}")]
-        public async Task<ActionResult<Ticket>> ObterTicket(int ticketId)
+        public async Task<ActionResult> ObterTicket(int ticketId)
         {
             try
             {
-                var ticket = await _context.Tickets.FindAsync(ticketId);
+                var ticketCompleto = await (
+                    from ticket in _context.Tickets
+                    join solicitante in _context.Solicitantes on ticket.IdSolicitante equals solicitante.Id
+                    join chat in _context.ChatsHistorico on ticket.Id equals chat.IdTicket into chatGroup
+                    from chat in chatGroup.DefaultIfEmpty()
+                    where ticket.Id == ticketId
+                    select new
+                    {
+                        Ticket = ticket,
+                        NomeSolicitante = solicitante.Nome,
+                        EmailSolicitante = solicitante.Email,
+                        Chat = chat != null ? new
+                        {
+                            chat.Id,
+                            chat.Pergunta,
+                            chat.Resposta,
+                            chat.DataHora,
+                            chat.Status
+                        } : null
+                    }
+                ).FirstOrDefaultAsync();
 
-                if (ticket == null)
+                if (ticketCompleto == null)
                 {
                     return NotFound(new { erro = "Ticket não encontrado" });
                 }
 
-                return Ok(ticket);
+                return Ok(ticketCompleto);
             }
             catch (Exception ex)
             {

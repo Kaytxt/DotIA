@@ -167,6 +167,13 @@ namespace TabelasDoBanco
 
         [Column("data_hora")]
         public DateTime DataHora { get; set; }
+
+        // ✅ NOVOS CAMPOS
+        [Column("id_ticket")]
+        public int? IdTicket { get; set; }
+
+        [Column("status")]
+        public int Status { get; set; } = 1; // 1=Em andamento, 2=Concluído, 3=Pendente Técnico, 4=Resolvido Técnico
     }
 
     [Table("avaliacao_resposta")]

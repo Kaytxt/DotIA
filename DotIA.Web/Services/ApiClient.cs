@@ -99,11 +99,18 @@ namespace DotIA.Web.Services
             }
         }
 
-        public async Task<bool> AvaliarRespostaAsync(int usuarioId, string pergunta, string resposta, bool foiUtil)
+        public async Task<bool> AvaliarRespostaAsync(int usuarioId, string pergunta, string resposta, bool foiUtil, int chatId)
         {
             try
             {
-                var request = new { UsuarioId = usuarioId, Pergunta = pergunta, Resposta = resposta, FoiUtil = foiUtil };
+                var request = new
+                {
+                    UsuarioId = usuarioId,
+                    Pergunta = pergunta,
+                    Resposta = resposta,
+                    FoiUtil = foiUtil,
+                    ChatId = chatId // ✅ ADICIONADO
+                };
                 var json = JsonSerializer.Serialize(request);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
@@ -113,6 +120,30 @@ namespace DotIA.Web.Services
             catch
             {
                 return false;
+            }
+        }
+
+        // ✅ NOVO: Verificar se há resposta do técnico
+        public async Task<VerificarRespostaResponse> VerificarRespostaAsync(int chatId)
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync($"/api/Chat/verificar-resposta/{chatId}");
+                var result = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return JsonSerializer.Deserialize<VerificarRespostaResponse>(result, new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    }) ?? new VerificarRespostaResponse { TemResposta = false };
+                }
+
+                return new VerificarRespostaResponse { TemResposta = false };
+            }
+            catch
+            {
+                return new VerificarRespostaResponse { TemResposta = false };
             }
         }
 
@@ -142,11 +173,16 @@ namespace DotIA.Web.Services
             }
         }
 
-        public async Task<bool> ResolverTicketAsync(int ticketId, string solucao)
+        public async Task<bool> ResolverTicketAsync(int ticketId, string solucao, bool marcarComoResolvido)
         {
             try
             {
-                var request = new { TicketId = ticketId, Solucao = solucao };
+                var request = new
+                {
+                    TicketId = ticketId,
+                    Solucao = solucao,
+                    MarcarComoResolvido = marcarComoResolvido // ✅ ADICIONADO
+                };
                 var json = JsonSerializer.Serialize(request);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
@@ -161,7 +197,7 @@ namespace DotIA.Web.Services
     }
 
     // ═══════════════════════════════════════════════════════════
-    // DTOs COM NULLABLE CORRIGIDO
+    // DTOs
     // ═══════════════════════════════════════════════════════════
 
     public class LoginResponse
@@ -178,6 +214,7 @@ namespace DotIA.Web.Services
         public bool Sucesso { get; set; }
         public string Resposta { get; set; } = string.Empty;
         public DateTime DataHora { get; set; }
+        public int ChatId { get; set; } // ✅ ADICIONADO
     }
 
     public class ChatHistorico
@@ -187,6 +224,19 @@ namespace DotIA.Web.Services
         public string Pergunta { get; set; } = string.Empty;
         public string Resposta { get; set; } = string.Empty;
         public DateTime DataHora { get; set; }
+        public int Status { get; set; } // ✅ ADICIONADO
+        public int? IdTicket { get; set; } // ✅ ADICIONADO
+        public string StatusTexto { get; set; } = string.Empty; // ✅ ADICIONADO
+    }
+
+    // ✅ NOVO DTO
+    public class VerificarRespostaResponse
+    {
+        public bool TemResposta { get; set; }
+        public string Solucao { get; set; } = string.Empty;
+        public int Status { get; set; }
+        public int StatusTicket { get; set; }
+        public DateTime? DataResposta { get; set; }
     }
 
     public class TicketDTO
@@ -197,5 +247,8 @@ namespace DotIA.Web.Services
         public string Status { get; set; } = string.Empty;
         public DateTime DataAbertura { get; set; }
         public string? Solucao { get; set; }
+        public int ChatId { get; set; } // ✅ ADICIONADO
+        public string PerguntaOriginal { get; set; } = string.Empty; // ✅ ADICIONADO
+        public string RespostaIA { get; set; } = string.Empty; // ✅ ADICIONADO
     }
 }
