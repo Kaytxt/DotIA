@@ -1,0 +1,502 @@
+﻿@{
+    ViewData["Title"] = "DotIA - Painel do Técnico";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-green: #10b981;
+            --secondary-green: #059669;
+            --dark-bg: #1a132f;
+            --darker-bg: #1e1433;
+            --card-bg: #2c204d;
+            --border-color: #3d2e6b;
+        }
+
+        body {
+            background: var(--dark-bg);
+            color: #e5e7eb;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+        }
+
+        .tech-container {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            height: 100vh;
+        }
+
+        .sidebar {
+            background: var(--dark-bg);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-green), #06b6d4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stats-card {
+            background: linear-gradient(135deg, var(--card-bg), var(--darker-bg));
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+            .stat-item:last-child {
+                border-bottom: none;
+            }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-green);
+        }
+
+        .tickets-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 20px;
+        }
+
+        .tickets-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ticket-card {
+            background: var(--card-bg);
+            border: 2px solid transparent;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+            .ticket-card:hover {
+                border-color: var(--primary-green);
+                transform: translateX(5px);
+            }
+
+            .ticket-card.active {
+                border-color: var(--primary-green);
+                background: linear-gradient(135deg, var(--card-bg), #1e3a32);
+            }
+
+        .badge-warning {
+            background: #fbbf24;
+            color: #1a132f;
+        }
+
+        .work-area {
+            display: flex;
+            flex-direction: column;
+            background: var(--darker-bg);
+        }
+
+        .work-header {
+            background: var(--dark-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 20px 30px;
+        }
+
+        .ticket-avatar {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .empty-icon {
+            font-size: 100px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .conversation-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+        }
+
+        .message-box {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+            .message-box.user {
+                border-left: 4px solid #8d4bff;
+            }
+
+            .message-box.bot {
+                border-left: 4px solid #3b82f6;
+            }
+
+        .solution-area {
+            background: var(--dark-bg);
+            border-top: 1px solid var(--border-color);
+            padding: 25px 30px;
+        }
+
+        .solution-container {
+            background: var(--card-bg);
+            border: 2px solid var(--primary-green);
+            border-radius: 16px;
+            padding: 20px;
+        }
+
+        .btn-resolve {
+            background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+            border: none;
+            padding: 12px 30px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+            .btn-resolve:hover:not(:disabled) {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+            }
+
+            .btn-resolve:disabled {
+                opacity: 0.5;
+            }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--primary-green);
+            color: var(--primary-green);
+        }
+
+        @@media (max-width: 768px) {
+            .tech-container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="tech-container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-container">
+                    <div class="logo-icon">🛠️</div>
+                    <div class="logo-text">DotIA Tech</div>
+                </div>
+            </div>
+
+            <div class="stats-card">
+                <div class="stat-item">
+                    <span class="text-muted">Tickets Pendentes</span>
+                    <span class="stat-value" id="totalTickets">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="text-muted">Resolvidos Hoje</span>
+                    <span class="stat-value text-success" id="resolvidosHoje">0</span>
+                </div>
+            </div>
+
+            <div class="tickets-container">
+                <div class="tickets-title">
+                    <i class="bi bi-list-task"></i> Tickets Pendentes
+                </div>
+                <div id="ticketsList"></div>
+            </div>
+
+            <div class="p-3 border-top border-secondary">
+                <a href="/Login/Sair" class="btn btn-outline-light w-100">
+                    <i class="bi bi-box-arrow-right"></i> Sair
+                </a>
+            </div>
+        </div>
+
+        <div class="work-area">
+            <div class="work-header">
+                <div id="ticketHeader" style="display: none;">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="ticket-avatar">🎫</div>
+                        <div>
+                            <h5 class="mb-1" id="headerTitle">Ticket #0</h5>
+                            <small class="text-muted" id="headerMeta">Solicitante: -</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="conversation-area" id="conversationArea">
+                <div class="empty-state">
+                    <div class="empty-icon">📋</div>
+                    <h3 class="mb-3">Selecione um Ticket</h3>
+                    <p class="text-muted">
+                        Escolha um ticket da lista ao lado para visualizar os detalhes e fornecer uma solução
+                    </p>
+                </div>
+            </div>
+
+            <div class="solution-area" id="solutionArea" style="display: none;">
+                <div class="alert alert-success mb-3" id="successMessage" style="display: none;">
+                    <i class="bi bi-check-circle"></i> Ticket resolvido com sucesso!
+                </div>
+
+                <div class="solution-container">
+                    <label class="form-label fw-bold text-success mb-3">
+                        <i class="bi bi-lightbulb"></i> Solução para o Problema
+                    </label>
+                    <textarea id="solutionInput"
+                              class="form-control mb-3"
+                              rows="5"
+                              placeholder="Descreva a solução detalhada para o problema do usuário..."
+                              style="background: var(--darker-bg); border: 1px solid var(--border-color); color: white;"></textarea>
+
+                    <div class="d-flex gap-2 justify-content-end">
+                        <button class="btn btn-secondary" onclick="limparFormulario()">
+                            <i class="bi bi-x-circle"></i> Limpar
+                        </button>
+                        <button class="btn-resolve" id="resolveBtn" onclick="resolverTicket()">
+                            <i class="bi bi-check-circle"></i> Resolver Ticket
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let ticketSelecionado = null;
+        let tickets = [];
+
+        window.addEventListener('load', () => {
+            carregarTickets();
+        });
+
+        async function carregarTickets() {
+            try {
+                const response = await fetch('/Tecnico/ObterTickets');
+                tickets = await response.json();
+
+                const ticketsList = document.getElementById('ticketsList');
+                ticketsList.innerHTML = '';
+
+                document.getElementById('totalTickets').textContent = tickets.length;
+
+                if (tickets.length === 0) {
+                    ticketsList.innerHTML = `
+                            <div class="text-center py-5 text-muted">
+                                <div style="font-size: 48px;">🎉</div>
+                                <div class="mt-2">Nenhum ticket pendente!</div>
+                            </div>
+                        `;
+                    return;
+                }
+
+                tickets.forEach(ticket => {
+                    const dataAbertura = new Date(ticket.dataAbertura);
+                    const dataFormatada = dataAbertura.toLocaleDateString('pt-BR');
+
+                    const ticketDiv = document.createElement('div');
+                    ticketDiv.className = 'ticket-card';
+                    ticketDiv.onclick = () => selecionarTicket(ticket);
+                    ticketDiv.innerHTML = `
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="fw-bold text-success">Ticket #${ticket.id}</span>
+                                <span class="badge badge-warning">${ticket.status}</span>
+                            </div>
+                            <div class="mb-2 small">
+                                <i class="bi bi-person"></i> ${ticket.nomeSolicitante}
+                            </div>
+                            <div class="text-muted small text-truncate">${ticket.descricaoProblema}</div>
+                            <div class="text-muted small mt-2">
+                                <i class="bi bi-calendar"></i> ${dataFormatada}
+                            </div>
+                        `;
+
+                    ticketsList.appendChild(ticketDiv);
+                });
+            } catch (error) {
+                console.error('Erro ao carregar tickets:', error);
+            }
+        }
+
+        function selecionarTicket(ticket) {
+            ticketSelecionado = ticket;
+
+            document.querySelectorAll('.ticket-card').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+
+            document.getElementById('ticketHeader').style.display = 'block';
+            document.getElementById('headerTitle').textContent = `Ticket #${ticket.id}`;
+            document.getElementById('headerMeta').textContent = `Solicitante: ${ticket.nomeSolicitante}`;
+
+            const conversationArea = document.getElementById('conversationArea');
+            conversationArea.innerHTML = `
+                    <div class="mb-3">
+                        <small class="text-muted text-uppercase">
+                            <i class="bi bi-person"></i> Pergunta do Usuário
+                        </small>
+                    </div>
+                    <div class="message-box user d-flex gap-3">
+                        <div class="flex-shrink-0">
+                            <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #8d4bff, #a855f7); border-radius: 50%; display: flex; align-items: center; justify-content: center;">👤</div>
+                        </div>
+                        <div class="flex-grow-1">${ticket.descricaoProblema}</div>
+                    </div>
+
+                    <div class="mb-3 mt-4">
+                        <small class="text-muted text-uppercase">
+                            <i class="bi bi-robot"></i> Resposta da IA (avaliada como insuficiente)
+                        </small>
+                    </div>
+                    <div class="message-box bot d-flex gap-3">
+                        <div class="flex-shrink-0">
+                            <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 50%; display: flex; align-items: center; justify-content: center;">🤖</div>
+                        </div>
+                        <div class="flex-grow-1">
+                            A resposta automática não foi suficiente para resolver o problema do usuário.
+                            Por favor, forneça uma solução mais detalhada e específica.
+                        </div>
+                    </div>
+                `;
+
+            document.getElementById('solutionArea').style.display = 'block';
+            document.getElementById('solutionInput').value = '';
+            document.getElementById('successMessage').style.display = 'none';
+        }
+
+        async function resolverTicket() {
+            if (!ticketSelecionado) return;
+
+            const solucao = document.getElementById('solutionInput').value.trim();
+
+            if (!solucao) {
+                alert('Por favor, descreva a solução para o problema.');
+                return;
+            }
+
+            const resolveBtn = document.getElementById('resolveBtn');
+            resolveBtn.disabled = true;
+
+            try {
+                const response = await fetch('/Tecnico/ResolverTicket', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        ticketId: ticketSelecionado.id,
+                        solucao: solucao
+                    })
+                });
+
+                if (response.ok) {
+                    const successMessage = document.getElementById('successMessage');
+                    successMessage.style.display = 'block';
+
+                    setTimeout(() => {
+                        limparFormulario();
+                        carregarTickets();
+
+                        document.getElementById('conversationArea').innerHTML = `
+                                <div class="empty-state">
+                                    <div class="empty-icon">✓</div>
+                                    <h3 class="mb-3">Ticket Resolvido!</h3>
+                                    <p class="text-muted">
+                                        O usuário receberá sua solução. Selecione outro ticket para continuar.
+                                    </p>
+                                </div>
+                            `;
+
+                        document.getElementById('solutionArea').style.display = 'none';
+                        document.getElementById('ticketHeader').style.display = 'none';
+                        ticketSelecionado = null;
+                    }, 2000);
+                } else {
+                    alert('Erro ao resolver ticket.');
+                    resolveBtn.disabled = false;
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro ao conectar com o servidor.');
+                resolveBtn.disabled = false;
+            }
+        }
+
+        function limparFormulario() {
+            document.getElementById('solutionInput').value = '';
+            document.getElementById('successMessage').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

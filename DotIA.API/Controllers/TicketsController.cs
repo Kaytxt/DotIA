@@ -18,25 +18,24 @@ namespace DotIA.API.Controllers
         }
 
         [HttpGet("pendentes")]
-        public async Task<ActionResult<List<TicketDTO>>> ObterTicketsPendentes()
+        public async Task<ActionResult> ObterTicketsPendentes()
         {
             try
             {
                 var tickets = await _context.Tickets
-                    .Where(t => t.IdStatus == 1)
-                    .Join(
-                        _context.Solicitantes,
-                        ticket => ticket.IdSolicitante,
-                        solicitante => solicitante.Id,
-                        (ticket, solicitante) => new TicketDTO
-                        {
-                            Id = ticket.Id,
-                            NomeSolicitante = solicitante.Nome,
-                            DescricaoProblema = ticket.DescricaoProblema,
-                            Status = "Pendente",
-                            DataAbertura = ticket.DataAbertura,
-                            Solucao = ticket.Solucao
-                        })
+                    .Where(t => t.IdStatus == 1) // Status "Pendente"
+                    .Join(_context.Solicitantes,
+                          ticket => ticket.IdSolicitante,
+                          solicitante => solicitante.Id,
+                          (ticket, solicitante) => new TicketDTO
+                          {
+                              Id = ticket.Id,
+                              NomeSolicitante = solicitante.Nome,
+                              DescricaoProblema = ticket.DescricaoProblema,
+                              Status = "Pendente",
+                              DataAbertura = ticket.DataAbertura,
+                              Solucao = ticket.Solucao
+                          })
                     .OrderByDescending(t => t.DataAbertura)
                     .ToListAsync();
 
@@ -44,7 +43,7 @@ namespace DotIA.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { erro = $"Erro ao buscar tickets: {ex.Message}" });
+                return StatusCode(500, new { erro = ex.Message });
             }
         }
 
@@ -58,11 +57,11 @@ namespace DotIA.API.Controllers
 
                 if (ticket == null)
                 {
-                    return NotFound(new { sucesso = false, mensagem = "Ticket não encontrado" });
+                    return NotFound(new { mensagem = "Ticket não encontrado" });
                 }
 
                 ticket.Solucao = request.Solucao;
-                ticket.IdStatus = 3;
+                ticket.IdStatus = 2; // Status "Resolvido"
                 ticket.DataEncerramento = DateTime.Now;
 
                 await _context.SaveChangesAsync();
@@ -71,7 +70,7 @@ namespace DotIA.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { sucesso = false, erro = $"Erro ao resolver ticket: {ex.Message}" });
+                return StatusCode(500, new { erro = ex.Message });
             }
         }
     }

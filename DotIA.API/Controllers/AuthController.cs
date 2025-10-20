@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DotIA.API.Data;
 using DotIA.API.Models;
-using TabelasDoBanco;
 
 namespace DotIA.API.Controllers
 {
@@ -22,30 +21,7 @@ namespace DotIA.API.Controllers
         {
             try
             {
-                if (string.IsNullOrEmpty(request.Email) || string.IsNullOrEmpty(request.Senha))
-                {
-                    return BadRequest(new LoginResponse
-                    {
-                        Sucesso = false,
-                        Mensagem = "Email e senha são obrigatórios"
-                    });
-                }
-
-                var solicitante = await _context.Solicitantes
-                    .FirstOrDefaultAsync(s => s.Email == request.Email && s.Senha == request.Senha);
-
-                if (solicitante != null)
-                {
-                    return Ok(new LoginResponse
-                    {
-                        Sucesso = true,
-                        TipoUsuario = "Solicitante",
-                        UsuarioId = solicitante.Id,
-                        Nome = solicitante.Nome,
-                        Mensagem = "Login realizado com sucesso"
-                    });
-                }
-
+                // Buscar técnico
                 var tecnico = await _context.Tecnicos
                     .FirstOrDefaultAsync(t => t.Email == request.Email && t.Senha == request.Senha);
 
@@ -61,10 +37,26 @@ namespace DotIA.API.Controllers
                     });
                 }
 
-                return Unauthorized(new LoginResponse
+                // Buscar solicitante
+                var solicitante = await _context.Solicitantes
+                    .FirstOrDefaultAsync(s => s.Email == request.Email && s.Senha == request.Senha);
+
+                if (solicitante != null)
+                {
+                    return Ok(new LoginResponse
+                    {
+                        Sucesso = true,
+                        TipoUsuario = "Solicitante",
+                        UsuarioId = solicitante.Id,
+                        Nome = solicitante.Nome,
+                        Mensagem = "Login realizado com sucesso"
+                    });
+                }
+
+                return Ok(new LoginResponse
                 {
                     Sucesso = false,
-                    Mensagem = "Email ou senha incorretos"
+                    Mensagem = "Email ou senha inválidos"
                 });
             }
             catch (Exception ex)
@@ -72,7 +64,7 @@ namespace DotIA.API.Controllers
                 return StatusCode(500, new LoginResponse
                 {
                     Sucesso = false,
-                    Mensagem = $"Erro ao realizar login: {ex.Message}"
+                    Mensagem = $"Erro: {ex.Message}"
                 });
             }
         }

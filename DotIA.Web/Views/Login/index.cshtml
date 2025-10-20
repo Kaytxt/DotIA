@@ -1,194 +1,378 @@
-﻿<!DOCTYPE html>
+﻿@{
+    ViewData["Title"] = "DotIA - Login";
+    Layout = null;
+}
+
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DotIA - Login</title>
+    <title>@ViewData["Title"]</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
     <style>
-        * {
+        :root {
+            --primary-purple: #8d4bff;
+            --secondary-purple: #a855f7;
+            --dark-bg: #1a132f;
+            --darker-bg: #140e25;
+            --card-bg: #2c204d;
+        }
+
+        html, body {
+            height: 100%;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
         }
 
         body {
+            background: var(--dark-bg);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
             display: flex;
+            align-items: center;
             justify-content: center;
-            align-items: center;
+            position: relative;
+            overflow: hidden;
         }
 
-        .login-container {
-            background: white;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            body::before {
+                content: '';
+                position: absolute;
+                width: 200%;
+                height: 200%;
+                background: radial-gradient(circle at 20% 50%, rgba(141, 75, 255, 0.15) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.15) 0%, transparent 50%);
+                animation: gradient 15s ease infinite;
+            }
+
+        @@keyframes gradient {
+            0%, 100% {
+                transform: translate(0, 0);
+            }
+
+            50% {
+                transform: translate(-50px, 50px);
+            }
+        }
+
+        .login-wrapper {
+            position: relative;
+            z-index: 1;
             width: 100%;
-            max-width: 400px;
+            max-width: 480px;
+            padding: 20px;
         }
 
-        .logo {
-            text-align: center;
-            margin-bottom: 30px;
+        .card {
+            background: linear-gradient(135deg, var(--card-bg) 0%, var(--darker-bg) 100%);
+            border: 1px solid rgba(141, 75, 255, 0.3);
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
         }
 
-        .logo h1 {
-            color: #667eea;
-            font-size: 36px;
-            margin-bottom: 10px;
-        }
-
-        .logo p {
-            color: #666;
-            font-size: 14px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            color: #333;
-            font-weight: 500;
-        }
-
-        input[type="email"],
-        input[type="password"] {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: border-color 0.3s;
-        }
-
-        input[type="email"]:focus,
-        input[type="password"]:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        .btn-login {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            border-radius: 8px;
-            color: white;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .btn-login:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-login:active {
-            transform: translateY(0);
-        }
-
-        .erro {
-            background: #ffebee;
-            color: #c62828;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            text-align: center;
-            font-size: 14px;
-        }
-
-        .credenciais-teste {
-            margin-top: 20px;
-            padding: 15px;
-            background: #f5f5f5;
-            border-radius: 8px;
-            font-size: 12px;
-        }
-
-        .credenciais-teste h4 {
-            margin-bottom: 10px;
-            color: #333;
-        }
-
-        .credenciais-teste p {
-            margin: 5px 0;
-            color: #666;
-        }
-
-        .mostrar-senha {
-            margin-top: 8px;
+        .logo-icon {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto;
+            background: linear-gradient(135deg, var(--primary-purple), var(--secondary-purple));
+            border-radius: 25px;
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 14px;
-            color: #666;
+            justify-content: center;
+            font-size: 50px;
+            box-shadow: 0 10px 30px rgba(141, 75, 255, 0.4);
+            animation: pulse 2s ease-in-out infinite;
         }
 
-        .mostrar-senha input[type="checkbox"] {
-            width: auto;
+        @@keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .logo-title {
+            font-size: 42px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--secondary-purple), #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+            margin: 20px 0 10px;
+        }
+
+        .logo-subtitle {
+            color: #9ca3af;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .form-control {
+            background: var(--darker-bg);
+            border: 2px solid rgba(141, 75, 255, 0.3);
+            border-radius: 15px;
+            color: white;
+            padding: 14px 20px 14px 50px;
+            transition: all 0.3s;
+        }
+
+            .form-control:focus {
+                background: var(--darker-bg);
+                border-color: var(--primary-purple);
+                color: white;
+                box-shadow: 0 0 0 4px rgba(141, 75, 255, 0.1);
+            }
+
+            .form-control::placeholder {
+                color: #6b7280;
+            }
+
+        .input-group-text {
+            background: transparent;
+            border: none;
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+            font-size: 20px;
+        }
+
+        .input-icon-wrapper {
+            position: relative;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-purple), var(--secondary-purple));
+            border: none;
+            border-radius: 15px;
+            padding: 16px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 10px 30px rgba(141, 75, 255, 0.3);
+            transition: all 0.3s;
+        }
+
+            .btn-primary:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 15px 40px rgba(141, 75, 255, 0.5);
+            }
+
+        .alert-danger {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.2));
+            border: 1px solid rgba(239, 68, 68, 0.5);
+            color: #fecaca;
+            border-radius: 15px;
+        }
+
+        .test-credentials {
+            background: linear-gradient(135deg, rgba(141, 75, 255, 0.1), rgba(168, 85, 247, 0.1));
+            border: 1px solid rgba(141, 75, 255, 0.3);
+            border-radius: 15px;
+        }
+
+            .test-credentials .card-title {
+                color: var(--secondary-purple);
+                font-size: 14px;
+                font-weight: 700;
+            }
+
+        .credential-item {
+            background: rgba(141, 75, 255, 0.1);
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-family: monospace;
+            color: #e5e7eb;
+        }
+
+        .text-muted {
+            color: #9ca3af !important;
+        }
+
+        .text-white {
+            color: #e5e7eb !important;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            color: #6b7280;
+            margin: 30px 0;
+        }
+
+            .divider::before,
+            .divider::after {
+                content: '';
+                flex: 1;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            .divider span {
+                padding: 0 15px;
+            }
+
+        .password-toggle {
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 20px;
+            z-index: 10;
+        }
+
+        .link-purple {
+            color: var(--secondary-purple);
+            text-decoration: none;
+        }
+
+            .link-purple:hover {
+                color: var(--primary-purple);
+            }
+
+        @@media (max-width: 600px) {
+            .login-wrapper {
+                padding: 20px;
+            }
+
+            .card {
+                padding: 30px 20px !important;
+            }
+
+            .logo-icon {
+                width: 80px;
+                height: 80px;
+                font-size: 40px;
+            }
+
+            .logo-title {
+                font-size: 36px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <div class="logo">
-            <h1>🤖 DotIA</h1>
-            <p>Sistema de Suporte Inteligente</p>
-        </div>
+    <div class="login-wrapper">
+        <div class="card p-5">
+            <div class="card-body">
+                <!-- Logo -->
+                <div class="logo-icon mb-3">🤖</div>
+                <h1 class="logo-title">DotIA</h1>
+                <p class="logo-subtitle mb-4">Sistema de Suporte Inteligente</p>
 
-        @if (ViewBag.Erro != null)
-        {
-            <div class="erro">
-                @ViewBag.Erro
-            </div>
-        }
+                <!-- Mensagem de Erro -->
+                @if (ViewBag.Erro != null)
+                {
+                <div class="alert alert-danger" role="alert">
+                    <i class="bi bi-exclamation-triangle"></i> @ViewBag.Erro
+                </div>
+                }
 
-        <form method="post" asp-action="Entrar">
-            <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" name="email" 
-                       placeholder="seu@email.com" 
-                       value="teste@teste.com" 
-                       required>
-            </div>
+                <!-- Formulário -->
+                <form method="post" asp-action="Entrar">
+                    <div class="mb-4">
+                        <label class="form-label text-white">
+                            <i class="bi bi-envelope"></i> Email
+                        </label>
+                        <div class="input-icon-wrapper">
+                            <span class="input-group-text">📧</span>
+                            <input type="email"
+                                   class="form-control"
+                                   id="email"
+                                   name="email"
+                                   placeholder="seu@email.com"
+                                   value="teste@teste.com"
+                                   required>
+                        </div>
+                    </div>
 
-            <div class="form-group">
-                <label for="senha">Senha</label>
-                <input type="password" id="senha" name="senha" 
-                       placeholder="••••••••" 
-                       value="123456" 
-                       required>
-                <div class="mostrar-senha">
-                    <input type="checkbox" id="mostrarSenha" 
-                           onchange="toggleSenha()">
-                    <label for="mostrarSenha" style="margin: 0; font-weight: normal;">
-                        Mostrar senha
-                    </label>
+                    <div class="mb-4">
+                        <label class="form-label text-white">
+                            <i class="bi bi-lock"></i> Senha
+                        </label>
+                        <div class="input-icon-wrapper">
+                            <span class="input-group-text">🔒</span>
+                            <input type="password"
+                                   class="form-control"
+                                   id="senha"
+                                   name="senha"
+                                   placeholder="••••••••"
+                                   value="123456"
+                                   required>
+                            <span class="password-toggle" onclick="togglePassword()">
+                                <i class="bi bi-eye" id="toggleIcon"></i>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="remember">
+                            <label class="form-check-label text-muted" for="remember">
+                                Lembrar-me
+                            </label>
+                        </div>
+                        <a href="#" class="link-purple">Esqueceu a senha?</a>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 mb-3">
+                        Entrar <i class="bi bi-arrow-right"></i>
+                    </button>
+                </form>
+
+                <!-- Divider -->
+                <div class="divider">
+                    <span>Credenciais para Teste</span>
+                </div>
+
+                <!-- Credenciais de Teste -->
+                <div class="test-credentials p-3">
+                    <h6 class="card-title mb-3">
+                        <i class="bi bi-info-circle"></i> Ambientes de Teste
+                    </h6>
+                    <div class="row g-2">
+                        <div class="col-12">
+                            <small class="text-muted d-block mb-1">👤 Solicitante:</small>
+                            <div class="credential-item">teste@teste.com / 123456</div>
+                        </div>
+                        <div class="col-12">
+                            <small class="text-muted d-block mb-1">🛠️ Técnico:</small>
+                            <div class="credential-item">joao.tecnico@dotia.com / 123456</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="text-center mt-4">
+                    <small class="text-muted">
+                        © 2025 DotIA. Todos os direitos reservados.<br>
+                        <a href="#" class="link-purple">Termos</a> •
+                        <a href="#" class="link-purple">Privacidade</a>
+                    </small>
                 </div>
             </div>
-
-            <button type="submit" class="btn-login">Entrar</button>
-        </form>
-
-        <div class="credenciais-teste">
-            <h4>📋 Credenciais para Teste:</h4>
-            <p><strong>Solicitante:</strong> teste@teste.com / 123456</p>
-            <p><strong>Técnico:</strong> joao.tecnico@dotia.com / 123456</p>
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        function toggleSenha() {
-            const senhaInput = document.getElementById('senha');
-            const checkbox = document.getElementById('mostrarSenha');
-            senhaInput.type = checkbox.checked ? 'text' : 'password';
+        function togglePassword() {
+            const senha = document.getElementById('senha');
+            const icon = document.getElementById('toggleIcon');
+
+            if (senha.type === 'password') {
+                senha.type = 'text';
+                icon.className = 'bi bi-eye-slash';
+            } else {
+                senha.type = 'password';
+                icon.className = 'bi bi-eye';
+            }
         }
     </script>
 </body>

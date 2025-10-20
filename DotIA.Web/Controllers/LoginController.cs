@@ -14,42 +14,47 @@ namespace DotIA.Web.Controllers
 
         public IActionResult Index()
         {
+            // Se já está logado, redireciona
+            var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
+            if (usuarioId != null)
+            {
+                var tipoUsuario = HttpContext.Session.GetString("TipoUsuario");
+                if (tipoUsuario == "Tecnico")
+                    return RedirectToAction("Index", "Tecnico");
+                else
+                    return RedirectToAction("Index", "Chat");
+            }
+
             return View();
         }
 
         [HttpPost]
         public async Task<IActionResult> Entrar(string email, string senha)
         {
-            try
+            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(senha))
             {
-                var resposta = await _apiClient.LoginAsync(email, senha);
-
-                if (resposta.Sucesso)
-                {
-                    // Salvar dados na sessão
-                    HttpContext.Session.SetInt32("UsuarioId", resposta.UsuarioId);
-                    HttpContext.Session.SetString("Nome", resposta.Nome);
-                    HttpContext.Session.SetString("TipoUsuario", resposta.TipoUsuario);
-
-                    // Redirecionar baseado no tipo de usuário
-                    if (resposta.TipoUsuario == "Solicitante")
-                    {
-                        return RedirectToAction("Index", "Chat");
-                    }
-                    else if (resposta.TipoUsuario == "Tecnico")
-                    {
-                        return RedirectToAction("Index", "Tecnico");
-                    }
-                }
-
-                ViewBag.Erro = resposta.Mensagem;
+                ViewBag.Erro = "Por favor, preencha todos os campos.";
                 return View("Index");
             }
-            catch (Exception ex)
+
+            var resultado = await _apiClient.LoginAsync(email, senha);
+
+            if (resultado.Sucesso)
             {
-                ViewBag.Erro = $"Erro ao conectar com a API: {ex.Message}";
-                return View("Index");
+                // Salva informações na sessão
+                HttpContext.Session.SetInt32("UsuarioId", resultado.UsuarioId);
+                HttpContext.Session.SetString("TipoUsuario", resultado.TipoUsuario);
+                HttpContext.Session.SetString("Nome", resultado.Nome);
+
+                // Redireciona conforme o tipo de usuário
+                if (resultado.TipoUsuario == "Tecnico")
+                    return RedirectToAction("Index", "Tecnico");
+                else
+                    return RedirectToAction("Index", "Chat");
             }
+
+            ViewBag.Erro = resultado.Mensagem ?? "Email ou senha inválidos.";
+            return View("Index");
         }
 
         public IActionResult Sair()

@@ -24,7 +24,7 @@ C:\Users\kauan\Desktop\DotIA\dotia.web\obj\Debug\net9.0\rjsmcshtml.dswa.cache.js
 C:\Users\kauan\Desktop\DotIA\dotia.web\obj\Debug\net9.0\scopedcss\Views\Shared\_Layout.cshtml.rz.scp.css
 C:\Users\kauan\Desktop\DotIA\dotia.web\obj\Debug\net9.0\scopedcss\bundle\DotIA.Web.styles.css
 C:\Users\kauan\Desktop\DotIA\dotia.web\obj\Debug\net9.0\scopedcss\projectbundle\DotIA.Web.bundle.scp.css
-C:\Users\kauan\Desktop\DotIA\dotia.web\obj\Debug\net9.0\compressed\i78gem2i27-b9sayid5wm.gz
+C:\Users\kauan\Desktop\DotIA\dotia.web\obj\Debug\net9.0\compressed\i78gem2i27-yavfmydhrv.gz
 C:\Users\kauan\Desktop\DotIA\dotia.web\obj\Debug\net9.0\compressed\rtuklk4lej-61n19gt1b8.gz
 C:\Users\kauan\Desktop\DotIA\dotia.web\obj\Debug\net9.0\compressed\hvtsw6qiuk-xtxxf3hu2r.gz
 C:\Users\kauan\Desktop\DotIA\dotia.web\obj\Debug\net9.0\compressed\gefxqli2at-t1cqhe9u97.gz
