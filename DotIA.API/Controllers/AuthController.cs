@@ -21,23 +21,7 @@ namespace DotIA.API.Controllers
         {
             try
             {
-                // Buscar técnico
-                var tecnico = await _context.Tecnicos
-                    .FirstOrDefaultAsync(t => t.Email == request.Email && t.Senha == request.Senha);
-
-                if (tecnico != null)
-                {
-                    return Ok(new LoginResponse
-                    {
-                        Sucesso = true,
-                        TipoUsuario = "Tecnico",
-                        UsuarioId = tecnico.Id,
-                        Nome = tecnico.Nome,
-                        Mensagem = "Login realizado com sucesso"
-                    });
-                }
-
-                // Buscar solicitante
+                // Verifica se é um solicitante
                 var solicitante = await _context.Solicitantes
                     .FirstOrDefaultAsync(s => s.Email == request.Email && s.Senha == request.Senha);
 
@@ -46,17 +30,34 @@ namespace DotIA.API.Controllers
                     return Ok(new LoginResponse
                     {
                         Sucesso = true,
-                        TipoUsuario = "Solicitante",
+                        TipoUsuario = "solicitante",
                         UsuarioId = solicitante.Id,
                         Nome = solicitante.Nome,
-                        Mensagem = "Login realizado com sucesso"
+                        Mensagem = "Login realizado com sucesso!"
                     });
                 }
 
-                return Ok(new LoginResponse
+                // Verifica se é um técnico
+                var tecnico = await _context.Tecnicos
+                    .FirstOrDefaultAsync(t => t.Email == request.Email && t.Senha == request.Senha);
+
+                if (tecnico != null)
+                {
+                    return Ok(new LoginResponse
+                    {
+                        Sucesso = true,
+                        TipoUsuario = "tecnico",
+                        UsuarioId = tecnico.Id,
+                        Nome = tecnico.Nome,
+                        Mensagem = "Login realizado com sucesso!"
+                    });
+                }
+
+                // Credenciais inválidas
+                return Unauthorized(new LoginResponse
                 {
                     Sucesso = false,
-                    Mensagem = "Email ou senha inválidos"
+                    Mensagem = "Email ou senha incorretos"
                 });
             }
             catch (Exception ex)
@@ -64,7 +65,7 @@ namespace DotIA.API.Controllers
                 return StatusCode(500, new LoginResponse
                 {
                     Sucesso = false,
-                    Mensagem = $"Erro: {ex.Message}"
+                    Mensagem = $"Erro no servidor: {ex.Message}"
                 });
             }
         }
