@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DotIA.API.Data;
 using DotIA.API.Models;
@@ -35,7 +35,7 @@ namespace DotIA.API.Controllers
                         : request.Pergunta,
                     Pergunta = request.Pergunta,
                     Resposta = resposta,
-                    DataHora = DateTime.Now
+                    DataHora = DateTime.UtcNow // ✅ CORRIGIDO: Era DateTime.Now
                 };
 
                 _context.ChatsHistorico.Add(historico);
@@ -45,7 +45,7 @@ namespace DotIA.API.Controllers
                 {
                     Sucesso = true,
                     Resposta = resposta,
-                    DataHora = DateTime.Now
+                    DataHora = DateTime.UtcNow // ✅ CORRIGIDO: Era DateTime.Now
                 });
             }
             catch (Exception ex)
@@ -80,32 +80,41 @@ namespace DotIA.API.Controllers
         [HttpPost("avaliar")]
         public async Task<ActionResult> AvaliarResposta([FromBody] AvaliacaoRequest request)
         {
-            if (request.FoiUtil)
+            try
             {
-                _context.HistoricoUtil.Add(new HistoricoUtil
+                if (request.FoiUtil)
                 {
-                    IdSolicitante = request.UsuarioId,
-                    Pergunta = request.Pergunta,
-                    Resposta = request.Resposta,
-                    DataHora = DateTime.Now
-                });
-            }
-            else
-            {
-                _context.Tickets.Add(new Ticket
+                    // Salva como útil
+                    _context.HistoricoUtil.Add(new HistoricoUtil
+                    {
+                        IdSolicitante = request.UsuarioId,
+                        Pergunta = request.Pergunta,
+                        Resposta = request.Resposta,
+                        DataHora = DateTime.UtcNow // ✅ CORRIGIDO: Era DateTime.Now
+                    });
+                }
+                else
                 {
-                    IdSolicitante = request.UsuarioId,
-                    IdTecnico = 1,
-                    IdSubcategoria = 1,
-                    IdNivel = 1,
-                    DescricaoProblema = request.Pergunta,
-                    IdStatus = 1,
-                    DataAbertura = DateTime.Now
-                });
-            }
+                    // Cria ticket para técnico resolver
+                    _context.Tickets.Add(new Ticket
+                    {
+                        IdSolicitante = request.UsuarioId,
+                        IdTecnico = 1,
+                        IdSubcategoria = 1,
+                        IdNivel = 1,
+                        DescricaoProblema = request.Pergunta,
+                        IdStatus = 1,
+                        DataAbertura = DateTime.UtcNow // ✅ CORRIGIDO: Era DateTime.Now
+                    });
+                }
 
-            await _context.SaveChangesAsync();
-            return Ok(new { sucesso = true });
+                await _context.SaveChangesAsync();
+                return Ok(new { sucesso = true });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { sucesso = false, erro = ex.Message });
+            }
         }
     }
 }

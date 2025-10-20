@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DotIA.API.Data;
 using DotIA.API.Models;
@@ -56,12 +56,12 @@ namespace DotIA.API.Controllers
 
                 if (ticket == null)
                 {
-                    return NotFound(new { erro = "Ticket n�o encontrado" });
+                    return NotFound(new { erro = "Ticket não encontrado" });
                 }
 
                 ticket.Solucao = request.Solucao;
                 ticket.IdStatus = 2; // Status 2 = Resolvido
-                ticket.DataEncerramento = DateTime.Now;
+                ticket.DataEncerramento = DateTime.UtcNow; // ✅ CORRIGIDO: Era DateTime.Now
 
                 await _context.SaveChangesAsync();
 
@@ -82,7 +82,7 @@ namespace DotIA.API.Controllers
 
                 if (ticket == null)
                 {
-                    return NotFound(new { erro = "Ticket n�o encontrado" });
+                    return NotFound(new { erro = "Ticket não encontrado" });
                 }
 
                 return Ok(ticket);
