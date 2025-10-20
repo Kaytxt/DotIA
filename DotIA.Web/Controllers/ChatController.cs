@@ -56,14 +56,14 @@ namespace DotIA.Web.Controllers
                 request.Pergunta,
                 request.Resposta,
                 request.FoiUtil,
-                request.ChatId // ✅ ADICIONADO
+                request.ChatId
             );
 
             return Json(new { sucesso });
         }
 
-        // ✅ NOVO ENDPOINT
-        [HttpGet]
+        // ✅ CORRIGIDO: Rota explícita com GET e parâmetro na rota
+        [HttpGet("Chat/VerificarResposta/{chatId}")]
         public async Task<IActionResult> VerificarResposta(int chatId)
         {
             var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
@@ -85,6 +85,6 @@ namespace DotIA.Web.Controllers
         public string Pergunta { get; set; } = string.Empty;
         public string Resposta { get; set; } = string.Empty;
         public bool FoiUtil { get; set; }
-        public int ChatId { get; set; } // ✅ ADICIONADO
+        public int ChatId { get; set; }
     }
 }
