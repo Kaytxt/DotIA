@@ -109,7 +109,7 @@ namespace DotIA.Web.Services
                     Pergunta = pergunta,
                     Resposta = resposta,
                     FoiUtil = foiUtil,
-                    ChatId = chatId // ✅ ADICIONADO
+                    ChatId = chatId
                 };
                 var json = JsonSerializer.Serialize(request);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -123,7 +123,6 @@ namespace DotIA.Web.Services
             }
         }
 
-        // ✅ NOVO: Verificar se há resposta do técnico
         public async Task<VerificarRespostaResponse> VerificarRespostaAsync(int chatId)
         {
             try
@@ -144,6 +143,56 @@ namespace DotIA.Web.Services
             catch
             {
                 return new VerificarRespostaResponse { TemResposta = false };
+            }
+        }
+
+        // ✅ NOVO: Enviar mensagem para o técnico
+        public async Task<bool> EnviarMensagemParaTecnicoAsync(int chatId, string mensagem)
+        {
+            try
+            {
+                var request = new { ChatId = chatId, Mensagem = mensagem };
+                var json = JsonSerializer.Serialize(request);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                var response = await _httpClient.PostAsync("/api/Chat/enviar-para-tecnico", content);
+                return response.IsSuccessStatusCode;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        // ✅ NOVO: Editar título do chat
+        public async Task<bool> EditarTituloChatAsync(int chatId, string novoTitulo)
+        {
+            try
+            {
+                var request = new { NovoTitulo = novoTitulo };
+                var json = JsonSerializer.Serialize(request);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                var response = await _httpClient.PutAsync($"/api/Chat/editar-titulo/{chatId}", content);
+                return response.IsSuccessStatusCode;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        // ✅ NOVO: Excluir chat
+        public async Task<bool> ExcluirChatAsync(int chatId)
+        {
+            try
+            {
+                var response = await _httpClient.DeleteAsync($"/api/Chat/excluir/{chatId}");
+                return response.IsSuccessStatusCode;
+            }
+            catch
+            {
+                return false;
             }
         }
 
@@ -181,7 +230,7 @@ namespace DotIA.Web.Services
                 {
                     TicketId = ticketId,
                     Solucao = solucao,
-                    MarcarComoResolvido = marcarComoResolvido // ✅ ADICIONADO
+                    MarcarComoResolvido = marcarComoResolvido
                 };
                 var json = JsonSerializer.Serialize(request);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -192,6 +241,30 @@ namespace DotIA.Web.Services
             catch
             {
                 return false;
+            }
+        }
+
+        // ✅ NOVO: Obter ticket específico
+        public async Task<object> ObterTicketAsync(int ticketId)
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync($"/api/Tickets/{ticketId}");
+                var result = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return JsonSerializer.Deserialize<object>(result, new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+                }
+
+                return null;
+            }
+            catch
+            {
+                return null;
             }
         }
     }
@@ -214,7 +287,7 @@ namespace DotIA.Web.Services
         public bool Sucesso { get; set; }
         public string Resposta { get; set; } = string.Empty;
         public DateTime DataHora { get; set; }
-        public int ChatId { get; set; } // ✅ ADICIONADO
+        public int ChatId { get; set; }
     }
 
     public class ChatHistorico
@@ -224,12 +297,11 @@ namespace DotIA.Web.Services
         public string Pergunta { get; set; } = string.Empty;
         public string Resposta { get; set; } = string.Empty;
         public DateTime DataHora { get; set; }
-        public int Status { get; set; } // ✅ ADICIONADO
-        public int? IdTicket { get; set; } // ✅ ADICIONADO
-        public string StatusTexto { get; set; } = string.Empty; // ✅ ADICIONADO
+        public int Status { get; set; }
+        public int? IdTicket { get; set; }
+        public string StatusTexto { get; set; } = string.Empty;
     }
 
-    // ✅ NOVO DTO
     public class VerificarRespostaResponse
     {
         public bool TemResposta { get; set; }
@@ -247,8 +319,8 @@ namespace DotIA.Web.Services
         public string Status { get; set; } = string.Empty;
         public DateTime DataAbertura { get; set; }
         public string? Solucao { get; set; }
-        public int ChatId { get; set; } // ✅ ADICIONADO
-        public string PerguntaOriginal { get; set; } = string.Empty; // ✅ ADICIONADO
-        public string RespostaIA { get; set; } = string.Empty; // ✅ ADICIONADO
+        public int ChatId { get; set; }
+        public string PerguntaOriginal { get; set; } = string.Empty;
+        public string RespostaIA { get; set; } = string.Empty;
     }
 }

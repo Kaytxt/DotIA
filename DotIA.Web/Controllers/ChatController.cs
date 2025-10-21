@@ -62,7 +62,6 @@ namespace DotIA.Web.Controllers
             return Json(new { sucesso });
         }
 
-        // ✅ CORRIGIDO: Rota explícita com GET e parâmetro na rota
         [HttpGet("Chat/VerificarResposta/{chatId}")]
         public async Task<IActionResult> VerificarResposta(int chatId)
         {
@@ -72,6 +71,41 @@ namespace DotIA.Web.Controllers
 
             var resposta = await _apiClient.VerificarRespostaAsync(chatId);
             return Json(resposta);
+        }
+
+        // ✅ NOVO: Editar título do chat
+        [HttpPut("Chat/EditarTitulo/{chatId}")]
+        public async Task<IActionResult> EditarTitulo(int chatId, [FromBody] EditarTituloRequest request)
+        {
+            var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
+            if (usuarioId == null)
+                return Unauthorized();
+
+            var sucesso = await _apiClient.EditarTituloChatAsync(chatId, request.NovoTitulo);
+            return Json(new { sucesso });
+        }
+
+        [HttpPost("Chat/EnviarParaTecnico")]
+        public async Task<IActionResult> EnviarParaTecnico([FromBody] EnviarParaTecnicoRequest request)
+        {
+            var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
+            if (usuarioId == null)
+                return Unauthorized();
+
+            var sucesso = await _apiClient.EnviarMensagemParaTecnicoAsync(request.ChatId, request.Mensagem);
+            return Json(new { sucesso });
+        }
+
+        // ✅ NOVO: Excluir chat
+        [HttpDelete("Chat/Excluir/{chatId}")]
+        public async Task<IActionResult> ExcluirChat(int chatId)
+        {
+            var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
+            if (usuarioId == null)
+                return Unauthorized();
+
+            var sucesso = await _apiClient.ExcluirChatAsync(chatId);
+            return Json(new { sucesso });
         }
     }
 
@@ -86,5 +120,16 @@ namespace DotIA.Web.Controllers
         public string Resposta { get; set; } = string.Empty;
         public bool FoiUtil { get; set; }
         public int ChatId { get; set; }
+    }
+
+    public class EditarTituloRequest
+    {
+        public string NovoTitulo { get; set; } = string.Empty;
+    }
+
+    public class EnviarParaTecnicoRequest
+    {
+        public int ChatId { get; set; }
+        public string Mensagem { get; set; } = string.Empty;
     }
 }

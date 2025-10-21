@@ -19,6 +19,7 @@
             --darker-bg: #1e1433;
             --card-bg: #2c204d;
             --border-color: #3d2e6b;
+            --text-color: #e5e7eb;
         }
 
         * {
@@ -29,7 +30,7 @@
 
         body {
             background: var(--dark-bg);
-            color: #e5e7eb;
+            color: var(--text-color);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             overflow: hidden;
             height: 100vh;
@@ -91,10 +92,10 @@
             margin: 20px;
         }
 
-            .btn-new-chat:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 8px 20px rgba(141, 75, 255, 0.4);
-            }
+        .btn-new-chat:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(141, 75, 255, 0.4);
+        }
 
         .history-container {
             flex: 1;
@@ -102,19 +103,19 @@
             padding: 0 20px 20px;
         }
 
-            .history-container::-webkit-scrollbar {
-                width: 6px;
-            }
+        .history-container::-webkit-scrollbar {
+            width: 6px;
+        }
 
-            .history-container::-webkit-scrollbar-track {
-                background: var(--card-bg);
-                border-radius: 10px;
-            }
+        .history-container::-webkit-scrollbar-track {
+            background: var(--card-bg);
+            border-radius: 10px;
+        }
 
-            .history-container::-webkit-scrollbar-thumb {
-                background: var(--primary-purple);
-                border-radius: 10px;
-            }
+        .history-container::-webkit-scrollbar-thumb {
+            background: var(--primary-purple);
+            border-radius: 10px;
+        }
 
         .history-title {
             font-size: 12px;
@@ -133,22 +134,59 @@
             border-radius: 10px;
             cursor: pointer;
             transition: all 0.3s;
-            color: #e5e7eb;
+            color: var(--text-color);
             font-size: 14px;
+            position: relative;
         }
 
-            .history-item:hover {
-                background: var(--border-color);
-                border-color: var(--primary-purple);
-                transform: translateX(5px);
-            }
+        .history-item:hover {
+            background: var(--border-color);
+            border-color: var(--primary-purple);
+            transform: translateX(5px);
+        }
 
-            .history-item.active {
-                border-color: var(--secondary-purple);
-                background: var(--border-color);
-            }
+        .history-item:hover .history-actions {
+            opacity: 1;
+        }
 
-        /* ✅ BADGES DE STATUS */
+        .history-item.active {
+            border-color: var(--secondary-purple);
+            background: var(--border-color);
+        }
+
+        .history-actions {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            display: flex;
+            gap: 4px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .history-action-btn {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+
+        .history-action-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .history-action-btn.delete:hover {
+            background: #ef4444;
+        }
+
         .status-badge {
             display: inline-block;
             padding: 2px 8px;
@@ -159,25 +197,10 @@
             text-transform: uppercase;
         }
 
-        .status-andamento {
-            background: rgba(59, 130, 246, 0.2);
-            color: #3b82f6;
-        }
-
-        .status-concluido {
-            background: rgba(16, 185, 129, 0.2);
-            color: #10b981;
-        }
-
-        .status-pendente {
-            background: rgba(251, 191, 36, 0.2);
-            color: #fbbf24;
-        }
-
-        .status-resolvido {
-            background: rgba(139, 92, 246, 0.2);
-            color: #8b5cf6;
-        }
+        .status-andamento { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+        .status-concluido { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+        .status-pendente { background: rgba(251, 191, 36, 0.2); color: #fbbf24; }
+        .status-resolvido { background: rgba(139, 92, 246, 0.2); color: #8b5cf6; }
 
         .user-info {
             padding: 20px;
@@ -212,6 +235,7 @@
         .chat-title {
             font-size: 20px;
             font-weight: 600;
+            color: var(--text-color);
             display: flex;
             align-items: center;
             gap: 12px;
@@ -223,19 +247,19 @@
             padding: 30px;
         }
 
-            .messages-container::-webkit-scrollbar {
-                width: 8px;
-            }
+        .messages-container::-webkit-scrollbar {
+            width: 8px;
+        }
 
-            .messages-container::-webkit-scrollbar-track {
-                background: var(--card-bg);
-                border-radius: 10px;
-            }
+        .messages-container::-webkit-scrollbar-track {
+            background: var(--card-bg);
+            border-radius: 10px;
+        }
 
-            .messages-container::-webkit-scrollbar-thumb {
-                background: var(--primary-purple);
-                border-radius: 10px;
-            }
+        .messages-container::-webkit-scrollbar-thumb {
+            background: var(--primary-purple);
+            border-radius: 10px;
+        }
 
         .welcome-screen {
             display: flex;
@@ -253,13 +277,8 @@
         }
 
         @@keyframes float {
-            0%, 100% {
-                transform: translateY(0);
-            }
-
-            50% {
-                transform: translateY(-20px);
-            }
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
         }
 
         .welcome-title {
@@ -278,15 +297,8 @@
         }
 
         @@keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .message.user {
@@ -330,6 +342,7 @@
             background: var(--card-bg);
             padding: 16px 20px;
             border-radius: 18px;
+            color: var(--text-color);
         }
 
         .message.user .message-bubble {
@@ -379,29 +392,36 @@
             color: white;
             font-size: 13px;
             transition: all 0.3s;
+            cursor: pointer;
         }
 
-            .btn-feedback:hover:not(:disabled) {
-                background: rgba(255, 255, 255, 0.1);
-            }
+        .btn-feedback:hover:not(:disabled) {
+            background: rgba(255, 255, 255, 0.1);
+        }
 
-            .btn-feedback:disabled {
-                opacity: 0.5;
-            }
+        .btn-feedback:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .btn-feedback.selected {
+            background: rgba(16, 185, 129, 0.3);
+            border-color: #10b981;
+        }
 
         .typing-indicator {
             display: none;
         }
 
-            .typing-indicator.active {
-                display: flex;
-                align-items: center;
-                gap: 12px;
-                padding: 16px 20px;
-                background: var(--card-bg);
-                border-radius: 18px;
-                width: fit-content;
-            }
+        .typing-indicator.active {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 20px;
+            background: var(--card-bg);
+            border-radius: 18px;
+            width: fit-content;
+        }
 
         .typing-dot {
             width: 8px;
@@ -411,24 +431,22 @@
             animation: typing 1.4s infinite;
         }
 
-            .typing-dot:nth-child(2) {
-                animation-delay: 0.2s;
-            }
-
-            .typing-dot:nth-child(3) {
-                animation-delay: 0.4s;
-            }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
 
         @@keyframes typing {
-            0%, 60%, 100% {
-                transform: translateY(0);
-                opacity: 0.7;
-            }
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.7; }
+            30% { transform: translateY(-10px); opacity: 1; }
+        }
 
-            30% {
-                transform: translateY(-10px);
-                opacity: 1;
-            }
+        .chat-blocked-notice {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(37, 99, 235, 0.2));
+            border: 1px solid #3b82f6;
+            color: #60a5fa;
+            padding: 12px 20px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 15px;
         }
 
         /* INPUT AREA */
@@ -448,10 +466,15 @@
             gap: 15px;
         }
 
-            .input-wrapper:focus-within {
-                border-color: var(--secondary-purple);
-                box-shadow: 0 0 0 3px rgba(141, 75, 255, 0.1);
-            }
+        .input-wrapper:focus-within {
+            border-color: var(--secondary-purple);
+            box-shadow: 0 0 0 3px rgba(141, 75, 255, 0.1);
+        }
+
+        .input-wrapper.disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
 
         .input-icon {
             width: 50px;
@@ -478,9 +501,9 @@
             overflow-y: auto;
         }
 
-            #messageInput::placeholder {
-                color: #9ca3af;
-            }
+        #messageInput::placeholder {
+            color: #9ca3af;
+        }
 
         .btn-send {
             background: linear-gradient(135deg, var(--primary-purple), var(--secondary-purple));
@@ -494,15 +517,43 @@
             flex-shrink: 0;
         }
 
-            .btn-send:hover:not(:disabled) {
-                transform: translateY(-2px);
-                box-shadow: 0 8px 20px rgba(141, 75, 255, 0.4);
-            }
+        .btn-send:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(141, 75, 255, 0.4);
+        }
 
-            .btn-send:disabled {
-                opacity: 0.5;
-                cursor: not-allowed;
-            }
+        .btn-send:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Modal para editar nome */
+        .modal-content {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+        }
+
+        .modal-header {
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-footer {
+            border-top: 1px solid var(--border-color);
+        }
+
+        .form-control {
+            background: var(--darker-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+        }
+
+        .form-control:focus {
+            background: var(--darker-bg);
+            border-color: var(--primary-purple);
+            color: var(--text-color);
+            box-shadow: 0 0 0 3px rgba(141, 75, 255, 0.1);
+        }
 
         @@media (max-width: 768px) {
             .chat-container {
@@ -560,7 +611,7 @@
                 <div class="welcome-screen" id="welcomeScreen">
                     <div class="welcome-icon">🤖</div>
                     <div class="welcome-title">Bem-vindo ao DotIA!</div>
-                    <p class="text-muted" style="max-width: 600px;">
+                    <p class="text-muted" style="max-width: 600px; color: #9ca3af;">
                         Sou sua assistente virtual especializada em suporte técnico de TI.
                         Faça qualquer pergunta sobre tecnologia, problemas técnicos ou funcionamento do sistema.
                         Estou aqui para ajudar! 🚀
@@ -580,7 +631,8 @@
             </div>
 
             <div class="input-area">
-                <div class="input-wrapper">
+                <div id="chatBlockedNotice"></div>
+                <div class="input-wrapper" id="inputWrapper">
                     <div class="input-icon">💬</div>
                     <textarea id="messageInput"
                               placeholder="Digite sua pergunta aqui..."
@@ -595,13 +647,32 @@
         </div>
     </div>
 
+    <!-- Modal para editar nome do chat -->
+    <div class="modal fade" id="editChatModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Editar Nome do Chat</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="text" class="form-control" id="editChatName" placeholder="Novo nome do chat">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="salvarNomeChat()">Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         let chatAtualId = null;
-        let chatAtualTicketId = null;
+        let chatAtualStatus = null;
         let pollingInterval = null;
+        let chatEditandoId = null;
 
-        // Carrega o histórico ao iniciar
         window.addEventListener('load', () => {
             carregarHistorico();
         });
@@ -624,19 +695,52 @@
 
             if (!mensagem) return;
 
-            // Esconde tela de boas-vindas
             document.getElementById('welcomeScreen').style.display = 'none';
 
-            // Adiciona mensagem do usuário
+            // ✅ SE O CHAT ESTÁ COM TICKET PENDENTE, ENVIA PARA O TÉCNICO
+            if (chatAtualStatus === 3 && chatAtualId) {
+                adicionarMensagem(mensagem, 'user');
+                input.value = '';
+                input.style.height = 'auto';
+
+                const sendBtn = document.getElementById('sendBtn');
+                sendBtn.disabled = true;
+
+                try {
+                    const response = await fetch('/Chat/EnviarParaTecnico', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            chatId: chatAtualId,
+                            mensagem: mensagem
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (data.sucesso) {
+                        mostrarNotificacao('Mensagem enviada ao técnico!', 'success');
+                    } else {
+                        mostrarNotificacao('Erro ao enviar mensagem', 'warning');
+                    }
+                } catch (error) {
+                    console.error('Erro:', error);
+                    mostrarNotificacao('Erro ao conectar com o servidor', 'warning');
+                } finally {
+                    sendBtn.disabled = false;
+                }
+
+                return; // Não continua com o fluxo normal
+            }
+
+            // ✅ FLUXO NORMAL: Envia para IA
             adicionarMensagem(mensagem, 'user');
             input.value = '';
             input.style.height = 'auto';
 
-            // Desabilita botão de envio
             const sendBtn = document.getElementById('sendBtn');
             sendBtn.disabled = true;
 
-            // Mostra indicador de digitação
             const typingIndicator = document.getElementById('typingIndicator');
             typingIndicator.classList.add('active');
 
@@ -651,11 +755,23 @@
                 typingIndicator.classList.remove('active');
 
                 if (data.sucesso) {
-                    chatAtualId = data.chatId; // ✅ Salva o ID do chat
+                    chatAtualId = data.chatId;
+                    chatAtualStatus = 1; // Em andamento
                     adicionarMensagem(data.resposta, 'bot', mensagem, data.chatId);
                     await carregarHistorico();
                 } else {
-                    adicionarMensagem('Desculpe, ocorreu um erro ao processar sua pergunta.', 'bot');
+                    // Se retornar erro dizendo que tem ticket pendente
+                    if (data.chatId) {
+                        mostrarNotificacao('Você tem um ticket pendente. Use o chat existente.', 'warning');
+                        // Carrega o chat pendente automaticamente
+                        const historico = await fetch('/Chat/ObterHistorico').then(r => r.json());
+                        const chatPendente = historico.find(c => c.id === data.chatId);
+                        if (chatPendente) {
+                            carregarChat(chatPendente);
+                        }
+                    } else {
+                        adicionarMensagem('Desculpe, ocorreu um erro ao processar sua pergunta.', 'bot');
+                    }
                 }
             } catch (error) {
                 typingIndicator.classList.remove('active');
@@ -685,10 +801,10 @@
             if (tipo === 'bot' && chatId) {
                 feedbackHTML = `
                         <div class="feedback-buttons" id="feedback-${chatId}">
-                            <button class="btn-feedback" onclick="avaliarResposta('${escapeHtml(perguntaOriginal)}', '${escapeHtml(texto)}', true, this)">
+                            <button class="btn-feedback" data-chat-id="${chatId}" onclick="avaliarResposta('${escapeHtml(perguntaOriginal)}', '${escapeHtml(texto)}', true, ${chatId}, this)">
                                 👍 Foi útil
                             </button>
-                            <button class="btn-feedback" onclick="avaliarResposta('${escapeHtml(perguntaOriginal)}', '${escapeHtml(texto)}', false, this, ${chatId})">
+                            <button class="btn-feedback" data-chat-id="${chatId}" onclick="avaliarResposta('${escapeHtml(perguntaOriginal)}', '${escapeHtml(texto)}', false, ${chatId}, this)">
                                 👎 Não ajudou
                             </button>
                         </div>
@@ -712,7 +828,6 @@
 
             messagesList.appendChild(messageDiv);
 
-            // Scroll automático
             const container = document.getElementById('messagesContainer');
             container.scrollTop = container.scrollHeight;
         }
@@ -723,15 +838,10 @@
             return div.innerHTML.replace(/'/g, "\\'");
         }
 
-        async function avaliarResposta(pergunta, resposta, foiUtil, button, chatId = null) {
+        async function avaliarResposta(pergunta, resposta, foiUtil, chatId, button) {
             const buttons = button.parentElement.querySelectorAll('.btn-feedback');
             buttons.forEach(btn => btn.disabled = true);
-
-            if (!chatId) {
-                console.error('ChatId não fornecido');
-                buttons.forEach(btn => btn.disabled = false);
-                return;
-            }
+            button.classList.add('selected');
 
             try {
                 const response = await fetch('/Chat/AvaliarResposta', {
@@ -741,132 +851,102 @@
                         pergunta,
                         resposta,
                         foiUtil,
-                        chatId // ✅ PASSA O CHAT ID
+                        chatId
                     })
                 });
 
                 const data = await response.json();
 
                 if (data.sucesso) {
-                    button.style.opacity = '1';
-                    button.style.transform = 'scale(1.1)';
-                    setTimeout(() => {
-                        button.style.transform = 'scale(1)';
-                    }, 200);
-
                     if (!foiUtil) {
-                        // Mostra notificação
-                        const confirmDiv = document.createElement('div');
-                        confirmDiv.style.cssText = `
-                                position: fixed;
-                                top: 50%;
-                                left: 50%;
-                                transform: translate(-50%, -50%);
-                                background: linear-gradient(135deg, #2c204d, #1e1433);
-                                padding: 30px;
-                                border-radius: 20px;
-                                border: 2px solid #8d4bff;
-                                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-                                z-index: 10000;
-                                text-align: center;
-                                min-width: 400px;
-                            `;
-                        confirmDiv.innerHTML = `
-                                <div style="font-size: 48px; margin-bottom: 20px;">📨</div>
-                                <h3 style="color: #a855f7; margin-bottom: 15px;">Ticket Criado!</h3>
-                                <p style="color: #e5e7eb; margin-bottom: 20px;">
-                                    Sua solicitação foi encaminhada para um técnico especializado.<br>
-                                    A resposta aparecerá aqui no chat automaticamente.
-                                </p>
-                                <button onclick="this.parentElement.remove()" style="
-                                    background: linear-gradient(135deg, #8d4bff, #a855f7);
-                                    border: none;
-                                    padding: 12px 30px;
-                                    border-radius: 10px;
-                                    color: white;
-                                    font-weight: 600;
-                                    cursor: pointer;
-                                ">OK, Entendi</button>
-                            `;
-                        document.body.appendChild(confirmDiv);
-                        setTimeout(() => confirmDiv.remove(), 5000);
+                        // Bloqueia o chat para IA e mostra aviso
+                        chatAtualStatus = 3;
+                        bloquearChatParaIA();
 
-                        // ✅ Inicia polling
+                        mostrarNotificacao('Ticket criado! Sua solicitação foi encaminhada para um técnico. A resposta aparecerá aqui automaticamente.', 'success');
+
                         iniciarPolling(chatId);
                     } else {
-                        // Mostra notificação de sucesso
-                        const successDiv = document.createElement('div');
-                        successDiv.style.cssText = `
-                                position: fixed;
-                                top: 20px;
-                                right: 20px;
-                                background: linear-gradient(135deg, #10b981, #059669);
-                                padding: 15px 25px;
-                                border-radius: 12px;
-                                color: white;
-                                font-weight: 600;
-                                z-index: 10000;
-                            `;
-                        successDiv.innerHTML = '✓ Avaliação registrada! 😊';
-                        document.body.appendChild(successDiv);
-                        setTimeout(() => successDiv.remove(), 3000);
+                        chatAtualStatus = 2;
+                        mostrarNotificacao('Avaliação registrada! Obrigado pelo feedback. 😊', 'success');
                     }
 
-                    // Recarrega histórico
                     await carregarHistorico();
                 }
             } catch (error) {
                 console.error('Erro ao avaliar:', error);
                 buttons.forEach(btn => btn.disabled = false);
+                button.classList.remove('selected');
             }
         }
 
-        // ✅ POLLING: Verifica periodicamente se há resposta do técnico
+        function bloquearChatParaIA() {
+            const noticeDiv = document.getElementById('chatBlockedNotice');
+
+            noticeDiv.innerHTML = `
+                    <div class="chat-blocked-notice">
+                        <i class="bi bi-chat-dots"></i> <strong>Chat com Técnico Ativo</strong><br>
+                        Você está conversando diretamente com um técnico especializado. Continue enviando mensagens!
+                    </div>
+                `;
+        }
+
+        function desbloquearChatParaIA() {
+            const noticeDiv = document.getElementById('chatBlockedNotice');
+            noticeDiv.innerHTML = '';
+        }
+
         function iniciarPolling(chatId) {
-            // Limpa polling anterior se existir
             if (pollingInterval) {
                 clearInterval(pollingInterval);
             }
 
-            // Verifica a cada 5 segundos
             pollingInterval = setInterval(async () => {
                 try {
                     const response = await fetch(`/Chat/VerificarResposta/${chatId}`);
                     const data = await response.json();
 
                     if (data.temResposta && data.solucao) {
-                        // Para o polling
                         clearInterval(pollingInterval);
                         pollingInterval = null;
 
-                        // Adiciona resposta do técnico
                         adicionarMensagem(data.solucao, 'tech');
+                        desbloquearChatParaIA();
+                        chatAtualStatus = 4;
 
-                        // Recarrega histórico
                         await carregarHistorico();
-
-                        // Mostra notificação
-                        const notif = document.createElement('div');
-                        notif.style.cssText = `
-                                position: fixed;
-                                top: 20px;
-                                right: 20px;
-                                background: linear-gradient(135deg, #10b981, #059669);
-                                padding: 15px 25px;
-                                border-radius: 12px;
-                                color: white;
-                                font-weight: 600;
-                                z-index: 10000;
-                                animation: slideInRight 0.3s ease-out;
-                            `;
-                        notif.innerHTML = '✓ Técnico respondeu sua solicitação! 🎉';
-                        document.body.appendChild(notif);
-                        setTimeout(() => notif.remove(), 5000);
+                        mostrarNotificacao('Técnico respondeu sua solicitação! 🎉', 'success');
                     }
                 } catch (error) {
                     console.error('Erro no polling:', error);
                 }
-            }, 5000); // Verifica a cada 5 segundos
+            }, 5000);
+        }
+
+        function mostrarNotificacao(mensagem, tipo = 'info') {
+            const cores = {
+                success: 'linear-gradient(135deg, #10b981, #059669)',
+                warning: 'linear-gradient(135deg, #fbbf24, #f59e0b)',
+                info: 'linear-gradient(135deg, #3b82f6, #2563eb)'
+            };
+
+            const notif = document.createElement('div');
+            notif.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: ${cores[tipo]};
+                    padding: 15px 25px;
+                    border-radius: 12px;
+                    color: white;
+                    font-weight: 600;
+                    z-index: 10000;
+                    animation: slideInRight 0.3s ease-out;
+                    max-width: 400px;
+                `;
+            notif.innerHTML = mensagem;
+            document.body.appendChild(notif);
+            setTimeout(() => notif.remove(), 5000);
         }
 
         async function carregarHistorico() {
@@ -890,13 +970,20 @@
                     const item = document.createElement('div');
                     item.className = 'history-item';
 
-                    // ✅ Define classe do badge baseado no status
                     let badgeClass = 'status-andamento';
                     if (chat.status === 2) badgeClass = 'status-concluido';
                     else if (chat.status === 3) badgeClass = 'status-pendente';
                     else if (chat.status === 4) badgeClass = 'status-resolvido';
 
                     item.innerHTML = `
+                            <div class="history-actions">
+                                <button class="history-action-btn" onclick="editarNomeChat(event, ${chat.id}, '${escapeHtml(chat.titulo)}')">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="history-action-btn delete" onclick="excluirChat(event, ${chat.id})">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
                             <div>${chat.titulo || chat.pergunta.substring(0, 30) + '...'}</div>
                             <div class="status-badge ${badgeClass}">${chat.statusTexto}</div>
                         `;
@@ -908,27 +995,130 @@
             }
         }
 
+        function editarNomeChat(event, chatId, nomeAtual) {
+            event.stopPropagation();
+            chatEditandoId = chatId;
+            document.getElementById('editChatName').value = nomeAtual;
+            const modal = new bootstrap.Modal(document.getElementById('editChatModal'));
+            modal.show();
+        }
+
+        async function salvarNomeChat() {
+            const novoNome = document.getElementById('editChatName').value.trim();
+            if (!novoNome) {
+                mostrarNotificacao('Digite um nome válido', 'warning');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/Chat/EditarTitulo/${chatEditandoId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ novoTitulo: novoNome })
+                });
+
+                const data = await response.json();
+
+                if (data.sucesso) {
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('editChatModal'));
+                    modal.hide();
+                    mostrarNotificacao('Nome do chat atualizado!', 'success');
+                    await carregarHistorico();
+
+                    // Atualiza o título se for o chat atual
+                    if (chatAtualId === chatEditandoId) {
+                        document.getElementById('chatTitle').textContent = novoNome;
+                    }
+                } else {
+                    mostrarNotificacao('Erro ao atualizar nome do chat', 'warning');
+                }
+            } catch (error) {
+                console.error('Erro ao editar chat:', error);
+                mostrarNotificacao('Erro ao conectar com o servidor', 'warning');
+            }
+        }
+
+        async function excluirChat(event, chatId) {
+            event.stopPropagation();
+
+            if (!confirm('Tem certeza que deseja excluir esta conversa? Esta ação não pode ser desfeita.')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/Chat/Excluir/${chatId}`, {
+                    method: 'DELETE'
+                });
+
+                const data = await response.json();
+
+                if (data.sucesso) {
+                    mostrarNotificacao('Chat excluído com sucesso!', 'success');
+
+                    // Se excluiu o chat atual, limpa a tela
+                    if (chatAtualId === chatId) {
+                        novoChat();
+                    }
+
+                    await carregarHistorico();
+                } else {
+                    mostrarNotificacao('Erro ao excluir chat', 'warning');
+                }
+            } catch (error) {
+                console.error('Erro ao excluir chat:', error);
+                mostrarNotificacao('Erro ao conectar com o servidor', 'warning');
+            }
+        }
+
         async function carregarChat(chat) {
             document.getElementById('welcomeScreen').style.display = 'none';
             const messagesList = document.getElementById('messagesList');
             messagesList.innerHTML = '';
 
             chatAtualId = chat.id;
+            chatAtualStatus = chat.status;
 
-            // Adiciona a pergunta e resposta
             adicionarMensagem(chat.pergunta, 'user');
             adicionarMensagem(chat.resposta, 'bot', chat.pergunta, chat.id);
 
-            // Se tem ticket pendente, buscar se há solução
+            // Mostra aviso se está aguardando técnico
+            if (chat.status === 3) {
+                bloquearChatParaIA();
+            } else {
+                desbloquearChatParaIA();
+            }
+
+            // Desabilita botões de avaliação se já foi avaliado
+            if (chat.status !== 1) {
+                setTimeout(() => {
+                    const feedbackDiv = document.querySelector(`#feedback-${chat.id}`);
+                    if (feedbackDiv) {
+                        const buttons = feedbackDiv.querySelectorAll('.btn-feedback');
+                        buttons.forEach(btn => {
+                            btn.disabled = true;
+                            if ((chat.status === 2 && btn.textContent.includes('útil')) ||
+                                (chat.status >= 3 && btn.textContent.includes('Não'))) {
+                                btn.classList.add('selected');
+                            }
+                        });
+                    }
+                }, 100);
+            }
+
             if (chat.idTicket) {
                 try {
                     const response = await fetch(`/Chat/VerificarResposta/${chat.id}`);
                     const data = await response.json();
 
                     if (data.temResposta && data.solucao) {
-                        adicionarMensagem(data.solucao, 'tech');
+                        // Processa múltiplas mensagens do técnico (sem timestamps)
+                        processarMensagensTecnico(data.solucao);
+
+                        // Se ainda está pendente (não fechado), continua polling
+                        if (data.statusTicket === 1 && chat.status === 3) {
+                            iniciarPolling(chat.id);
+                        }
                     } else if (chat.status === 3) {
-                        // Se ainda pendente, inicia polling
                         iniciarPolling(chat.id);
                     }
                 } catch (error) {
@@ -938,33 +1128,65 @@
 
             document.getElementById('chatTitle').textContent = chat.titulo || 'Chat';
 
-            // Marca como ativo no histórico
             document.querySelectorAll('.history-item').forEach(item => {
                 item.classList.remove('active');
             });
-            event.currentTarget.classList.add('active');
+            event.currentTarget?.classList.add('active');
+        }
+
+        // ✅ FUNÇÃO ATUALIZADA: Processa mensagens do técnico E do usuário
+        function processarMensagensTecnico(solucaoCompleta) {
+            // Separa mensagens que estão concatenadas com \n\n
+            const mensagens = solucaoCompleta.split('\n\n');
+
+            mensagens.forEach(mensagem => {
+                if (mensagem.trim()) {
+                    let mensagemLimpa = mensagem.trim();
+
+                    // Verifica se é mensagem do usuário ou do técnico
+                    const usuarioRegex = /^\[USUÁRIO\s*-\s*\d{2}\/\d{2}\/\d{4}\s\d{2}:\d{2}\]\s*/;
+                    const tecnicoRegex = /^\[TÉCNICO\s*-\s*\d{2}\/\d{2}\/\d{4}\s\d{2}:\d{2}\]\s*/;
+
+                    const isUsuario = usuarioRegex.test(mensagemLimpa);
+                    const isTecnico = tecnicoRegex.test(mensagemLimpa);
+
+                    // Remove o timestamp completo
+                    const timestampRegex = /^\[\w+\s*-\s*\d{2}\/\d{2}\/\d{4}\s\d{2}:\d{2}\]\s*/;
+                    mensagemLimpa = mensagemLimpa.replace(timestampRegex, '');
+
+                    if (mensagemLimpa) {
+                        if (isUsuario) {
+                            adicionarMensagem(mensagemLimpa, 'user');
+                        } else if (isTecnico) {
+                            adicionarMensagem(mensagemLimpa, 'tech');
+                        } else {
+                            // Fallback: assume que é técnico se não tem prefixo
+                            adicionarMensagem(mensagemLimpa, 'tech');
+                        }
+                    }
+                }
+            });
         }
 
         function novoChat() {
-            // Para polling se estiver rodando
             if (pollingInterval) {
                 clearInterval(pollingInterval);
                 pollingInterval = null;
             }
 
             chatAtualId = null;
-            chatAtualTicketId = null;
+            chatAtualStatus = null;
             document.getElementById('messagesList').innerHTML = '';
             document.getElementById('welcomeScreen').style.display = 'flex';
             document.getElementById('chatTitle').textContent = 'DotIA - Assistente Inteligente';
             document.getElementById('messageInput').focus();
+            desbloquearChatParaIA();
 
             document.querySelectorAll('.history-item').forEach(item => {
                 item.classList.remove('active');
             });
         }
 
-        // Limpa polling ao sair da página
         window.addEventListener('beforeunload', () => {
             if (pollingInterval) {
                 clearInterval(pollingInterval);

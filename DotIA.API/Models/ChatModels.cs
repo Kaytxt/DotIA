@@ -26,7 +26,7 @@
         public bool Sucesso { get; set; }
         public string Resposta { get; set; } = string.Empty;
         public DateTime DataHora { get; set; }
-        public int ChatId { get; set; } // ✅ NOVO: ID do chat criado
+        public int ChatId { get; set; }
     }
 
     public class AvaliacaoRequest
@@ -35,7 +35,20 @@
         public string Pergunta { get; set; } = string.Empty;
         public string Resposta { get; set; } = string.Empty;
         public bool FoiUtil { get; set; }
-        public int ChatId { get; set; } // ✅ NOVO: ID do chat para buscar diretamente
+        public int ChatId { get; set; }
+    }
+
+    // ✅ NOVO MODELO
+    public class EditarTituloRequest
+    {
+        public string NovoTitulo { get; set; } = string.Empty;
+    }
+
+    // ✅ NOVO MODELO: Mensagem do usuário para o técnico
+    public class MensagemUsuarioRequest
+    {
+        public int ChatId { get; set; }
+        public string Mensagem { get; set; } = string.Empty;
     }
 
     public class TicketDTO
@@ -46,8 +59,6 @@
         public string Status { get; set; } = string.Empty;
         public DateTime DataAbertura { get; set; }
         public string? Solucao { get; set; }
-
-        // ✅ NOVOS CAMPOS
         public int ChatId { get; set; }
         public string PerguntaOriginal { get; set; } = string.Empty;
         public string RespostaIA { get; set; } = string.Empty;
@@ -57,6 +68,6 @@
     {
         public int TicketId { get; set; }
         public string Solucao { get; set; } = string.Empty;
-        public bool MarcarComoResolvido { get; set; } = false; // ✅ NOVO: Define se marca como resolvido ou mantém aberto
+        public bool MarcarComoResolvido { get; set; } = false;
     }
 }

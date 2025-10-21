@@ -63,8 +63,21 @@ namespace DotIA.API.Controllers
                     return NotFound(new { erro = "Ticket não encontrado" });
                 }
 
-                // Atualiza a solução do ticket
-                ticket.Solucao = request.Solucao;
+                // ✅ CONCATENA mensagens se já existir solução anterior
+                if (!string.IsNullOrEmpty(request.Solucao))
+                {
+                    var timestamp = DateTime.UtcNow.ToString("dd/MM/yyyy HH:mm");
+                    var novaMensagem = $"[{timestamp}] {request.Solucao}";
+
+                    if (!string.IsNullOrEmpty(ticket.Solucao))
+                    {
+                        ticket.Solucao += "\n\n" + novaMensagem;
+                    }
+                    else
+                    {
+                        ticket.Solucao = novaMensagem;
+                    }
+                }
 
                 // Se marcar como resolvido
                 if (request.MarcarComoResolvido)

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DotIA.API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c5df583b4877cd5b111720fece4d7b6a93cbed4d")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e7ccf33f640f646ba90512bd5d6a90cfdb690177")]
 [assembly: System.Reflection.AssemblyProductAttribute("DotIA.API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DotIA.API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

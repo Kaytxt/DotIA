@@ -19,19 +19,23 @@
             --darker-bg: #1e1433;
             --card-bg: #2c204d;
             --border-color: #3d2e6b;
+            --text-color: #e5e7eb;
         }
 
         body {
             background: var(--dark-bg);
-            color: #e5e7eb;
+            color: var(--text-color);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             overflow: hidden;
+            height: 100vh;
+            margin: 0;
         }
 
         .tech-container {
             display: grid;
             grid-template-columns: 320px 1fr;
             height: 100vh;
+            overflow: hidden;
         }
 
         .sidebar {
@@ -87,9 +91,9 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-            .stat-item:last-child {
-                border-bottom: none;
-            }
+        .stat-item:last-child {
+            border-bottom: none;
+        }
 
         .stat-value {
             font-size: 24px;
@@ -110,6 +114,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            color: var(--text-color);
         }
 
         .ticket-card {
@@ -122,15 +127,15 @@
             transition: all 0.3s;
         }
 
-            .ticket-card:hover {
-                border-color: var(--primary-green);
-                transform: translateX(5px);
-            }
+        .ticket-card:hover {
+            border-color: var(--primary-green);
+            transform: translateX(5px);
+        }
 
-            .ticket-card.active {
-                border-color: var(--primary-green);
-                background: linear-gradient(135deg, var(--card-bg), #1e3a32);
-            }
+        .ticket-card.active {
+            border-color: var(--primary-green);
+            background: linear-gradient(135deg, var(--card-bg), #1e3a32);
+        }
 
         .badge-warning {
             background: #fbbf24;
@@ -141,6 +146,8 @@
             display: flex;
             flex-direction: column;
             background: var(--darker-bg);
+            height: 100vh;
+            overflow: hidden;
         }
 
         .work-header {
@@ -179,7 +186,24 @@
         .conversation-area {
             flex: 1;
             overflow-y: auto;
+            overflow-x: hidden;
             padding: 30px;
+            max-height: calc(100vh - 200px);
+            scroll-behavior: smooth;
+        }
+
+        .conversation-area::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .conversation-area::-webkit-scrollbar-track {
+            background: var(--card-bg);
+            border-radius: 10px;
+        }
+
+        .conversation-area::-webkit-scrollbar-thumb {
+            background: var(--primary-green);
+            border-radius: 10px;
         }
 
         .message-box {
@@ -188,20 +212,81 @@
             border-radius: 16px;
             padding: 20px;
             margin-bottom: 20px;
+            animation: slideIn 0.3s ease-out;
         }
 
-            .message-box.user {
-                border-left: 4px solid #8d4bff;
-            }
+        @@keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-            .message-box.bot {
-                border-left: 4px solid #3b82f6;
-            }
+        .message-box.user {
+            border-left: 4px solid #8d4bff;
+        }
+
+        .message-box.bot {
+            border-left: 4px solid #3b82f6;
+        }
+
+        .message-box.tech {
+            border-left: 4px solid var(--primary-green);
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1));
+        }
+
+        .message-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .message-avatar.user {
+            background: linear-gradient(135deg, #8d4bff, #a855f7);
+        }
+
+        .message-avatar.bot {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+        }
+
+        .message-avatar.tech {
+            background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+        }
+
+        .message-meta {
+            flex: 1;
+        }
+
+        .message-author {
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .message-time {
+            font-size: 12px;
+            color: #9ca3af;
+        }
+
+        .message-content {
+            color: var(--text-color);
+            line-height: 1.6;
+        }
 
         .solution-area {
             background: var(--dark-bg);
             border-top: 1px solid var(--border-color);
-            padding: 25px 30px;
+            padding: 20px 30px;
         }
 
         .solution-container {
@@ -211,7 +296,6 @@
             padding: 20px;
         }
 
-        /* ✅ BOTÕES DE AÇÃO */
         .action-buttons {
             display: flex;
             gap: 12px;
@@ -232,10 +316,10 @@
             gap: 8px;
         }
 
-            .btn-respond:hover:not(:disabled) {
-                transform: translateY(-2px);
-                box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
-            }
+        .btn-respond:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+        }
 
         .btn-resolve {
             flex: 1;
@@ -252,16 +336,16 @@
             gap: 8px;
         }
 
-            .btn-resolve:hover:not(:disabled) {
-                transform: translateY(-2px);
-                box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
-            }
+        .btn-resolve:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+        }
 
-            .btn-respond:disabled,
-            .btn-resolve:disabled {
-                opacity: 0.5;
-                cursor: not-allowed;
-            }
+        .btn-respond:disabled,
+        .btn-resolve:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
 
         .alert-success {
             background: rgba(16, 185, 129, 0.1);
@@ -269,10 +353,57 @@
             color: var(--primary-green);
         }
 
-        .alert-info {
-            background: rgba(59, 130, 246, 0.1);
-            border: 1px solid #3b82f6;
-            color: #3b82f6;
+        .form-control, .form-control:focus {
+            background: var(--darker-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-green);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+
+        .form-control::placeholder {
+            color: #6b7280;
+        }
+
+        .btn-secondary {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border-color);
+            border-color: var(--primary-green);
+        }
+
+        .typing-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 16px 20px;
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 18px;
+            margin-top: 10px;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--primary-green);
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @@keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.7; }
+            30% { transform: translateY(-8px); opacity: 1; }
         }
 
         @@media (max-width: 768px) {
@@ -327,7 +458,7 @@
                     <div class="d-flex align-items-center gap-3">
                         <div class="ticket-avatar">🎫</div>
                         <div>
-                            <h5 class="mb-1" id="headerTitle">Ticket #0</h5>
+                            <h5 class="mb-1" id="headerTitle" style="color: var(--text-color);">Ticket #0</h5>
                             <small class="text-muted" id="headerMeta">Solicitante: -</small>
                         </div>
                     </div>
@@ -337,7 +468,7 @@
             <div class="conversation-area" id="conversationArea">
                 <div class="empty-state">
                     <div class="empty-icon">📋</div>
-                    <h3 class="mb-3">Selecione um Ticket</h3>
+                    <h3 class="mb-3" style="color: var(--text-color);">Selecione um Ticket</h3>
                     <p class="text-muted">
                         Escolha um ticket da lista ao lado para visualizar os detalhes e fornecer uma solução
                     </p>
@@ -350,14 +481,14 @@
                 </div>
 
                 <div class="solution-container">
-                    <label class="form-label fw-bold text-success mb-3">
-                        <i class="bi bi-lightbulb"></i> Solução para o Problema
+                    <label class="form-label fw-bold mb-3" style="color: var(--primary-green); font-size: 16px;">
+                        <i class="bi bi-chat-dots"></i> Digite sua resposta
                     </label>
                     <textarea id="solutionInput"
                               class="form-control mb-3"
                               rows="5"
-                              placeholder="Descreva a solução detalhada para o problema do usuário..."
-                              style="background: var(--darker-bg); border: 1px solid var(--border-color); color: white;"></textarea>
+                              placeholder="Escreva sua mensagem aqui..."
+                              onkeydown="handleKeyPress(event)"></textarea>
 
                     <div class="d-flex gap-2 justify-content-between">
                         <button class="btn btn-secondary" onclick="limparFormulario()">
@@ -367,7 +498,7 @@
                         <div class="action-buttons">
                             <button class="btn-respond" id="respondBtn" onclick="responderTicket(false)">
                                 <i class="bi bi-reply"></i>
-                                Responder
+                                Enviar Mensagem
                             </button>
                             <button class="btn-resolve" id="resolveBtn" onclick="responderTicket(true)">
                                 <i class="bi bi-check-circle"></i>
@@ -377,9 +508,7 @@
                     </div>
 
                     <div class="mt-3 text-muted small">
-                        <i class="bi bi-info-circle"></i>
-                        <strong>Responder:</strong> Envia a solução mas mantém o ticket em acompanhamento<br>
-                        <strong>Resolver e Fechar:</strong> Envia a solução e marca o ticket como resolvido
+                        <i class="bi bi-info-circle"></i> <strong>Enviar Mensagem:</strong> Mantém ticket aberto • <strong>Resolver:</strong> Fecha o ticket
                     </div>
                 </div>
             </div>
@@ -390,10 +519,26 @@
     <script>
         let ticketSelecionado = null;
         let tickets = [];
+        let conversationMessages = [];
+        let pollingTecnicoInterval = null;
 
         window.addEventListener('load', () => {
             carregarTickets();
         });
+
+        // ✅ Para o polling quando sair da página
+        window.addEventListener('beforeunload', () => {
+            if (pollingTecnicoInterval) {
+                clearInterval(pollingTecnicoInterval);
+            }
+        });
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                responderTicket(false);
+            }
+        }
 
         async function carregarTickets() {
             try {
@@ -424,10 +569,10 @@
                     ticketDiv.onclick = () => selecionarTicket(ticket);
                     ticketDiv.innerHTML = `
                             <div class="d-flex justify-content-between align-items-center mb-2">
-                                <span class="fw-bold text-success">Ticket #${ticket.id}</span>
+                                <span class="fw-bold" style="color: var(--primary-green);">Ticket #${ticket.id}</span>
                                 <span class="badge badge-warning">${ticket.status}</span>
                             </div>
-                            <div class="mb-2 small">
+                            <div class="mb-2 small" style="color: var(--text-color);">
                                 <i class="bi bi-person"></i> ${ticket.nomeSolicitante}
                             </div>
                             <div class="text-muted small text-truncate">${ticket.descricaoProblema}</div>
@@ -445,6 +590,7 @@
 
         function selecionarTicket(ticket) {
             ticketSelecionado = ticket;
+            conversationMessages = [];
 
             document.querySelectorAll('.ticket-card').forEach(item => {
                 item.classList.remove('active');
@@ -456,37 +602,86 @@
             document.getElementById('headerMeta').textContent = `Solicitante: ${ticket.nomeSolicitante}`;
 
             const conversationArea = document.getElementById('conversationArea');
-            conversationArea.innerHTML = `
-                    <div class="mb-3">
-                        <small class="text-muted text-uppercase">
-                            <i class="bi bi-person"></i> Pergunta do Usuário
-                        </small>
-                    </div>
-                    <div class="message-box user d-flex gap-3">
-                        <div class="flex-shrink-0">
-                            <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #8d4bff, #a855f7); border-radius: 50%; display: flex; align-items: center; justify-content: center;">👤</div>
-                        </div>
-                        <div class="flex-grow-1">${ticket.descricaoProblema}</div>
-                    </div>
+            conversationArea.innerHTML = '';
 
-                    <div class="mb-3 mt-4">
-                        <small class="text-muted text-uppercase">
-                            <i class="bi bi-robot"></i> Resposta da IA (avaliada como insuficiente)
-                        </small>
-                    </div>
-                    <div class="message-box bot d-flex gap-3">
-                        <div class="flex-shrink-0">
-                            <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 50%; display: flex; align-items: center; justify-content: center;">🤖</div>
-                        </div>
-                        <div class="flex-grow-1">
-                            ${ticket.respostaIA || 'A resposta automática não foi suficiente para resolver o problema do usuário.'}
-                        </div>
-                    </div>
-                `;
+            // Adiciona pergunta do usuário
+            adicionarMensagemAoChat('user', ticket.perguntaOriginal, ticket.nomeSolicitante);
+
+            // Adiciona resposta da IA
+            adicionarMensagemAoChat('bot', ticket.respostaIA || 'A resposta automática não foi suficiente para resolver o problema do usuário.', 'DotIA');
+
+            // Se já tem solução anterior, processa e mostra cada mensagem (técnico E usuário)
+            if (ticket.solucao) {
+                const mensagens = ticket.solucao.split('\n\n');
+                mensagens.forEach(mensagem => {
+                    if (mensagem.trim()) {
+                        let mensagemLimpa = mensagem.trim();
+
+                        // Verifica se é mensagem do usuário ou técnico
+                        const usuarioRegex = /^\[USUÁRIO\s*-\s*\d{2}\/\d{2}\/\d{4}\s\d{2}:\d{2}\]\s*/;
+                        const tecnicoRegex = /^\[TÉCNICO\s*-\s*\d{2}\/\d{2}\/\d{4}\s\d{2}:\d{2}\]\s*/;
+
+                        const isUsuario = usuarioRegex.test(mensagemLimpa);
+                        const isTecnico = tecnicoRegex.test(mensagemLimpa);
+
+                        // Remove timestamp
+                        const timestampRegex = /^\[\w+\s*-\s*\d{2}\/\d{2}\/\d{4}\s\d{2}:\d{2}\]\s*/;
+                        mensagemLimpa = mensagemLimpa.replace(timestampRegex, '');
+
+                        if (mensagemLimpa) {
+                            if (isUsuario) {
+                                adicionarMensagemAoChat('user', mensagemLimpa, ticket.nomeSolicitante);
+                            } else if (isTecnico) {
+                                adicionarMensagemAoChat('tech', mensagemLimpa, 'Você (Técnico)');
+                            } else {
+                                // Fallback: assume técnico
+                                adicionarMensagemAoChat('tech', mensagemLimpa, 'Você (Técnico)');
+                            }
+                        }
+                    }
+                });
+            }
 
             document.getElementById('solutionArea').style.display = 'block';
             document.getElementById('solutionInput').value = '';
             document.getElementById('successMessage').style.display = 'none';
+
+            // ✅ Inicia polling para receber novas mensagens do usuário
+            iniciarPollingTecnico(ticket.id);
+        }
+
+        function adicionarMensagemAoChat(tipo, conteudo, autor) {
+            const conversationArea = document.getElementById('conversationArea');
+            const now = new Date();
+            const time = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+            let avatarClass = tipo;
+            let icon = '';
+            if (tipo === 'user') icon = '👤';
+            else if (tipo === 'bot') icon = '🤖';
+            else if (tipo === 'tech') icon = '🛠️';
+
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message-box ${tipo}`;
+            messageDiv.innerHTML = `
+                    <div class="message-header">
+                        <div class="message-avatar ${avatarClass}">${icon}</div>
+                        <div class="message-meta">
+                            <div class="message-author">${autor}</div>
+                            <div class="message-time">${time}</div>
+                        </div>
+                    </div>
+                    <div class="message-content">${conteudo}</div>
+                `;
+
+            conversationArea.appendChild(messageDiv);
+
+            // Scroll suave para a última mensagem
+            setTimeout(() => {
+                messageDiv.scrollIntoView({ behavior: 'smooth', block: 'end' });
+            }, 100);
+
+            conversationMessages.push({ tipo, conteudo, autor, time });
         }
 
         async function responderTicket(marcarComoResolvido) {
@@ -494,9 +689,17 @@
 
             const solucao = document.getElementById('solutionInput').value.trim();
 
-            if (!solucao) {
-                alert('Por favor, descreva a solução para o problema.');
-                return;
+            // Se for resolver e fechar, não precisa de mensagem, mas pede confirmação
+            if (marcarComoResolvido) {
+                if (!confirm('Tem certeza que deseja fechar este ticket? O cliente será notificado.')) {
+                    return;
+                }
+            } else {
+                // Se for apenas enviar mensagem, precisa de texto
+                if (!solucao) {
+                    alert('Por favor, escreva uma mensagem para o cliente.');
+                    return;
+                }
             }
 
             const respondBtn = document.getElementById('respondBtn');
@@ -504,57 +707,95 @@
             respondBtn.disabled = true;
             resolveBtn.disabled = true;
 
+            // Mostra indicador de digitação apenas se tiver mensagem
+            const conversationArea = document.getElementById('conversationArea');
+            let typingDiv = null;
+
+            if (solucao) {
+                typingDiv = document.createElement('div');
+                typingDiv.id = 'typing-temp';
+                typingDiv.className = 'typing-indicator';
+                typingDiv.innerHTML = `
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                        <span style="font-size: 12px; color: var(--primary-green); margin-left: 8px;">Enviando mensagem...</span>
+                    `;
+                conversationArea.appendChild(typingDiv);
+
+                // Scroll para o indicador
+                setTimeout(() => {
+                    typingDiv.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                }, 100);
+            }
+
             try {
                 const response = await fetch('/Tecnico/ResolverTicket', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         ticketId: ticketSelecionado.id,
-                        solucao: solucao,
+                        solucao: solucao || "Ticket fechado pelo técnico.",
                         marcarComoResolvido: marcarComoResolvido
                     })
                 });
 
                 const data = await response.json();
 
+                // Remove indicador de digitação
+                if (typingDiv) {
+                    const tempTyping = document.getElementById('typing-temp');
+                    if (tempTyping) tempTyping.remove();
+                }
+
                 if (data.sucesso) {
+                    // Adiciona mensagem do técnico ao chat apenas se houver texto (sem timestamp local)
+                    if (solucao) {
+                        adicionarMensagemAoChat('tech', solucao, 'Você (Técnico)');
+                    }
+
                     const successMessage = document.getElementById('successMessage');
                     const successText = document.getElementById('successText');
 
                     successText.textContent = data.mensagem;
                     successMessage.style.display = 'block';
 
+                    // Limpa formulário
+                    document.getElementById('solutionInput').value = '';
+
                     setTimeout(() => {
-                        limparFormulario();
-                        carregarTickets();
+                        successMessage.style.display = 'none';
+                        if (marcarComoResolvido) {
+                            carregarTickets();
 
-                        const statusText = marcarComoResolvido ? 'Resolvido' : 'Respondido';
-                        const icon = marcarComoResolvido ? '✓' : '💬';
+                            conversationArea.innerHTML = `
+                                    <div class="empty-state">
+                                        <div class="empty-icon">✅</div>
+                                        <h3 class="mb-3" style="color: var(--text-color);">Ticket Resolvido com Sucesso!</h3>
+                                        <p class="text-muted">
+                                            O ticket foi marcado como resolvido e o cliente foi notificado.
+                                        </p>
+                                    </div>
+                                `;
 
-                        document.getElementById('conversationArea').innerHTML = `
-                                <div class="empty-state">
-                                    <div class="empty-icon">${icon}</div>
-                                    <h3 class="mb-3">${statusText} com Sucesso!</h3>
-                                    <p class="text-muted">
-                                        ${marcarComoResolvido
-                                ? 'O ticket foi marcado como resolvido e o usuário foi notificado.'
-                                : 'Sua resposta foi enviada. O ticket continua em acompanhamento.'}
-                                    </p>
-                                </div>
-                            `;
-
-                        document.getElementById('solutionArea').style.display = 'none';
-                        document.getElementById('ticketHeader').style.display = 'none';
-                        ticketSelecionado = null;
+                            document.getElementById('solutionArea').style.display = 'none';
+                            document.getElementById('ticketHeader').style.display = 'none';
+                            ticketSelecionado = null;
+                        } else {
+                            mostrarNotificacao('Mensagem enviada! O ticket continua em acompanhamento.', 'success');
+                        }
                     }, 2000);
                 } else {
                     alert('Erro ao processar ticket.');
-                    respondBtn.disabled = false;
-                    resolveBtn.disabled = false;
                 }
             } catch (error) {
+                if (typingDiv) {
+                    const tempTyping = document.getElementById('typing-temp');
+                    if (tempTyping) tempTyping.remove();
+                }
                 console.error('Erro:', error);
                 alert('Erro ao conectar com o servidor.');
+            } finally {
                 respondBtn.disabled = false;
                 resolveBtn.disabled = false;
             }
@@ -565,6 +806,105 @@
             document.getElementById('successMessage').style.display = 'none';
             document.getElementById('respondBtn').disabled = false;
             document.getElementById('resolveBtn').disabled = false;
+        }
+
+        function mostrarNotificacao(mensagem, tipo = 'info') {
+            const cores = {
+                success: 'linear-gradient(135deg, #10b981, #059669)',
+                warning: 'linear-gradient(135deg, #fbbf24, #f59e0b)',
+                info: 'linear-gradient(135deg, #3b82f6, #2563eb)'
+            };
+
+            const notif = document.createElement('div');
+            notif.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: ${cores[tipo]};
+                    padding: 15px 25px;
+                    border-radius: 12px;
+                    color: white;
+                    font-weight: 600;
+                    z-index: 10000;
+                    animation: slideInRight 0.3s ease-out;
+                    max-width: 400px;
+                `;
+            notif.innerHTML = mensagem;
+            document.body.appendChild(notif);
+            setTimeout(() => notif.remove(), 5000);
+        }
+
+        // ✅ NOVO: Polling para técnico receber mensagens do usuário
+        function iniciarPollingTecnico(ticketId) {
+            // Limpa polling anterior se existir
+            if (pollingTecnicoInterval) {
+                clearInterval(pollingTecnicoInterval);
+            }
+
+            // Armazena hash das mensagens para detectar mudanças
+            let ultimoHash = '';
+
+            // Verifica a cada 3 segundos (mais rápido que o do cliente)
+            pollingTecnicoInterval = setInterval(async () => {
+                try {
+                    const response = await fetch(`/Tecnico/ObterTicket/${ticketId}`);
+                    const data = await response.json();
+
+                    if (data && data.ticket && data.ticket.solucao) {
+                        const hashAtual = data.ticket.solucao.length + '_' + data.ticket.solucao.substring(0, 50);
+
+                        // Se mudou, atualiza a conversa
+                        if (hashAtual !== ultimoHash) {
+                            ultimoHash = hashAtual;
+
+                            // Recarrega a conversa
+                            const conversationArea = document.getElementById('conversationArea');
+                            conversationArea.innerHTML = '';
+
+                            // Adiciona pergunta original
+                            adicionarMensagemAoChat('user', ticketSelecionado.perguntaOriginal, ticketSelecionado.nomeSolicitante);
+                            adicionarMensagemAoChat('bot', ticketSelecionado.respostaIA || 'A resposta automática não foi suficiente.', 'DotIA');
+
+                            // Processa todas as mensagens
+                            const mensagens = data.ticket.solucao.split('\n\n');
+                            mensagens.forEach(mensagem => {
+                                if (mensagem.trim()) {
+                                    let mensagemLimpa = mensagem.trim();
+
+                                    const usuarioRegex = /^\[USUÁRIO\s*-\s*\d{2}\/\d{2}\/\d{4}\s\d{2}:\d{2}\]\s*/;
+                                    const tecnicoRegex = /^\[TÉCNICO\s*-\s*\d{2}\/\d{2}\/\d{4}\s\d{2}:\d{2}\]\s*/;
+
+                                    const isUsuario = usuarioRegex.test(mensagemLimpa);
+                                    const isTecnico = tecnicoRegex.test(mensagemLimpa);
+
+                                    const timestampRegex = /^\[\w+\s*-\s*\d{2}\/\d{2}\/\d{4}\s\d{2}:\d{2}\]\s*/;
+                                    mensagemLimpa = mensagemLimpa.replace(timestampRegex, '');
+
+                                    if (mensagemLimpa) {
+                                        if (isUsuario) {
+                                            adicionarMensagemAoChat('user', mensagemLimpa, ticketSelecionado.nomeSolicitante);
+                                        } else if (isTecnico) {
+                                            adicionarMensagemAoChat('tech', mensagemLimpa, 'Você (Técnico)');
+                                        } else {
+                                            adicionarMensagemAoChat('tech', mensagemLimpa, 'Você (Técnico)');
+                                        }
+                                    }
+                                }
+                            });
+
+                            mostrarNotificacao('Nova mensagem do usuário!', 'success');
+                        }
+                    }
+
+                    // Se o ticket foi fechado, para o polling
+                    if (data && data.ticket && data.ticket.idStatus === 2) {
+                        clearInterval(pollingTecnicoInterval);
+                        pollingTecnicoInterval = null;
+                    }
+                } catch (error) {
+                    console.error('Erro no polling do técnico:', error);
+                }
+            }, 3000); // Verifica a cada 3 segundos
         }
     </script>
 </body>

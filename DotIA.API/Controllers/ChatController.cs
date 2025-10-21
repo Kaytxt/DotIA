@@ -25,6 +25,22 @@ namespace DotIA.API.Controllers
         {
             try
             {
+                // ✅ VERIFICA SE O USUÁRIO TEM CHAT ATIVO COM TICKET PENDENTE
+                var chatPendente = await _context.ChatsHistorico
+                    .Where(c => c.IdSolicitante == request.UsuarioId && c.Status == 3)
+                    .OrderByDescending(c => c.DataHora)
+                    .FirstOrDefaultAsync();
+
+                if (chatPendente != null)
+                {
+                    return BadRequest(new ChatResponse
+                    {
+                        Sucesso = false,
+                        Resposta = "Você tem um ticket pendente com técnico. Use o chat existente para continuar a conversa.",
+                        ChatId = chatPendente.Id
+                    });
+                }
+
                 var resposta = await _openAIService.ObterRespostaAsync(request.Pergunta);
 
                 var historico = new ChatHistorico
@@ -60,6 +76,58 @@ namespace DotIA.API.Controllers
             }
         }
 
+        // ✅ NOVO ENDPOINT: Enviar mensagem do usuário para o técnico
+        [HttpPost("enviar-para-tecnico")]
+        public async Task<ActionResult> EnviarMensagemParaTecnico([FromBody] MensagemUsuarioRequest request)
+        {
+            try
+            {
+                var chat = await _context.ChatsHistorico.FindAsync(request.ChatId);
+
+                if (chat == null)
+                {
+                    return NotFound(new { erro = "Chat não encontrado" });
+                }
+
+                if (chat.Status != 3 || !chat.IdTicket.HasValue)
+                {
+                    return BadRequest(new { erro = "Este chat não está com ticket pendente" });
+                }
+
+                var ticket = await _context.Tickets.FindAsync(chat.IdTicket.Value);
+
+                if (ticket == null)
+                {
+                    return NotFound(new { erro = "Ticket não encontrado" });
+                }
+
+                // ✅ CONCATENA mensagem do usuário ao ticket
+                var timestamp = DateTime.UtcNow.ToString("dd/MM/yyyy HH:mm");
+                var novaMensagem = $"[USUÁRIO - {timestamp}] {request.Mensagem}";
+
+                if (!string.IsNullOrEmpty(ticket.Solucao))
+                {
+                    ticket.Solucao += "\n\n" + novaMensagem;
+                }
+                else
+                {
+                    ticket.Solucao = novaMensagem;
+                }
+
+                await _context.SaveChangesAsync();
+
+                return Ok(new
+                {
+                    sucesso = true,
+                    mensagem = "Mensagem enviada ao técnico"
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { erro = ex.Message });
+            }
+        }
+
         [HttpGet("historico/{usuarioId}")]
         public async Task<ActionResult> ObterHistorico(int usuarioId)
         {
@@ -75,7 +143,7 @@ namespace DotIA.API.Controllers
                         h.Pergunta,
                         h.Resposta,
                         h.DataHora,
-                        Status = h.Status, // ✅ Garantir que retorna o status
+                        Status = h.Status,
                         h.IdTicket,
                         StatusTexto = h.Status == 1 ? "Em andamento" :
                                       h.Status == 2 ? "Concluído" :
@@ -97,7 +165,6 @@ namespace DotIA.API.Controllers
         {
             try
             {
-                // ✅ Buscar o chat pelo ID se fornecido, senão busca pela pergunta/resposta
                 ChatHistorico chat = null;
 
                 if (request.ChatId > 0)
@@ -123,7 +190,7 @@ namespace DotIA.API.Controllers
                         DataHora = DateTime.UtcNow
                     });
 
-                    // ✅ ATUALIZA STATUS DO CHAT PARA CONCLUÍDO
+                    // Atualiza status do chat para concluído
                     if (chat != null)
                     {
                         chat.Status = 2; // Concluído
@@ -146,7 +213,7 @@ namespace DotIA.API.Controllers
                     _context.Tickets.Add(ticket);
                     await _context.SaveChangesAsync(); // Salva para obter o ID
 
-                    // ✅ ATUALIZA STATUS DO CHAT PARA PENDENTE E VINCULA TICKET
+                    // Atualiza status do chat para pendente e vincula ticket
                     if (chat != null)
                     {
                         chat.Status = 3; // Pendente com Técnico
@@ -170,7 +237,6 @@ namespace DotIA.API.Controllers
             }
         }
 
-        // ✅ ENDPOINT: Verificar se há resposta do técnico
         [HttpGet("verificar-resposta/{chatId}")]
         public async Task<ActionResult> VerificarRespostaTecnico(int chatId)
         {
@@ -209,7 +275,6 @@ namespace DotIA.API.Controllers
             }
         }
 
-        // ✅ ENDPOINT: Obter detalhes completos de um chat
         [HttpGet("detalhes/{chatId}")]
         public async Task<ActionResult> ObterDetalhesChat(int chatId)
         {
@@ -262,5 +327,77 @@ namespace DotIA.API.Controllers
                 return StatusCode(500, new { erro = ex.Message });
             }
         }
+
+        // ✅ NOVO ENDPOINT: Editar título do chat
+        [HttpPut("editar-titulo/{chatId}")]
+        public async Task<ActionResult> EditarTituloChat(int chatId, [FromBody] EditarTituloRequest request)
+        {
+            try
+            {
+                var chat = await _context.ChatsHistorico.FindAsync(chatId);
+
+                if (chat == null)
+                {
+                    return NotFound(new { erro = "Chat não encontrado" });
+                }
+
+                chat.Titulo = request.NovoTitulo;
+                await _context.SaveChangesAsync();
+
+                return Ok(new
+                {
+                    sucesso = true,
+                    mensagem = "Título atualizado com sucesso"
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { erro = ex.Message });
+            }
+        }
+
+        // ✅ NOVO ENDPOINT: Excluir chat
+        [HttpDelete("excluir/{chatId}")]
+        public async Task<ActionResult> ExcluirChat(int chatId)
+        {
+            try
+            {
+                var chat = await _context.ChatsHistorico.FindAsync(chatId);
+
+                if (chat == null)
+                {
+                    return NotFound(new { erro = "Chat não encontrado" });
+                }
+
+                // Se tem ticket vinculado, também exclui o ticket
+                if (chat.IdTicket.HasValue)
+                {
+                    var ticket = await _context.Tickets.FindAsync(chat.IdTicket.Value);
+                    if (ticket != null)
+                    {
+                        _context.Tickets.Remove(ticket);
+                    }
+                }
+
+                _context.ChatsHistorico.Remove(chat);
+                await _context.SaveChangesAsync();
+
+                return Ok(new
+                {
+                    sucesso = true,
+                    mensagem = "Chat excluído com sucesso"
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { erro = ex.Message });
+            }
+        }
+    }
+
+    // ✅ NOVO MODELO
+    public class EditarTituloRequest
+    {
+        public string NovoTitulo { get; set; } = string.Empty;
     }
 }

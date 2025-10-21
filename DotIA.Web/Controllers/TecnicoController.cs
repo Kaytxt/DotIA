@@ -34,9 +34,17 @@ namespace DotIA.Web.Controllers
             var sucesso = await _apiClient.ResolverTicketAsync(
                 request.TicketId,
                 request.Solucao,
-                request.MarcarComoResolvido // ✅ ADICIONADO
+                request.MarcarComoResolvido
             );
             return Json(new { sucesso });
+        }
+
+        // ✅ NOVO: Obter ticket específico para polling
+        [HttpGet("Tecnico/ObterTicket/{ticketId}")]
+        public async Task<IActionResult> ObterTicket(int ticketId)
+        {
+            var ticket = await _apiClient.ObterTicketAsync(ticketId);
+            return Json(ticket);
         }
     }
 
@@ -44,6 +52,6 @@ namespace DotIA.Web.Controllers
     {
         public int TicketId { get; set; }
         public string Solucao { get; set; } = string.Empty;
-        public bool MarcarComoResolvido { get; set; } // ✅ ADICIONADO
+        public bool MarcarComoResolvido { get; set; }
     }
 }
