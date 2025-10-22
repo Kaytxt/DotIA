@@ -63,11 +63,11 @@ namespace DotIA.API.Controllers
                     return NotFound(new { erro = "Ticket não encontrado" });
                 }
 
-                // ✅ CONCATENA mensagens se já existir solução anterior
+                // ✅ CORREÇÃO: Usando formato consistente com prefixo TÉCNICO
                 if (!string.IsNullOrEmpty(request.Solucao))
                 {
                     var timestamp = DateTime.UtcNow.ToString("dd/MM/yyyy HH:mm");
-                    var novaMensagem = $"[{timestamp}] {request.Solucao}";
+                    var novaMensagem = $"[TÉCNICO - {timestamp}] {request.Solucao}";
 
                     if (!string.IsNullOrEmpty(ticket.Solucao))
                     {

@@ -25,21 +25,8 @@ namespace DotIA.API.Controllers
         {
             try
             {
-                // ✅ VERIFICA SE O USUÁRIO TEM CHAT ATIVO COM TICKET PENDENTE
-                var chatPendente = await _context.ChatsHistorico
-                    .Where(c => c.IdSolicitante == request.UsuarioId && c.Status == 3)
-                    .OrderByDescending(c => c.DataHora)
-                    .FirstOrDefaultAsync();
-
-                if (chatPendente != null)
-                {
-                    return BadRequest(new ChatResponse
-                    {
-                        Sucesso = false,
-                        Resposta = "Você tem um ticket pendente com técnico. Use o chat existente para continuar a conversa.",
-                        ChatId = chatPendente.Id
-                    });
-                }
+                // ✅ CORREÇÃO: O usuário pode criar novos chats mesmo tendo tickets pendentes
+                // Não há mais bloqueio para criar novos chats
 
                 var resposta = await _openAIService.ObterRespostaAsync(request.Pergunta);
 
@@ -76,7 +63,7 @@ namespace DotIA.API.Controllers
             }
         }
 
-        // ✅ NOVO ENDPOINT: Enviar mensagem do usuário para o técnico
+        // ✅ Enviar mensagem do usuário para o técnico
         [HttpPost("enviar-para-tecnico")]
         public async Task<ActionResult> EnviarMensagemParaTecnico([FromBody] MensagemUsuarioRequest request)
         {
@@ -328,7 +315,6 @@ namespace DotIA.API.Controllers
             }
         }
 
-        // ✅ NOVO ENDPOINT: Editar título do chat
         [HttpPut("editar-titulo/{chatId}")]
         public async Task<ActionResult> EditarTituloChat(int chatId, [FromBody] EditarTituloRequest request)
         {
@@ -356,7 +342,6 @@ namespace DotIA.API.Controllers
             }
         }
 
-        // ✅ NOVO ENDPOINT: Excluir chat
         [HttpDelete("excluir/{chatId}")]
         public async Task<ActionResult> ExcluirChat(int chatId)
         {
@@ -395,7 +380,6 @@ namespace DotIA.API.Controllers
         }
     }
 
-    // ✅ NOVO MODELO
     public class EditarTituloRequest
     {
         public string NovoTitulo { get; set; } = string.Empty;
