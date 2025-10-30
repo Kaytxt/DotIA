@@ -196,6 +196,24 @@ namespace DotIA.Web.Services
             }
         }
 
+        // ✅ NOVO: Criar ticket direto
+        public async Task<bool> CriarTicketDiretoAsync(int chatId)
+        {
+            try
+            {
+                var request = new { ChatId = chatId };
+                var json = JsonSerializer.Serialize(request);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                var response = await _httpClient.PostAsync("/api/Chat/criar-ticket", content);
+                return response.IsSuccessStatusCode;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         // ═══════════════════════════════════════════════════════════
         // TICKETS
         // ═══════════════════════════════════════════════════════════
