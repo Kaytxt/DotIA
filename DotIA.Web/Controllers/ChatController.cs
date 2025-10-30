@@ -107,18 +107,6 @@ namespace DotIA.Web.Controllers
             var sucesso = await _apiClient.ExcluirChatAsync(chatId);
             return Json(new { sucesso });
         }
-
-        // ✅ NOVO: Criar ticket direto
-        [HttpPost("Chat/CriarTicket")]
-        public async Task<IActionResult> CriarTicketDireto([FromBody] CriarTicketDiretoRequest request)
-        {
-            var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
-            if (usuarioId == null)
-                return Unauthorized();
-
-            var sucesso = await _apiClient.CriarTicketDiretoAsync(request.ChatId);
-            return Json(new { sucesso });
-        }
     }
 
     public class PerguntaRequest
@@ -143,10 +131,5 @@ namespace DotIA.Web.Controllers
     {
         public int ChatId { get; set; }
         public string Mensagem { get; set; } = string.Empty;
-    }
-
-    public class CriarTicketDiretoRequest
-    {
-        public int ChatId { get; set; }
     }
 }

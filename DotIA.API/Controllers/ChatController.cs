@@ -185,11 +185,6 @@ namespace DotIA.API.Controllers
                 }
                 else
                 {
-                    // ✅ Busca todo o histórico do chat para incluir no ticket
-                    string descricaoCompleta = chat != null
-                        ? $"CHAT COMPLETO:\n\n[USUÁRIO] {chat.Pergunta}\n\n[IA] {chat.Resposta}"
-                        : request.Pergunta;
-
                     // Cria ticket para técnico resolver
                     var ticket = new Ticket
                     {
@@ -197,7 +192,7 @@ namespace DotIA.API.Controllers
                         IdTecnico = 1,
                         IdSubcategoria = 1,
                         IdNivel = 1,
-                        DescricaoProblema = descricaoCompleta,
+                        DescricaoProblema = request.Pergunta,
                         IdStatus = 1, // Pendente
                         DataAbertura = DateTime.UtcNow
                     };
@@ -226,60 +221,6 @@ namespace DotIA.API.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, new { sucesso = false, erro = ex.Message });
-            }
-        }
-
-        // ✅ NOVO: Criar ticket direto sem avaliação
-        [HttpPost("criar-ticket")]
-        public async Task<ActionResult> CriarTicketDireto([FromBody] CriarTicketRequest request)
-        {
-            try
-            {
-                var chat = await _context.ChatsHistorico.FindAsync(request.ChatId);
-
-                if (chat == null)
-                {
-                    return NotFound(new { erro = "Chat não encontrado" });
-                }
-
-                // Se já tem ticket vinculado, não cria outro
-                if (chat.IdTicket.HasValue)
-                {
-                    return BadRequest(new { erro = "Este chat já possui um ticket associado" });
-                }
-
-                // ✅ Monta descrição com todo o histórico do chat
-                string descricaoCompleta = $"TICKET CRIADO PELO USUÁRIO\n\nCHAT COMPLETO:\n\n[USUÁRIO] {chat.Pergunta}\n\n[IA] {chat.Resposta}";
-
-                var ticket = new Ticket
-                {
-                    IdSolicitante = chat.IdSolicitante,
-                    IdTecnico = 1,
-                    IdSubcategoria = 1,
-                    IdNivel = 1,
-                    DescricaoProblema = descricaoCompleta,
-                    IdStatus = 1, // Pendente
-                    DataAbertura = DateTime.UtcNow
-                };
-
-                _context.Tickets.Add(ticket);
-                await _context.SaveChangesAsync();
-
-                // Vincula ticket ao chat e atualiza status
-                chat.IdTicket = ticket.Id;
-                chat.Status = 3; // Pendente com Técnico
-                await _context.SaveChangesAsync();
-
-                return Ok(new
-                {
-                    sucesso = true,
-                    ticketId = ticket.Id,
-                    mensagem = "Ticket criado com sucesso!"
-                });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { erro = ex.Message });
             }
         }
 
@@ -442,10 +383,5 @@ namespace DotIA.API.Controllers
     public class EditarTituloRequest
     {
         public string NovoTitulo { get; set; } = string.Empty;
-    }
-
-    public class CriarTicketRequest
-    {
-        public int ChatId { get; set; }
     }
 }
