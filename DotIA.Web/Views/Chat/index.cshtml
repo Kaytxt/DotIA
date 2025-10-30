@@ -375,40 +375,6 @@
             margin-top: 8px;
         }
 
-        .feedback-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 12px;
-            padding-top: 12px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .btn-feedback {
-            flex: 1;
-            padding: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-            color: white;
-            font-size: 13px;
-            transition: all 0.3s;
-            cursor: pointer;
-        }
-
-        .btn-feedback:hover:not(:disabled) {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .btn-feedback:disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
-        }
-
-        .btn-feedback.selected {
-            background: rgba(16, 185, 129, 0.3);
-            border-color: #10b981;
-        }
-
         .typing-indicator {
             display: none;
         }
@@ -447,6 +413,64 @@
             border-radius: 12px;
             text-align: center;
             margin-bottom: 15px;
+        }
+
+        /* CHAT ACTIONS BAR */
+        .chat-actions-bar {
+            background: var(--dark-bg);
+            border-top: 1px solid var(--border-color);
+            padding: 15px 30px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .chat-actions-bar.hidden {
+            display: none;
+        }
+
+        .btn-action {
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-action:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-action:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-feedback-util {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .btn-feedback-nao-util {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+        }
+
+        .btn-criar-ticket {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+        }
+
+        .btn-action.selected {
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
         }
 
         /* INPUT AREA */
@@ -630,6 +654,19 @@
                 </div>
             </div>
 
+            <!-- BARRA DE AÇÕES DO CHAT -->
+            <div class="chat-actions-bar hidden" id="chatActionsBar">
+                <button class="btn-action btn-feedback-util" id="btnFeedbackUtil" onclick="avaliarChatCompleto(true)">
+                    <i class="bi bi-hand-thumbs-up"></i> Este chat foi útil
+                </button>
+                <button class="btn-action btn-feedback-nao-util" id="btnFeedbackNaoUtil" onclick="avaliarChatCompleto(false)">
+                    <i class="bi bi-hand-thumbs-down"></i> Este chat não ajudou
+                </button>
+                <button class="btn-action btn-criar-ticket" id="btnCriarTicket" onclick="criarTicketDireto()">
+                    <i class="bi bi-ticket-detailed"></i> Criar Ticket
+                </button>
+            </div>
+
             <div class="input-area">
                 <div id="chatBlockedNotice"></div>
                 <div class="input-wrapper" id="inputWrapper">
@@ -802,20 +839,6 @@
                 badge = '<div class="tech-badge">✓ Resposta do Técnico</div>';
             }
 
-            let feedbackHTML = '';
-            if (tipo === 'bot' && chatId) {
-                feedbackHTML = `
-            <div class="feedback-buttons" id="feedback-${chatId}">
-                <button class="btn-feedback" data-chat-id="${chatId}" onclick="avaliarResposta('${escapeHtml(perguntaOriginal)}', '${escapeHtml(texto)}', true, ${chatId}, this)">
-                    👍 Foi útil
-                </button>
-                <button class="btn-feedback" data-chat-id="${chatId}" onclick="avaliarResposta('${escapeHtml(perguntaOriginal)}', '${escapeHtml(texto)}', false, ${chatId}, this)">
-                    👎 Não ajudou
-                </button>
-            </div>
-        `;
-            }
-
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${tipo}`;
             if (chatId) messageDiv.dataset.chatId = chatId;
@@ -826,7 +849,6 @@
                 ${badge}
                 <div class="message-text">${texto}</div>
                 <div class="message-time">${time}</div>
-                ${feedbackHTML}
             </div>
         </div>
     `;
@@ -835,6 +857,11 @@
 
             const container = document.getElementById('messagesContainer');
             container.scrollTop = container.scrollHeight;
+
+            // ✅ Mostra a barra de ações quando uma mensagem da IA é adicionada
+            if (tipo === 'bot' && chatId) {
+                mostrarBarraAcoes();
+            }
         }
 
         function escapeHtml(text) {
@@ -843,20 +870,40 @@
             return div.innerHTML.replace(/'/g, "\\'");
         }
 
-        async function avaliarResposta(pergunta, resposta, foiUtil, chatId, button) {
-            const buttons = button.parentElement.querySelectorAll('.btn-feedback');
-            buttons.forEach(btn => btn.disabled = true);
-            button.classList.add('selected');
+        // ✅ NOVA FUNÇÃO: Avaliar chat completo
+        async function avaliarChatCompleto(foiUtil) {
+            if (!chatAtualId) {
+                mostrarNotificacao('Nenhum chat ativo para avaliar', 'warning');
+                return;
+            }
+
+            // Desabilita todos os botões da barra de ações
+            const btnUtil = document.getElementById('btnFeedbackUtil');
+            const btnNaoUtil = document.getElementById('btnFeedbackNaoUtil');
+            const btnTicket = document.getElementById('btnCriarTicket');
+
+            btnUtil.disabled = true;
+            btnNaoUtil.disabled = true;
+            btnTicket.disabled = true;
+
+            if (foiUtil) {
+                btnUtil.classList.add('selected');
+            } else {
+                btnNaoUtil.classList.add('selected');
+            }
 
             try {
+                // Busca as informações do chat atual
+                const chat = await obterDadosChat(chatAtualId);
+
                 const response = await fetch('/Chat/AvaliarResposta', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        pergunta,
-                        resposta,
+                        pergunta: chat.pergunta,
+                        resposta: chat.resposta,
                         foiUtil,
-                        chatId
+                        chatId: chatAtualId
                     })
                 });
 
@@ -864,18 +911,14 @@
 
                 if (data.sucesso) {
                     if (!foiUtil) {
-                        // ✅ Atualiza o status deste chat específico
-                        if (chatAtualId === chatId) {
-                            chatAtualStatus = 3;
-                            bloquearChatParaIA();
-                            iniciarPolling(chatId);
-                        }
-
-                        mostrarNotificacao('✅ Ticket criado! Este chat agora está com um técnico. Você pode criar novos chats para conversar com a IA!', 'success');
+                        chatAtualStatus = 3;
+                        bloquearChatParaIA();
+                        iniciarPolling(chatAtualId);
+                        esconderBarraAcoes();
+                        mostrarNotificacao('✅ Ticket criado com o chat completo! Agora está com um técnico.', 'success');
                     } else {
-                        if (chatAtualId === chatId) {
-                            chatAtualStatus = 2;
-                        }
+                        chatAtualStatus = 2;
+                        esconderBarraAcoes();
                         mostrarNotificacao('Avaliação registrada! Obrigado pelo feedback. 😊', 'success');
                     }
 
@@ -883,9 +926,96 @@
                 }
             } catch (error) {
                 console.error('Erro ao avaliar:', error);
-                buttons.forEach(btn => btn.disabled = false);
-                button.classList.remove('selected');
+                btnUtil.disabled = false;
+                btnNaoUtil.disabled = false;
+                btnTicket.disabled = false;
+                btnUtil.classList.remove('selected');
+                btnNaoUtil.classList.remove('selected');
             }
+        }
+
+        // ✅ NOVA FUNÇÃO: Criar ticket direto
+        async function criarTicketDireto() {
+            if (!chatAtualId) {
+                mostrarNotificacao('Nenhum chat ativo para criar ticket', 'warning');
+                return;
+            }
+
+            if (!confirm('Deseja criar um ticket para este chat? Ele será enviado para um técnico.')) {
+                return;
+            }
+
+            const btnTicket = document.getElementById('btnCriarTicket');
+            btnTicket.disabled = true;
+
+            try {
+                const response = await fetch('/Chat/CriarTicket', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ chatId: chatAtualId })
+                });
+
+                const data = await response.json();
+
+                if (data.sucesso) {
+                    chatAtualStatus = 3;
+                    bloquearChatParaIA();
+                    iniciarPolling(chatAtualId);
+                    esconderBarraAcoes();
+                    mostrarNotificacao('✅ Ticket criado com sucesso! O chat completo foi enviado ao técnico.', 'success');
+                    await carregarHistorico();
+                } else {
+                    mostrarNotificacao('Erro ao criar ticket. Este chat pode já ter um ticket associado.', 'warning');
+                    btnTicket.disabled = false;
+                }
+            } catch (error) {
+                console.error('Erro ao criar ticket:', error);
+                mostrarNotificacao('Erro ao conectar com o servidor', 'warning');
+                btnTicket.disabled = false;
+            }
+        }
+
+        // ✅ NOVA FUNÇÃO: Obter dados do chat
+        async function obterDadosChat(chatId) {
+            const messages = document.querySelectorAll(`[data-chat-id="${chatId}"]`);
+            let pergunta = '';
+            let resposta = '';
+
+            messages.forEach(msg => {
+                if (msg.classList.contains('user')) {
+                    const text = msg.querySelector('.message-text');
+                    if (text) pergunta = text.textContent;
+                } else if (msg.classList.contains('bot')) {
+                    const text = msg.querySelector('.message-text');
+                    if (text) resposta = text.textContent;
+                }
+            });
+
+            return { pergunta, resposta };
+        }
+
+        // ✅ NOVA FUNÇÃO: Mostrar barra de ações
+        function mostrarBarraAcoes() {
+            const actionsBar = document.getElementById('chatActionsBar');
+            const btnUtil = document.getElementById('btnFeedbackUtil');
+            const btnNaoUtil = document.getElementById('btnFeedbackNaoUtil');
+            const btnTicket = document.getElementById('btnCriarTicket');
+
+            // Só mostra se o chat não está concluído ou com técnico
+            if (chatAtualStatus === 1) {
+                actionsBar.classList.remove('hidden');
+                btnUtil.disabled = false;
+                btnNaoUtil.disabled = false;
+                btnTicket.disabled = false;
+                btnUtil.classList.remove('selected');
+                btnNaoUtil.classList.remove('selected');
+            }
+        }
+
+        // ✅ NOVA FUNÇÃO: Esconder barra de ações
+        function esconderBarraAcoes() {
+            const actionsBar = document.getElementById('chatActionsBar');
+            actionsBar.classList.add('hidden');
         }
 
         function bloquearChatParaIA() {
@@ -1135,25 +1265,15 @@
             // ✅ Mostra aviso apenas se ESTE chat específico está com técnico
             if (chat.status === 3) {
                 bloquearChatParaIA();
+                esconderBarraAcoes();
                 console.log('🔒 Chat bloqueado para IA - modo técnico ativo');
-            } else {
+            } else if (chat.status === 1) {
                 desbloquearChatParaIA();
-            }
-
-            if (chat.status !== 1) {
-                setTimeout(() => {
-                    const feedbackDiv = document.querySelector(`#feedback-${chat.id}`);
-                    if (feedbackDiv) {
-                        const buttons = feedbackDiv.querySelectorAll('.btn-feedback');
-                        buttons.forEach(btn => {
-                            btn.disabled = true;
-                            if ((chat.status === 2 && btn.textContent.includes('útil')) ||
-                                (chat.status >= 3 && btn.textContent.includes('Não'))) {
-                                btn.classList.add('selected');
-                            }
-                        });
-                    }
-                }, 100);
+                mostrarBarraAcoes();
+            } else {
+                // Status 2 (concluído) ou 4 (resolvido)
+                desbloquearChatParaIA();
+                esconderBarraAcoes();
             }
 
             if (chat.idTicket) {
@@ -1228,6 +1348,7 @@
             document.getElementById('messageInput').value = '';
             document.getElementById('messageInput').focus();
             desbloquearChatParaIA();
+            esconderBarraAcoes();
 
             document.querySelectorAll('.history-item').forEach(item => {
                 item.classList.remove('active');
