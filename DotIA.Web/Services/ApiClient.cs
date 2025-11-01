@@ -27,7 +27,7 @@ namespace DotIA.Web.Services
                 var json = JsonSerializer.Serialize(request);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                var response = await _httpClient.PostAsync("Auth/login", content);
+                var response = await _httpClient.PostAsync("api/Auth/login", content);
                 var result = await response.Content.ReadAsStringAsync();
 
                 if (response.IsSuccessStatusCode)
@@ -65,7 +65,7 @@ namespace DotIA.Web.Services
                 var json = JsonSerializer.Serialize(requestObj);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                var response = await _httpClient.PostAsync("Auth/registro", content);
+                var response = await _httpClient.PostAsync("api/Auth/registro", content);
                 var result = await response.Content.ReadAsStringAsync();
 
                 if (response.IsSuccessStatusCode)
@@ -88,7 +88,7 @@ namespace DotIA.Web.Services
         {
             try
             {
-                var response = await _httpClient.GetAsync("Auth/departamentos");
+                var response = await _httpClient.GetAsync("api/Auth/departamentos");
                 var result = await response.Content.ReadAsStringAsync();
 
                 if (response.IsSuccessStatusCode)
@@ -118,7 +118,7 @@ namespace DotIA.Web.Services
                 var json = JsonSerializer.Serialize(request);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                var response = await _httpClient.PostAsync("Chat/enviar", content);
+                var response = await _httpClient.PostAsync("api/Chat/enviar", content);
                 var result = await response.Content.ReadAsStringAsync();
 
                 if (response.IsSuccessStatusCode)
@@ -141,7 +141,7 @@ namespace DotIA.Web.Services
         {
             try
             {
-                var response = await _httpClient.GetAsync($"Chat/historico/{usuarioId}");
+                var response = await _httpClient.GetAsync($"api/Chat/historico/{usuarioId}");
                 var result = await response.Content.ReadAsStringAsync();
 
                 if (response.IsSuccessStatusCode)
@@ -175,7 +175,7 @@ namespace DotIA.Web.Services
                 var json = JsonSerializer.Serialize(request);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                var response = await _httpClient.PostAsync("Chat/avaliar", content);
+                var response = await _httpClient.PostAsync("api/Chat/avaliar", content);
                 return response.IsSuccessStatusCode;
             }
             catch
@@ -188,7 +188,7 @@ namespace DotIA.Web.Services
         {
             try
             {
-                var response = await _httpClient.GetAsync($"Chat/verificar-resposta/{chatId}");
+                var response = await _httpClient.GetAsync($"api/Chat/verificar-resposta/{chatId}");
                 var result = await response.Content.ReadAsStringAsync();
 
                 if (response.IsSuccessStatusCode)
@@ -215,7 +215,7 @@ namespace DotIA.Web.Services
                 var json = JsonSerializer.Serialize(request);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                var response = await _httpClient.PostAsync("Chat/enviar-para-tecnico", content);
+                var response = await _httpClient.PostAsync("api/Chat/enviar-para-tecnico", content);
                 return response.IsSuccessStatusCode;
             }
             catch
@@ -232,7 +232,7 @@ namespace DotIA.Web.Services
                 var json = JsonSerializer.Serialize(request);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                var response = await _httpClient.PutAsync($"Chat/editar-titulo/{chatId}", content);
+                var response = await _httpClient.PutAsync($"api/Chat/editar-titulo/{chatId}", content);
                 return response.IsSuccessStatusCode;
             }
             catch
@@ -245,7 +245,7 @@ namespace DotIA.Web.Services
         {
             try
             {
-                var response = await _httpClient.DeleteAsync($"Chat/excluir/{chatId}");
+                var response = await _httpClient.DeleteAsync($"api/Chat/excluir/{chatId}");
                 return response.IsSuccessStatusCode;
             }
             catch
@@ -261,7 +261,7 @@ namespace DotIA.Web.Services
         {
             try
             {
-                var response = await _httpClient.GetAsync("Tickets/pendentes");
+                var response = await _httpClient.GetAsync("api/Tickets/pendentes");
                 var result = await response.Content.ReadAsStringAsync();
 
                 if (response.IsSuccessStatusCode)
@@ -293,7 +293,7 @@ namespace DotIA.Web.Services
                 var json = JsonSerializer.Serialize(request);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                var response = await _httpClient.PostAsync("Tickets/resolver", content);
+                var response = await _httpClient.PostAsync("api/Tickets/resolver", content);
                 return response.IsSuccessStatusCode;
             }
             catch
@@ -306,7 +306,7 @@ namespace DotIA.Web.Services
         {
             try
             {
-                var response = await _httpClient.GetAsync($"Tickets/{ticketId}");
+                var response = await _httpClient.GetAsync($"api/Tickets/{ticketId}");
                 var result = await response.Content.ReadAsStringAsync();
 
                 if (response.IsSuccessStatusCode)
