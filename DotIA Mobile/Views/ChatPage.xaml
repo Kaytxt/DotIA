@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="DotIA_Mobile.Views.ChatPage"
+             Title="DotIA Chat"
+             BackgroundColor="#f8fafc">
+
+    <Grid RowDefinitions="Auto,*,Auto">
+
+        <!-- Header -->
+        <Frame Grid.Row="0" 
+               BackgroundColor="#2563eb" 
+               CornerRadius="0" 
+               Padding="20"
+               HasShadow="True">
+            <Grid ColumnDefinitions="*,Auto">
+                <VerticalStackLayout Grid.Column="0" Spacing="5">
+                    <Label x:Name="lblBemVindo" 
+                           Text="Olá, Usuário!" 
+                           FontSize="18" 
+                           FontAttributes="Bold" 
+                           TextColor="White"/>
+                    <Label Text="Como posso ajudar você hoje?" 
+                           FontSize="14" 
+                           TextColor="#e0e7ff"/>
+                </VerticalStackLayout>
+
+                <Button Grid.Column="1"
+                        Text="📚"
+                        FontSize="24"
+                        BackgroundColor="Transparent"
+                        Clicked="OnVerHistoricoClicked"
+                        WidthRequest="50"
+                        HeightRequest="50"/>
+            </Grid>
+        </Frame>
+
+        <!-- Área de Conversa -->
+        <ScrollView Grid.Row="1" x:Name="scrollView" Padding="15">
+            <VerticalStackLayout x:Name="conversaLayout" Spacing="15">
+                
+                <!-- Mensagem de boas-vindas -->
+                <Frame BackgroundColor="White" 
+                       Padding="15" 
+                       HasShadow="True"
+                       CornerRadius="15"
+                       BorderColor="#e5e7eb">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="👋 Bem-vindo ao DotIA!" 
+                               FontSize="16" 
+                               FontAttributes="Bold" 
+                               TextColor="#1e293b"/>
+                        <Label Text="Sou seu assistente de TI. Faça uma pergunta ou descreva seu problema que vou ajudá-lo!"
+                               FontSize="14" 
+                               TextColor="#6b7280"/>
+                    </VerticalStackLayout>
+                </Frame>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Campo de entrada -->
+        <Frame Grid.Row="2" 
+               BackgroundColor="White" 
+               CornerRadius="0" 
+               Padding="15"
+               HasShadow="True"
+               BorderColor="#e5e7eb">
+            <Grid ColumnDefinitions="*,Auto">
+                <Entry Grid.Column="0"
+                       x:Name="txtPergunta"
+                       Placeholder="Digite sua pergunta..."
+                       BackgroundColor="#f8fafc"
+                       TextColor="#1e293b"
+                       PlaceholderColor="#94a3b8"
+                       HeightRequest="45"
+                       VerticalOptions="Center"/>
+
+                <Button Grid.Column="1"
+                        x:Name="btnEnviar"
+                        Text="➤"
+                        FontSize="24"
+                        BackgroundColor="#2563eb"
+                        TextColor="White"
+                        Clicked="OnEnviarClicked"
+                        WidthRequest="50"
+                        HeightRequest="45"
+                        CornerRadius="10"
+                        Margin="10,0,0,0"/>
+            </Grid>
+        </Frame>
+
+    </Grid>
+</ContentPage>

@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="DotIA_Mobile.Views.RegistroPage"
+             Title="Criar Conta"
+             BackgroundColor="#f8fafc">
+
+    <ScrollView>
+        <VerticalStackLayout Spacing="20" Padding="30">
+
+            <!-- Título -->
+            <Label Text="Criar Nova Conta" 
+                   FontSize="28" 
+                   FontAttributes="Bold" 
+                   TextColor="#1e293b"
+                   HorizontalOptions="Center"
+                   Margin="0,20,0,10"/>
+
+            <!-- Card de Registro -->
+            <Frame BackgroundColor="White" 
+                   Padding="25" 
+                   HasShadow="True"
+                   CornerRadius="15"
+                   BorderColor="#e5e7eb">
+                
+                <VerticalStackLayout Spacing="20">
+
+                    <!-- Nome -->
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="Nome Completo" 
+                               FontSize="14" 
+                               TextColor="#6b7280"/>
+                        <Entry x:Name="txtNome" 
+                               Placeholder="Seu nome" 
+                               BackgroundColor="#f8fafc"
+                               TextColor="#1e293b"
+                               PlaceholderColor="#94a3b8"/>
+                    </VerticalStackLayout>
+
+                    <!-- Email -->
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="E-mail" 
+                               FontSize="14" 
+                               TextColor="#6b7280"/>
+                        <Entry x:Name="txtEmail" 
+                               Placeholder="seu@email.com" 
+                               Keyboard="Email"
+                               BackgroundColor="#f8fafc"
+                               TextColor="#1e293b"
+                               PlaceholderColor="#94a3b8"/>
+                    </VerticalStackLayout>
+
+                    <!-- Departamento -->
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="Departamento" 
+                               FontSize="14" 
+                               TextColor="#6b7280"/>
+                        <Picker x:Name="pickerDepartamento"
+                                Title="Selecione um departamento"
+                                BackgroundColor="#f8fafc"
+                                TextColor="#1e293b"/>
+                    </VerticalStackLayout>
+
+                    <!-- Senha -->
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="Senha" 
+                               FontSize="14" 
+                               TextColor="#6b7280"/>
+                        <Entry x:Name="txtSenha" 
+                               Placeholder="Mínimo 6 caracteres" 
+                               IsPassword="True"
+                               BackgroundColor="#f8fafc"
+                               TextColor="#1e293b"
+                               PlaceholderColor="#94a3b8"/>
+                    </VerticalStackLayout>
+
+                    <!-- Confirmar Senha -->
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="Confirmar Senha" 
+                               FontSize="14" 
+                               TextColor="#6b7280"/>
+                        <Entry x:Name="txtConfirmaSenha" 
+                               Placeholder="Digite a senha novamente" 
+                               IsPassword="True"
+                               BackgroundColor="#f8fafc"
+                               TextColor="#1e293b"
+                               PlaceholderColor="#94a3b8"/>
+                    </VerticalStackLayout>
+
+                    <!-- Botão Registrar -->
+                    <Button x:Name="btnRegistrar"
+                            Text="Criar Conta" 
+                            Clicked="OnRegistrarClicked" 
+                            BackgroundColor="#2563eb"
+                            TextColor="White"
+                            FontAttributes="Bold"
+                            HeightRequest="50"
+                            CornerRadius="10"
+                            Margin="0,10,0,0"/>
+
+                    <!-- ActivityIndicator -->
+                    <ActivityIndicator x:Name="loadingIndicator"
+                                       IsRunning="False"
+                                       IsVisible="False"
+                                       Color="#2563eb"
+                                       HorizontalOptions="Center"/>
+
+                    <!-- Mensagem -->
+                    <Label x:Name="lblMensagem" 
+                           HorizontalOptions="Center"
+                           FontSize="14"/>
+
+                    <!-- Link para Login -->
+                    <HorizontalStackLayout HorizontalOptions="Center" Spacing="5" Margin="0,10,0,0">
+                        <Label Text="Já tem conta?" 
+                               FontSize="14" 
+                               TextColor="#6b7280"/>
+                        <Label Text="Faça login" 
+                               FontSize="14" 
+                               TextColor="#2563eb"
+                               FontAttributes="Bold">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnVoltarLoginClicked"/>
+                            </Label.GestureRecognizers>
+                        </Label>
+                    </HorizontalStackLayout>
+
+                </VerticalStackLayout>
+            </Frame>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
