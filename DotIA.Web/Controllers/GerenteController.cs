@@ -105,6 +105,63 @@ namespace DotIA.Web.Controllers
         }
 
         // ═══════════════════════════════════════════════════════════
+        // TICKETS
+        // ═══════════════════════════════════════════════════════════
+
+        [HttpGet]
+        public async Task<IActionResult> ObterTodosTickets()
+        {
+            var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
+            if (usuarioId == null)
+                return Unauthorized();
+
+            var tickets = await _apiClient.ObterTodosTicketsAsync();
+            return Json(tickets);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ObterTicketsAbertos()
+        {
+            var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
+            if (usuarioId == null)
+                return Unauthorized();
+
+            var tickets = await _apiClient.ObterTicketsAbertosAsync();
+            return Json(tickets);
+        }
+
+        [HttpPost("Gerente/ResponderTicket")]
+        public async Task<IActionResult> ResponderTicket([FromBody] ResponderTicketRequest request)
+        {
+            var gerenteId = HttpContext.Session.GetInt32("UsuarioId");
+            if (gerenteId == null)
+                return Unauthorized();
+
+            var sucesso = await _apiClient.ResponderTicketGerenteAsync(
+                request.TicketId,
+                request.Resposta,
+                request.MarcarComoResolvido
+            );
+
+            return Json(new { sucesso });
+        }
+
+        [HttpPut("Gerente/AlterarSenha")]
+        public async Task<IActionResult> AlterarSenha([FromBody] AlterarSenhaRequest request)
+        {
+            var gerenteId = HttpContext.Session.GetInt32("UsuarioId");
+            if (gerenteId == null)
+                return Unauthorized();
+
+            var sucesso = await _apiClient.AlterarSenhaUsuarioAsync(
+                request.UsuarioId,
+                request.NovaSenha
+            );
+
+            return Json(new { sucesso });
+        }
+
+        // ═══════════════════════════════════════════════════════════
         // RELATÓRIOS
         // ═══════════════════════════════════════════════════════════
 
@@ -131,11 +188,28 @@ namespace DotIA.Web.Controllers
         }
     }
 
+    // ═══════════════════════════════════════════════════════════
+    // MODELS
+    // ═══════════════════════════════════════════════════════════
+
     public class AtualizarUsuarioRequest
     {
         public int UsuarioId { get; set; }
         public string Nome { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public int IdDepartamento { get; set; }
+    }
+
+    public class ResponderTicketRequest
+    {
+        public int TicketId { get; set; }
+        public string Resposta { get; set; } = string.Empty;
+        public bool MarcarComoResolvido { get; set; }
+    }
+
+    public class AlterarSenhaRequest
+    {
+        public int UsuarioId { get; set; }
+        public string NovaSenha { get; set; } = string.Empty;
     }
 }

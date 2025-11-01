@@ -7,6 +7,10 @@ namespace DotIA.Web.Services
     {
         private readonly HttpClient _httpClient;
         private readonly string _baseUrl;
+        private static readonly JsonSerializerOptions _jsonOpts = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        };
 
         public ApiClient(HttpClient httpClient, IConfiguration configuration)
         {
@@ -32,10 +36,8 @@ namespace DotIA.Web.Services
 
                 if (response.IsSuccessStatusCode)
                 {
-                    return JsonSerializer.Deserialize<LoginResponse>(result, new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true
-                    }) ?? new LoginResponse { Sucesso = false, Mensagem = "Erro ao processar resposta" };
+                    return JsonSerializer.Deserialize<LoginResponse>(result, _jsonOpts)
+                           ?? new LoginResponse { Sucesso = false, Mensagem = "Erro ao processar resposta" };
                 }
 
                 return new LoginResponse { Sucesso = false, Mensagem = "Erro ao fazer login" };
@@ -70,10 +72,8 @@ namespace DotIA.Web.Services
 
                 if (response.IsSuccessStatusCode)
                 {
-                    return JsonSerializer.Deserialize<RegistroResponse>(result, new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true
-                    }) ?? new RegistroResponse { Sucesso = false, Mensagem = "Erro ao processar resposta" };
+                    return JsonSerializer.Deserialize<RegistroResponse>(result, _jsonOpts)
+                           ?? new RegistroResponse { Sucesso = false, Mensagem = "Erro ao processar resposta" };
                 }
 
                 return new RegistroResponse { Sucesso = false, Mensagem = "Erro ao realizar cadastro" };
@@ -93,10 +93,8 @@ namespace DotIA.Web.Services
 
                 if (response.IsSuccessStatusCode)
                 {
-                    return JsonSerializer.Deserialize<List<DepartamentoDTO>>(result, new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true
-                    }) ?? new List<DepartamentoDTO>();
+                    return JsonSerializer.Deserialize<List<DepartamentoDTO>>(result, _jsonOpts)
+                           ?? new List<DepartamentoDTO>();
                 }
 
                 return new List<DepartamentoDTO>();
@@ -123,10 +121,8 @@ namespace DotIA.Web.Services
 
                 if (response.IsSuccessStatusCode)
                 {
-                    return JsonSerializer.Deserialize<ChatResponse>(result, new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true
-                    }) ?? new ChatResponse { Sucesso = false, Resposta = "Erro ao processar resposta" };
+                    return JsonSerializer.Deserialize<ChatResponse>(result, _jsonOpts)
+                           ?? new ChatResponse { Sucesso = false, Resposta = "Erro ao processar resposta" };
                 }
 
                 return new ChatResponse { Sucesso = false, Resposta = "Erro ao enviar pergunta" };
@@ -146,10 +142,8 @@ namespace DotIA.Web.Services
 
                 if (response.IsSuccessStatusCode)
                 {
-                    return JsonSerializer.Deserialize<List<ChatHistorico>>(result, new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true
-                    }) ?? new List<ChatHistorico>();
+                    return JsonSerializer.Deserialize<List<ChatHistorico>>(result, _jsonOpts)
+                           ?? new List<ChatHistorico>();
                 }
 
                 return new List<ChatHistorico>();
@@ -193,10 +187,8 @@ namespace DotIA.Web.Services
 
                 if (response.IsSuccessStatusCode)
                 {
-                    return JsonSerializer.Deserialize<VerificarRespostaResponse>(result, new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true
-                    }) ?? new VerificarRespostaResponse { TemResposta = false };
+                    return JsonSerializer.Deserialize<VerificarRespostaResponse>(result, _jsonOpts)
+                           ?? new VerificarRespostaResponse { TemResposta = false };
                 }
 
                 return new VerificarRespostaResponse { TemResposta = false };
@@ -255,7 +247,7 @@ namespace DotIA.Web.Services
         }
 
         // ═══════════════════════════════════════════════════════════
-        // TICKETS
+        // TICKETS (usuário)
         // ═══════════════════════════════════════════════════════════
         public async Task<List<TicketDTO>> ObterTicketsPendentesAsync()
         {
@@ -266,10 +258,8 @@ namespace DotIA.Web.Services
 
                 if (response.IsSuccessStatusCode)
                 {
-                    return JsonSerializer.Deserialize<List<TicketDTO>>(result, new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true
-                    }) ?? new List<TicketDTO>();
+                    return JsonSerializer.Deserialize<List<TicketDTO>>(result, _jsonOpts)
+                           ?? new List<TicketDTO>();
                 }
 
                 return new List<TicketDTO>();
@@ -302,7 +292,7 @@ namespace DotIA.Web.Services
             }
         }
 
-        public async Task<object> ObterTicketAsync(int ticketId)
+        public async Task<object?> ObterTicketAsync(int ticketId)
         {
             try
             {
@@ -311,10 +301,7 @@ namespace DotIA.Web.Services
 
                 if (response.IsSuccessStatusCode)
                 {
-                    return JsonSerializer.Deserialize<object>(result, new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true
-                    });
+                    return JsonSerializer.Deserialize<object>(result, _jsonOpts);
                 }
 
                 return null;
@@ -328,7 +315,6 @@ namespace DotIA.Web.Services
         // ═══════════════════════════════════════════════════════════
         // GERENTE
         // ═══════════════════════════════════════════════════════════
-
         public async Task<DashboardDTO> ObterDashboardAsync()
         {
             try
@@ -338,10 +324,8 @@ namespace DotIA.Web.Services
 
                 if (response.IsSuccessStatusCode)
                 {
-                    return JsonSerializer.Deserialize<DashboardDTO>(result, new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true
-                    }) ?? new DashboardDTO();
+                    return JsonSerializer.Deserialize<DashboardDTO>(result, _jsonOpts)
+                           ?? new DashboardDTO();
                 }
 
                 return new DashboardDTO();
@@ -361,10 +345,8 @@ namespace DotIA.Web.Services
 
                 if (response.IsSuccessStatusCode)
                 {
-                    return JsonSerializer.Deserialize<List<UsuarioDTO>>(result, new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true
-                    }) ?? new List<UsuarioDTO>();
+                    return JsonSerializer.Deserialize<List<UsuarioDTO>>(result, _jsonOpts)
+                           ?? new List<UsuarioDTO>();
                 }
 
                 return new List<UsuarioDTO>();
@@ -384,10 +366,8 @@ namespace DotIA.Web.Services
 
                 if (response.IsSuccessStatusCode)
                 {
-                    return JsonSerializer.Deserialize<UsuarioDetalheDTO>(result, new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true
-                    }) ?? new UsuarioDetalheDTO();
+                    return JsonSerializer.Deserialize<UsuarioDetalheDTO>(result, _jsonOpts)
+                           ?? new UsuarioDetalheDTO();
                 }
 
                 return new UsuarioDetalheDTO();
@@ -437,10 +417,8 @@ namespace DotIA.Web.Services
 
                 if (response.IsSuccessStatusCode)
                 {
-                    return JsonSerializer.Deserialize<List<TicketUsuarioDTO>>(result, new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true
-                    }) ?? new List<TicketUsuarioDTO>();
+                    return JsonSerializer.Deserialize<List<TicketUsuarioDTO>>(result, _jsonOpts)
+                           ?? new List<TicketUsuarioDTO>();
                 }
 
                 return new List<TicketUsuarioDTO>();
@@ -460,10 +438,8 @@ namespace DotIA.Web.Services
 
                 if (response.IsSuccessStatusCode)
                 {
-                    return JsonSerializer.Deserialize<List<RelatorioDepartamentoDTO>>(result, new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true
-                    }) ?? new List<RelatorioDepartamentoDTO>();
+                    return JsonSerializer.Deserialize<List<RelatorioDepartamentoDTO>>(result, _jsonOpts)
+                           ?? new List<RelatorioDepartamentoDTO>();
                 }
 
                 return new List<RelatorioDepartamentoDTO>();
@@ -473,6 +449,93 @@ namespace DotIA.Web.Services
                 return new List<RelatorioDepartamentoDTO>();
             }
         }
+
+        // >>> Estes eram os métodos que estavam fora da classe <<<
+        // Obter todos os tickets
+        public async Task<List<TicketGerenteDTO>> ObterTodosTicketsAsync()
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync("api/Gerente/tickets/todos");
+                var result = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return JsonSerializer.Deserialize<List<TicketGerenteDTO>>(result, _jsonOpts)
+                           ?? new List<TicketGerenteDTO>();
+                }
+
+                return new List<TicketGerenteDTO>();
+            }
+            catch
+            {
+                return new List<TicketGerenteDTO>();
+            }
+        }
+
+        // Obter tickets abertos
+        public async Task<List<TicketGerenteDTO>> ObterTicketsAbertosAsync()
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync("api/Gerente/tickets/abertos");
+                var result = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return JsonSerializer.Deserialize<List<TicketGerenteDTO>>(result, _jsonOpts)
+                           ?? new List<TicketGerenteDTO>();
+                }
+
+                return new List<TicketGerenteDTO>();
+            }
+            catch
+            {
+                return new List<TicketGerenteDTO>();
+            }
+        }
+
+        // Responder ticket como gerente
+        public async Task<bool> ResponderTicketGerenteAsync(int ticketId, string resposta, bool marcarComoResolvido)
+        {
+            try
+            {
+                var request = new
+                {
+                    TicketId = ticketId,
+                    Resposta = resposta,
+                    MarcarComoResolvido = marcarComoResolvido
+                };
+                var json = JsonSerializer.Serialize(request);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                var response = await _httpClient.PostAsync("api/Gerente/tickets/responder", content);
+                return response.IsSuccessStatusCode;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        // Alterar senha do usuário
+        public async Task<bool> AlterarSenhaUsuarioAsync(int usuarioId, string novaSenha)
+        {
+            try
+            {
+                var request = new { NovaSenha = novaSenha };
+                var json = JsonSerializer.Serialize(request);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                var response = await _httpClient.PutAsync($"api/Gerente/usuarios/{usuarioId}/senha", content);
+                return response.IsSuccessStatusCode;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+        // >>> Fim dos métodos movidos <<<
     }
 
     // ═══════════════════════════════════════════════════════════
@@ -543,10 +606,7 @@ namespace DotIA.Web.Services
         public string RespostaIA { get; set; } = string.Empty;
     }
 
-    // ═══════════════════════════════════════════════════════════
-    // DTOs DO GERENTE
-    // ═══════════════════════════════════════════════════════════
-
+    // DTOs do gerente
     public class DashboardDTO
     {
         public int TotalUsuarios { get; set; }
@@ -557,6 +617,24 @@ namespace DotIA.Web.Services
         public int ChatsResolvidos { get; set; }
         public int TicketsResolvidosHoje { get; set; }
         public List<TopUsuarioDTO> TopUsuarios { get; set; } = new List<TopUsuarioDTO>();
+    }
+
+    public class TicketGerenteDTO
+    {
+        public int Id { get; set; }
+        public int IdSolicitante { get; set; }
+        public string NomeSolicitante { get; set; } = string.Empty;
+        public string EmailSolicitante { get; set; } = string.Empty;
+        public string Departamento { get; set; } = string.Empty;
+        public string DescricaoProblema { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
+        public int IdStatus { get; set; }
+        public DateTime DataAbertura { get; set; }
+        public DateTime? DataEncerramento { get; set; }
+        public string? Solucao { get; set; }
+        public int ChatId { get; set; }
+        public string PerguntaOriginal { get; set; } = string.Empty;
+        public string RespostaIA { get; set; } = string.Empty;
     }
 
     public class TopUsuarioDTO

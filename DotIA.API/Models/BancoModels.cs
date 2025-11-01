@@ -53,6 +53,10 @@ namespace TabelasDoBanco
 
         [Column("id_especialidade")]
         public int IdEspecialidade { get; set; }
+
+
+        [Column("is_gerente")]              
+        public bool IsGerente { get; set; }
     }
 
     [Table("categorias")]

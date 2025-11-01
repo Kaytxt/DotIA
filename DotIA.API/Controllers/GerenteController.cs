@@ -83,6 +83,148 @@ namespace DotIA.API.Controllers
         }
 
         // ═══════════════════════════════════════════════════════════
+        // TICKETS - MONITORAMENTO E RESPOSTA
+        // ═══════════════════════════════════════════════════════════
+
+        [HttpGet("tickets/todos")]
+        public async Task<ActionResult> ObterTodosTickets()
+        {
+            try
+            {
+                var tickets = await (
+                    from ticket in _context.Tickets
+                    join solicitante in _context.Solicitantes on ticket.IdSolicitante equals solicitante.Id
+                    join departamento in _context.Departamentos on solicitante.IdDepartamento equals departamento.Id
+                    join chat in _context.ChatsHistorico on ticket.Id equals chat.IdTicket into chatGroup
+                    from chat in chatGroup.DefaultIfEmpty()
+                    orderby ticket.DataAbertura descending
+                    select new
+                    {
+                        id = ticket.Id,
+                        idSolicitante = ticket.IdSolicitante,
+                        nomeSolicitante = solicitante.Nome,
+                        emailSolicitante = solicitante.Email,
+                        departamento = departamento.Nome,
+                        descricaoProblema = ticket.DescricaoProblema,
+                        status = ticket.IdStatus == 1 ? "Pendente" : ticket.IdStatus == 2 ? "Resolvido" : "Desconhecido",
+                        idStatus = ticket.IdStatus,
+                        dataAbertura = ticket.DataAbertura,
+                        dataEncerramento = ticket.DataEncerramento,
+                        solucao = ticket.Solucao,
+                        chatId = chat != null ? chat.Id : 0,
+                        perguntaOriginal = chat != null ? chat.Pergunta : "",
+                        respostaIA = chat != null ? chat.Resposta : ""
+                    }
+                ).ToListAsync();
+
+                return Ok(tickets);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { erro = $"Erro ao obter tickets: {ex.Message}" });
+            }
+        }
+
+        [HttpGet("tickets/abertos")]
+        public async Task<ActionResult> ObterTicketsAbertos()
+        {
+            try
+            {
+                var tickets = await (
+                    from ticket in _context.Tickets
+                    join solicitante in _context.Solicitantes on ticket.IdSolicitante equals solicitante.Id
+                    join departamento in _context.Departamentos on solicitante.IdDepartamento equals departamento.Id
+                    join chat in _context.ChatsHistorico on ticket.Id equals chat.IdTicket into chatGroup
+                    from chat in chatGroup.DefaultIfEmpty()
+                    where ticket.IdStatus == 1
+                    orderby ticket.DataAbertura descending
+                    select new
+                    {
+                        id = ticket.Id,
+                        idSolicitante = ticket.IdSolicitante,
+                        nomeSolicitante = solicitante.Nome,
+                        emailSolicitante = solicitante.Email,
+                        departamento = departamento.Nome,
+                        descricaoProblema = ticket.DescricaoProblema,
+                        status = "Pendente",
+                        idStatus = ticket.IdStatus,
+                        dataAbertura = ticket.DataAbertura,
+                        solucao = ticket.Solucao,
+                        chatId = chat != null ? chat.Id : 0,
+                        perguntaOriginal = chat != null ? chat.Pergunta : "",
+                        respostaIA = chat != null ? chat.Resposta : ""
+                    }
+                ).ToListAsync();
+
+                return Ok(tickets);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { erro = $"Erro ao obter tickets: {ex.Message}" });
+            }
+        }
+
+        [HttpPost("tickets/responder")]
+        public async Task<ActionResult> ResponderTicket([FromBody] ResponderTicketGerenteRequest request)
+        {
+            try
+            {
+                var ticket = await _context.Tickets.FindAsync(request.TicketId);
+
+                if (ticket == null)
+                {
+                    return NotFound(new { erro = "Ticket não encontrado" });
+                }
+
+                // Adiciona resposta do gerente
+                if (!string.IsNullOrEmpty(request.Resposta))
+                {
+                    var timestamp = DateTime.UtcNow.ToString("dd/MM/yyyy HH:mm");
+                    var novaMensagem = $"[GERENTE - {timestamp}] {request.Resposta}";
+
+                    if (!string.IsNullOrEmpty(ticket.Solucao))
+                    {
+                        ticket.Solucao += "\n\n" + novaMensagem;
+                    }
+                    else
+                    {
+                        ticket.Solucao = novaMensagem;
+                    }
+                }
+
+                // Se marcar como resolvido
+                if (request.MarcarComoResolvido)
+                {
+                    ticket.IdStatus = 2; // Resolvido
+                    ticket.DataEncerramento = DateTime.UtcNow;
+
+                    // Atualiza o chat relacionado
+                    var chat = await _context.ChatsHistorico
+                        .FirstOrDefaultAsync(c => c.IdTicket == ticket.Id);
+
+                    if (chat != null)
+                    {
+                        chat.Status = 4; // Resolvido
+                    }
+                }
+
+                await _context.SaveChangesAsync();
+
+                return Ok(new
+                {
+                    sucesso = true,
+                    mensagem = request.MarcarComoResolvido
+                        ? "Ticket resolvido com sucesso!"
+                        : "Resposta enviada! Ticket ainda em acompanhamento."
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { erro = $"Erro ao responder ticket: {ex.Message}" });
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════
         // GERENCIAMENTO DE USUÁRIOS
         // ═══════════════════════════════════════════════════════════
 
@@ -196,6 +338,38 @@ namespace DotIA.API.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, new { erro = $"Erro ao atualizar usuário: {ex.Message}" });
+            }
+        }
+
+        [HttpPut("usuarios/{usuarioId}/senha")]
+        public async Task<ActionResult> AlterarSenhaUsuario(int usuarioId, [FromBody] AlterarSenhaRequest request)
+        {
+            try
+            {
+                var usuario = await _context.Solicitantes.FindAsync(usuarioId);
+
+                if (usuario == null)
+                {
+                    return NotFound(new { erro = "Usuário não encontrado" });
+                }
+
+                if (string.IsNullOrEmpty(request.NovaSenha) || request.NovaSenha.Length < 6)
+                {
+                    return BadRequest(new { erro = "A senha deve ter no mínimo 6 caracteres" });
+                }
+
+                usuario.Senha = request.NovaSenha;
+                await _context.SaveChangesAsync();
+
+                return Ok(new
+                {
+                    sucesso = true,
+                    mensagem = "Senha alterada com sucesso"
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { erro = $"Erro ao alterar senha: {ex.Message}" });
             }
         }
 
@@ -327,5 +501,17 @@ namespace DotIA.API.Controllers
         public string? Nome { get; set; }
         public string? Email { get; set; }
         public int IdDepartamento { get; set; }
+    }
+
+    public class ResponderTicketGerenteRequest
+    {
+        public int TicketId { get; set; }
+        public string Resposta { get; set; } = string.Empty;
+        public bool MarcarComoResolvido { get; set; } = false;
+    }
+
+    public class AlterarSenhaRequest
+    {
+        public string NovaSenha { get; set; } = string.Empty;
     }
 }

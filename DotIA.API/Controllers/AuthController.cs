@@ -1,8 +1,9 @@
-using Microsoft.AspNetCore.Mvc;
+ï»¿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DotIA.API.Data;
 using DotIA.API.Models;
 using TabelasDoBanco;
+using System.Linq;
 
 namespace DotIA.API.Controllers
 {
@@ -22,7 +23,7 @@ namespace DotIA.API.Controllers
         {
             try
             {
-                // Verifica se é solicitante
+                // â”€â”€ 1) Login como Solicitante
                 var solicitante = await _context.Solicitantes
                     .FirstOrDefaultAsync(s => s.Email == request.Email && s.Senha == request.Senha);
 
@@ -38,22 +39,25 @@ namespace DotIA.API.Controllers
                     });
                 }
 
-                // Verifica se é técnico
+                // â”€â”€ 2) Login como TÃ©cnico / Gerente
                 var tecnico = await _context.Tecnicos
                     .FirstOrDefaultAsync(t => t.Email == request.Email && t.Senha == request.Senha);
 
                 if (tecnico != null)
                 {
+                    var tipo = tecnico.IsGerente ? "Gerente" : "Tecnico";
+
                     return Ok(new LoginResponse
                     {
                         Sucesso = true,
-                        TipoUsuario = "Tecnico",
+                        TipoUsuario = tipo,
                         UsuarioId = tecnico.Id,
                         Nome = tecnico.Nome,
                         Mensagem = "Login realizado com sucesso!"
                     });
                 }
 
+                // â”€â”€ 3) Falha
                 return Ok(new LoginResponse
                 {
                     Sucesso = false,
@@ -75,100 +79,44 @@ namespace DotIA.API.Controllers
         {
             try
             {
-                // Validações
+                // ValidaÃ§Ãµes
                 if (string.IsNullOrWhiteSpace(request.Nome))
-                {
-                    return Ok(new RegistroResponse
-                    {
-                        Sucesso = false,
-                        Mensagem = "Nome é obrigatório."
-                    });
-                }
+                    return Ok(new RegistroResponse { Sucesso = false, Mensagem = "Nome Ã© obrigatÃ³rio." });
 
                 if (string.IsNullOrWhiteSpace(request.Email))
-                {
-                    return Ok(new RegistroResponse
-                    {
-                        Sucesso = false,
-                        Mensagem = "Email é obrigatório."
-                    });
-                }
+                    return Ok(new RegistroResponse { Sucesso = false, Mensagem = "Email Ã© obrigatÃ³rio." });
 
                 if (!request.Email.Contains("@"))
-                {
-                    return Ok(new RegistroResponse
-                    {
-                        Sucesso = false,
-                        Mensagem = "Email inválido."
-                    });
-                }
+                    return Ok(new RegistroResponse { Sucesso = false, Mensagem = "Email invÃ¡lido." });
 
                 if (string.IsNullOrWhiteSpace(request.Senha))
-                {
-                    return Ok(new RegistroResponse
-                    {
-                        Sucesso = false,
-                        Mensagem = "Senha é obrigatória."
-                    });
-                }
+                    return Ok(new RegistroResponse { Sucesso = false, Mensagem = "Senha Ã© obrigatÃ³ria." });
 
                 if (request.Senha.Length < 6)
-                {
-                    return Ok(new RegistroResponse
-                    {
-                        Sucesso = false,
-                        Mensagem = "Senha deve ter no mínimo 6 caracteres."
-                    });
-                }
+                    return Ok(new RegistroResponse { Sucesso = false, Mensagem = "Senha deve ter no mÃ­nimo 6 caracteres." });
 
                 if (request.Senha != request.ConfirmacaoSenha)
-                {
-                    return Ok(new RegistroResponse
-                    {
-                        Sucesso = false,
-                        Mensagem = "As senhas não coincidem."
-                    });
-                }
+                    return Ok(new RegistroResponse { Sucesso = false, Mensagem = "As senhas nÃ£o coincidem." });
 
                 if (request.IdDepartamento <= 0)
-                {
-                    return Ok(new RegistroResponse
-                    {
-                        Sucesso = false,
-                        Mensagem = "Selecione um departamento."
-                    });
-                }
+                    return Ok(new RegistroResponse { Sucesso = false, Mensagem = "Selecione um departamento." });
 
-                // Verifica se o departamento existe
+                // Departamento existe?
                 var departamento = await _context.Departamentos.FindAsync(request.IdDepartamento);
                 if (departamento == null)
-                {
-                    return Ok(new RegistroResponse
-                    {
-                        Sucesso = false,
-                        Mensagem = "Departamento não encontrado."
-                    });
-                }
+                    return Ok(new RegistroResponse { Sucesso = false, Mensagem = "Departamento nÃ£o encontrado." });
 
-                // Verifica se email já existe
-                var emailExiste = await _context.Solicitantes
-                    .AnyAsync(s => s.Email == request.Email);
-
+                // Email jÃ¡ cadastrado?
+                var emailExiste = await _context.Solicitantes.AnyAsync(s => s.Email == request.Email);
                 if (emailExiste)
-                {
-                    return Ok(new RegistroResponse
-                    {
-                        Sucesso = false,
-                        Mensagem = "Este email já está cadastrado."
-                    });
-                }
+                    return Ok(new RegistroResponse { Sucesso = false, Mensagem = "Este email jÃ¡ estÃ¡ cadastrado." });
 
-                // Cria novo solicitante
+                // Cria solicitante
                 var novoSolicitante = new Solicitante
                 {
                     Nome = request.Nome,
                     Email = request.Email,
-                    Senha = request.Senha, // Em produção, use hash de senha!
+                    Senha = request.Senha, // Em produÃ§Ã£o, faÃ§a hash!
                     IdDepartamento = request.IdDepartamento
                 };
 
@@ -178,7 +126,7 @@ namespace DotIA.API.Controllers
                 return Ok(new RegistroResponse
                 {
                     Sucesso = true,
-                    Mensagem = "Cadastro realizado com sucesso! Você já pode fazer login.",
+                    Mensagem = "Cadastro realizado com sucesso! VocÃª jÃ¡ pode fazer login.",
                     UsuarioId = novoSolicitante.Id
                 });
             }
@@ -198,11 +146,7 @@ namespace DotIA.API.Controllers
             try
             {
                 var departamentos = await _context.Departamentos
-                    .Select(d => new DepartamentoDTO
-                    {
-                        Id = d.Id,
-                        Nome = d.Nome
-                    })
+                    .Select(d => new DepartamentoDTO { Id = d.Id, Nome = d.Nome })
                     .OrderBy(d => d.Nome)
                     .ToListAsync();
 
