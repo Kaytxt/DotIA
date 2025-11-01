@@ -1,0 +1,894 @@
+﻿@{
+    ViewData["Title"] = "DotIA - Painel do Gerente";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #3b82f6;
+            --secondary-blue: #2563eb;
+            --dark-bg: #1a132f;
+            --darker-bg: #1e1433;
+            --card-bg: #2c204d;
+            --border-color: #3d2e6b;
+            --text-color: #e5e7eb;
+        }
+
+        body {
+            background: var(--dark-bg);
+            color: var(--text-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            margin: 0;
+        }
+
+        .header {
+            background: var(--darker-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+
+        .logo-text {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-blue), #06b6d4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .container-fluid {
+            padding: 30px 40px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--card-bg), var(--darker-bg));
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 25px;
+            transition: all 0.3s;
+        }
+
+            .stat-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 30px rgba(59, 130, 246, 0.2);
+            }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            margin-bottom: 15px;
+        }
+
+        .stat-value {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #9ca3af;
+            font-size: 14px;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin: 30px 0 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .tabs-nav {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            padding: 12px 24px;
+            color: #9ca3af;
+            font-weight: 600;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+            .tab-btn:hover {
+                color: var(--text-color);
+            }
+
+            .tab-btn.active {
+                color: var(--primary-blue);
+                border-bottom-color: var(--primary-blue);
+            }
+
+        .tab-content {
+            display: none;
+        }
+
+            .tab-content.active {
+                display: block;
+                animation: fadeIn 0.3s;
+            }
+
+        @@keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .users-table {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .table {
+            color: var(--text-color);
+            margin: 0;
+        }
+
+            .table thead {
+                background: var(--darker-bg);
+            }
+
+            .table tbody tr {
+                border-bottom: 1px solid var(--border-color);
+                transition: all 0.3s;
+            }
+
+                .table tbody tr:hover {
+                    background: rgba(59, 130, 246, 0.1);
+                }
+
+        .badge {
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 11px;
+        }
+
+        .badge-primary {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+
+        .badge-success {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .badge-warning {
+            background: rgba(251, 191, 36, 0.2);
+            color: #fbbf24;
+        }
+
+        .badge-danger {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .btn-action {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+            .btn-action:hover {
+                background: rgba(59, 130, 246, 0.1);
+                border-color: var(--primary-blue);
+                color: var(--primary-blue);
+            }
+
+        .btn-danger {
+            border-color: #ef4444;
+            color: #ef4444;
+        }
+
+            .btn-danger:hover {
+                background: rgba(239, 68, 68, 0.1);
+            }
+
+        .modal-content {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+        }
+
+        .modal-header {
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-footer {
+            border-top: 1px solid var(--border-color);
+        }
+
+        .form-control, .form-select {
+            background: var(--darker-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+        }
+
+            .form-control:focus, .form-select:focus {
+                background: var(--darker-bg);
+                border-color: var(--primary-blue);
+                color: var(--text-color);
+                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            }
+
+            .form-select option {
+                background: var(--darker-bg);
+                color: var(--text-color);
+            }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+        }
+
+            .btn-primary:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+            }
+
+        .btn-secondary {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 10px 20px;
+            border-radius: 10px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6b7280;
+        }
+
+            .empty-state i {
+                font-size: 64px;
+                margin-bottom: 20px;
+                opacity: 0.5;
+            }
+
+        .chart-container {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .top-users-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .top-user-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px;
+            background: var(--darker-bg);
+            border-radius: 12px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        .user-rank {
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            margin-right: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo-container">
+            <div class="logo-icon">👨‍💼</div>
+            <div>
+                <div class="logo-text">DotIA Manager</div>
+                <small style="color: #9ca3af;">Painel de Gerenciamento</small>
+            </div>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+            <span>Olá, <strong>@ViewBag.Nome</strong></span>
+            <a href="/Login/Sair" class="btn btn-sm btn-outline-light">
+                <i class="bi bi-box-arrow-right"></i> Sair
+            </a>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <!-- DASHBOARD STATS -->
+        <div class="stats-grid" id="statsGrid">
+            <!-- Será preenchido via JavaScript -->
+        </div>
+
+        <!-- TABS -->
+        <div class="tabs-nav">
+            <button class="tab-btn active" onclick="mudarTab('usuarios')">
+                <i class="bi bi-people"></i> Usuários
+            </button>
+            <button class="tab-btn" onclick="mudarTab('relatorios')">
+                <i class="bi bi-bar-chart"></i> Relatórios
+            </button>
+        </div>
+
+        <!-- TAB USUÁRIOS -->
+        <div class="tab-content active" id="tab-usuarios">
+            <div class="section-title">
+                <i class="bi bi-people-fill"></i>
+                Gerenciamento de Usuários
+            </div>
+
+            <div class="users-table">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Email</th>
+                            <th>Departamento</th>
+                            <th>Total Tickets</th>
+                            <th>Tickets Abertos</th>
+                            <th>Total Chats</th>
+                            <th class="text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody">
+                        <tr>
+                            <td colspan="7" class="text-center">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Carregando...</span>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TAB RELATÓRIOS -->
+        <div class="tab-content" id="tab-relatorios">
+            <div class="section-title">
+                <i class="bi bi-bar-chart-fill"></i>
+                Relatórios e Estatísticas
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="chart-container">
+                        <h5 class="mb-4"><i class="bi bi-building"></i> Por Departamento</h5>
+                        <div id="departamentosChart"></div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="chart-container">
+                        <h5 class="mb-4"><i class="bi bi-trophy"></i> Top Usuários com Mais Tickets</h5>
+                        <ul class="top-users-list" id="topUsersList"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL EDITAR USUÁRIO -->
+    <div class="modal fade" id="editUserModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Editar Usuário</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="editUserId">
+                    <div class="mb-3">
+                        <label class="form-label">Nome</label>
+                        <input type="text" class="form-control" id="editUserName">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" id="editUserEmail">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Departamento</label>
+                        <select class="form-select" id="editUserDepartamento">
+                            <!-- Preenchido via JS -->
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="salvarUsuario()">Salvar Alterações</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL VER TICKETS DO USUÁRIO -->
+    <div class="modal fade" id="userTicketsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Tickets do Usuário</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="userTicketsContent">
+                        <div class="text-center">
+                            <div class="spinner-border text-primary" role="status"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- CONTINUA NA PARTE 2 -->
+    <script>
+        let departamentos = [];
+        let usuarios = [];
+        let dashboard = {};
+
+        window.addEventListener('load', () => {
+            carregarDashboard();
+            carregarDepartamentos();
+            carregarUsuarios();
+        });
+
+        // ═══════════════════════════════════════════════════════════
+        // TABS
+        // ═══════════════════════════════════════════════════════════
+
+        function mudarTab(tabName) {
+            // Remove active de todos os botões e conteúdos
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            // Ativa o botão e conteúdo selecionado
+            event.currentTarget.classList.add('active');
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+
+            if (tabName === 'relatorios') {
+                carregarRelatorios();
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // DASHBOARD
+        // ═══════════════════════════════════════════════════════════
+
+        async function carregarDashboard() {
+            try {
+                const response = await fetch('/Gerente/ObterDashboard');
+                dashboard = await response.json();
+
+                const statsGrid = document.getElementById('statsGrid');
+                statsGrid.innerHTML = `
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">
+                            👥
+                        </div>
+                        <div class="stat-value" style="color: #3b82f6;">${dashboard.totalUsuarios}</div>
+                        <div class="stat-label">Total de Usuários</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #fbbf24, #f59e0b);">
+                            🎫
+                        </div>
+                        <div class="stat-value" style="color: #fbbf24;">${dashboard.ticketsAbertos}</div>
+                        <div class="stat-label">Tickets em Aberto</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
+                            ✅
+                        </div>
+                        <div class="stat-value" style="color: #10b981;">${dashboard.ticketsResolvidos}</div>
+                        <div class="stat-label">Tickets Resolvidos</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
+                            💬
+                        </div>
+                        <div class="stat-value" style="color: #8b5cf6;">${dashboard.totalChats}</div>
+                        <div class="stat-label">Total de Chats</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #ec4899, #db2777);">
+                            📊
+                        </div>
+                        <div class="stat-value" style="color: #ec4899;">${dashboard.ticketsResolvidosHoje}</div>
+                        <div class="stat-label">Resolvidos Hoje</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #06b6d4, #0891b2);">
+                            🎯
+                        </div>
+                        <div class="stat-value" style="color: #06b6d4;">${dashboard.chatsResolvidos}</div>
+                        <div class="stat-label">Chats Concluídos</div>
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Erro ao carregar dashboard:', error);
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // USUÁRIOS
+        // ═══════════════════════════════════════════════════════════
+
+        async function carregarDepartamentos() {
+            try {
+                const response = await fetch('/Gerente/ObterDepartamentos');
+                departamentos = await response.json();
+            } catch (error) {
+                console.error('Erro ao carregar departamentos:', error);
+            }
+        }
+
+        async function carregarUsuarios() {
+            try {
+                const response = await fetch('/Gerente/ObterUsuarios');
+                usuarios = await response.json();
+
+                const tbody = document.getElementById('usersTableBody');
+
+                if (usuarios.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="7">
+                                <div class="empty-state">
+                                    <i class="bi bi-people"></i>
+                                    <p>Nenhum usuário cadastrado</p>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                tbody.innerHTML = '';
+                usuarios.forEach(usuario => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><strong>${usuario.nome}</strong></td>
+                        <td>${usuario.email}</td>
+                        <td><span class="badge badge-primary">${usuario.departamento}</span></td>
+                        <td><span class="badge badge-success">${usuario.totalTickets}</span></td>
+                        <td><span class="badge badge-warning">${usuario.ticketsAbertos}</span></td>
+                        <td><span class="badge badge-primary">${usuario.totalChats}</span></td>
+                        <td class="text-center">
+                            <button class="btn-action me-1" onclick="editarUsuario(${usuario.id})" title="Editar">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <button class="btn-action me-1" onclick="verTicketsUsuario(${usuario.id}, '${usuario.nome}')" title="Ver Tickets">
+                                <i class="bi bi-ticket"></i>
+                            </button>
+                            <button class="btn-action btn-danger" onclick="excluirUsuario(${usuario.id}, '${usuario.nome}')" title="Excluir">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (error) {
+                console.error('Erro ao carregar usuários:', error);
+                document.getElementById('usersTableBody').innerHTML = `
+                    <tr><td colspan="7" class="text-center text-danger">Erro ao carregar usuários</td></tr>
+                `;
+            }
+        }
+
+        async function editarUsuario(usuarioId) {
+            try {
+                const response = await fetch(`/Gerente/ObterUsuario/${usuarioId}`);
+                const usuario = await response.json();
+
+                document.getElementById('editUserId').value = usuario.id;
+                document.getElementById('editUserName').value = usuario.nome;
+                document.getElementById('editUserEmail').value = usuario.email;
+
+                // Preenche select de departamentos
+                const selectDept = document.getElementById('editUserDepartamento');
+                selectDept.innerHTML = '';
+                departamentos.forEach(dept => {
+                    const option = document.createElement('option');
+                    option.value = dept.id;
+                    option.textContent = dept.nome;
+                    option.selected = dept.id === usuario.idDepartamento;
+                    selectDept.appendChild(option);
+                });
+
+                const modal = new bootstrap.Modal(document.getElementById('editUserModal'));
+                modal.show();
+            } catch (error) {
+                console.error('Erro ao carregar usuário:', error);
+                alert('Erro ao carregar dados do usuário');
+            }
+        }
+
+        async function salvarUsuario() {
+            const usuarioId = document.getElementById('editUserId').value;
+            const nome = document.getElementById('editUserName').value.trim();
+            const email = document.getElementById('editUserEmail').value.trim();
+            const idDepartamento = parseInt(document.getElementById('editUserDepartamento').value);
+
+            if (!nome || !email) {
+                alert('Preencha todos os campos obrigatórios');
+                return;
+            }
+
+            try {
+                const response = await fetch('/Gerente/AtualizarUsuario', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        usuarioId: parseInt(usuarioId),
+                        nome,
+                        email,
+                        idDepartamento
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.sucesso) {
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('editUserModal'));
+                    modal.hide();
+                    mostrarNotificacao('Usuário atualizado com sucesso!', 'success');
+                    await carregarUsuarios();
+                    await carregarDashboard();
+                } else {
+                    alert('Erro ao atualizar usuário');
+                }
+            } catch (error) {
+                console.error('Erro ao salvar usuário:', error);
+                alert('Erro ao conectar com o servidor');
+            }
+        }
+
+        async function excluirUsuario(usuarioId, nomeUsuario) {
+            if (!confirm(`Tem certeza que deseja excluir o usuário "${nomeUsuario}"?\n\nISTO IRÁ DELETAR:\n✗ Todos os chats do usuário\n✗ Todos os tickets do usuário\n✗ Todo o histórico\n\nEsta ação não pode ser desfeita!`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/Gerente/ExcluirUsuario/${usuarioId}`, {
+                    method: 'DELETE'
+                });
+
+                const data = await response.json();
+
+                if (data.sucesso) {
+                    mostrarNotificacao('Usuário excluído com sucesso!', 'success');
+                    await carregarUsuarios();
+                    await carregarDashboard();
+                } else {
+                    alert('Erro ao excluir usuário');
+                }
+            } catch (error) {
+                console.error('Erro ao excluir usuário:', error);
+                alert('Erro ao conectar com o servidor');
+            }
+        }
+
+        async function verTicketsUsuario(usuarioId, nomeUsuario) {
+            try {
+                const response = await fetch(`/Gerente/ObterTicketsUsuario/${usuarioId}`);
+                const tickets = await response.json();
+
+                const modal = new bootstrap.Modal(document.getElementById('userTicketsModal'));
+                const content = document.getElementById('userTicketsContent');
+
+                if (tickets.length === 0) {
+                    content.innerHTML = `
+                        <div class="empty-state">
+                            <i class="bi bi-ticket-detailed"></i>
+                            <p>Nenhum ticket encontrado para ${nomeUsuario}</p>
+                        </div>
+                    `;
+                } else {
+                    let html = `<h6 class="mb-3">Tickets de <strong>${nomeUsuario}</strong></h6>`;
+                    html += '<div class="list-group">';
+
+                    tickets.forEach(ticket => {
+                        const dataAbertura = new Date(ticket.dataAbertura).toLocaleDateString('pt-BR');
+                        const statusClass = ticket.idStatus === 1 ? 'warning' : 'success';
+
+                        html += `
+                            <div class="list-group-item" style="background: var(--darker-bg); border: 1px solid var(--border-color); margin-bottom: 10px; border-radius: 10px;">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h6 class="mb-0">Ticket #${ticket.id}</h6>
+                                    <span class="badge badge-${statusClass}">${ticket.status}</span>
+                                </div>
+                                <p class="mb-2 text-muted">${ticket.descricaoProblema}</p>
+                                <small class="text-muted">
+                                    <i class="bi bi-calendar"></i> ${dataAbertura}
+                                </small>
+                            </div>
+                        `;
+                    });
+
+                    html += '</div>';
+                    content.innerHTML = html;
+                }
+
+                modal.show();
+            } catch (error) {
+                console.error('Erro ao carregar tickets:', error);
+                alert('Erro ao carregar tickets do usuário');
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // RELATÓRIOS
+        // ═══════════════════════════════════════════════════════════
+
+        async function carregarRelatorios() {
+            try {
+                const response = await fetch('/Gerente/ObterRelatorioDepartamentos');
+                const relatorio = await response.json();
+
+                // Relatório por departamento
+                const chartDiv = document.getElementById('departamentosChart');
+                if (relatorio.length === 0) {
+                    chartDiv.innerHTML = '<div class="empty-state"><p>Nenhum dado disponível</p></div>';
+                } else {
+                    let html = '<div class="table-responsive"><table class="table table-sm">';
+                    html += '<thead><tr><th>Departamento</th><th>Usuários</th><th>Tickets</th><th>Abertos</th><th>Resolvidos</th></tr></thead><tbody>';
+
+                    relatorio.forEach(dept => {
+                        html += `
+                            <tr>
+                                <td><strong>${dept.departamento}</strong></td>
+                                <td><span class="badge badge-primary">${dept.totalUsuarios}</span></td>
+                                <td><span class="badge badge-success">${dept.totalTickets}</span></td>
+                                <td><span class="badge badge-warning">${dept.ticketsAbertos}</span></td>
+                                <td><span class="badge badge-success">${dept.ticketsResolvidos}</span></td>
+                            </tr>
+                        `;
+                    });
+
+                    html += '</tbody></table></div>';
+                    chartDiv.innerHTML = html;
+                }
+
+                // Top usuários
+                const topUsersList = document.getElementById('topUsersList');
+                if (dashboard.topUsuarios && dashboard.topUsuarios.length > 0) {
+                    topUsersList.innerHTML = '';
+                    dashboard.topUsuarios.forEach((user, index) => {
+                        const li = document.createElement('li');
+                        li.className = 'top-user-item';
+                        li.innerHTML = `
+                            <div class="d-flex align-items-center">
+                                <div class="user-rank">${index + 1}</div>
+                                <strong>${user.nome}</strong>
+                            </div>
+                            <span class="badge badge-warning">${user.totalTickets} tickets</span>
+                        `;
+                        topUsersList.appendChild(li);
+                    });
+                } else {
+                    topUsersList.innerHTML = '<div class="empty-state"><p>Nenhum dado disponível</p></div>';
+                }
+            } catch (error) {
+                console.error('Erro ao carregar relatórios:', error);
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // UTILITÁRIOS
+        // ═══════════════════════════════════════════════════════════
+
+        function mostrarNotificacao(mensagem, tipo = 'info') {
+            const cores = {
+                success: 'linear-gradient(135deg, #10b981, #059669)',
+                warning: 'linear-gradient(135deg, #fbbf24, #f59e0b)',
+                info: 'linear-gradient(135deg, #3b82f6, #2563eb)'
+            };
+
+            const notif = document.createElement('div');
+            notif.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${cores[tipo]};
+                padding: 15px 25px;
+                border-radius: 12px;
+                color: white;
+                font-weight: 600;
+                z-index: 10000;
+                animation: slideInRight 0.3s ease-out;
+                max-width: 400px;
+                box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            `;
+            notif.innerHTML = mensagem;
+            document.body.appendChild(notif);
+            setTimeout(() => notif.remove(), 4000);
+        }
+
+        // Atualiza dashboard a cada 30 segundos
+        setInterval(() => {
+            carregarDashboard();
+        }, 30000);
+    </script>
+</body>
+</html>

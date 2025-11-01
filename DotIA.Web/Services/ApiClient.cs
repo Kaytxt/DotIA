@@ -324,6 +324,155 @@ namespace DotIA.Web.Services
                 return null;
             }
         }
+
+        // ═══════════════════════════════════════════════════════════
+        // GERENTE
+        // ═══════════════════════════════════════════════════════════
+
+        public async Task<DashboardDTO> ObterDashboardAsync()
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync("api/Gerente/dashboard");
+                var result = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return JsonSerializer.Deserialize<DashboardDTO>(result, new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    }) ?? new DashboardDTO();
+                }
+
+                return new DashboardDTO();
+            }
+            catch
+            {
+                return new DashboardDTO();
+            }
+        }
+
+        public async Task<List<UsuarioDTO>> ObterUsuariosAsync()
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync("api/Gerente/usuarios");
+                var result = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return JsonSerializer.Deserialize<List<UsuarioDTO>>(result, new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    }) ?? new List<UsuarioDTO>();
+                }
+
+                return new List<UsuarioDTO>();
+            }
+            catch
+            {
+                return new List<UsuarioDTO>();
+            }
+        }
+
+        public async Task<UsuarioDetalheDTO> ObterUsuarioAsync(int usuarioId)
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync($"api/Gerente/usuarios/{usuarioId}");
+                var result = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return JsonSerializer.Deserialize<UsuarioDetalheDTO>(result, new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    }) ?? new UsuarioDetalheDTO();
+                }
+
+                return new UsuarioDetalheDTO();
+            }
+            catch
+            {
+                return new UsuarioDetalheDTO();
+            }
+        }
+
+        public async Task<bool> AtualizarUsuarioAsync(int usuarioId, string nome, string email, int idDepartamento)
+        {
+            try
+            {
+                var request = new { Nome = nome, Email = email, IdDepartamento = idDepartamento };
+                var json = JsonSerializer.Serialize(request);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                var response = await _httpClient.PutAsync($"api/Gerente/usuarios/{usuarioId}", content);
+                return response.IsSuccessStatusCode;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> ExcluirUsuarioAsync(int usuarioId)
+        {
+            try
+            {
+                var response = await _httpClient.DeleteAsync($"api/Gerente/usuarios/{usuarioId}");
+                return response.IsSuccessStatusCode;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public async Task<List<TicketUsuarioDTO>> ObterTicketsUsuarioAsync(int usuarioId)
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync($"api/Gerente/usuarios/{usuarioId}/tickets");
+                var result = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return JsonSerializer.Deserialize<List<TicketUsuarioDTO>>(result, new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    }) ?? new List<TicketUsuarioDTO>();
+                }
+
+                return new List<TicketUsuarioDTO>();
+            }
+            catch
+            {
+                return new List<TicketUsuarioDTO>();
+            }
+        }
+
+        public async Task<List<RelatorioDepartamentoDTO>> ObterRelatorioDepartamentosAsync()
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync("api/Gerente/relatorio-departamentos");
+                var result = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return JsonSerializer.Deserialize<List<RelatorioDepartamentoDTO>>(result, new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    }) ?? new List<RelatorioDepartamentoDTO>();
+                }
+
+                return new List<RelatorioDepartamentoDTO>();
+            }
+            catch
+            {
+                return new List<RelatorioDepartamentoDTO>();
+            }
+        }
     }
 
     // ═══════════════════════════════════════════════════════════
@@ -392,5 +541,71 @@ namespace DotIA.Web.Services
         public int ChatId { get; set; }
         public string PerguntaOriginal { get; set; } = string.Empty;
         public string RespostaIA { get; set; } = string.Empty;
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // DTOs DO GERENTE
+    // ═══════════════════════════════════════════════════════════
+
+    public class DashboardDTO
+    {
+        public int TotalUsuarios { get; set; }
+        public int TotalTickets { get; set; }
+        public int TicketsAbertos { get; set; }
+        public int TicketsResolvidos { get; set; }
+        public int TotalChats { get; set; }
+        public int ChatsResolvidos { get; set; }
+        public int TicketsResolvidosHoje { get; set; }
+        public List<TopUsuarioDTO> TopUsuarios { get; set; } = new List<TopUsuarioDTO>();
+    }
+
+    public class TopUsuarioDTO
+    {
+        public string Nome { get; set; } = string.Empty;
+        public int TotalTickets { get; set; }
+    }
+
+    public class UsuarioDTO
+    {
+        public int Id { get; set; }
+        public string Nome { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string Departamento { get; set; } = string.Empty;
+        public int IdDepartamento { get; set; }
+        public int TotalTickets { get; set; }
+        public int TicketsAbertos { get; set; }
+        public int TotalChats { get; set; }
+    }
+
+    public class UsuarioDetalheDTO
+    {
+        public int Id { get; set; }
+        public string Nome { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public int IdDepartamento { get; set; }
+        public string Departamento { get; set; } = string.Empty;
+    }
+
+    public class TicketUsuarioDTO
+    {
+        public int Id { get; set; }
+        public string DescricaoProblema { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
+        public int IdStatus { get; set; }
+        public DateTime DataAbertura { get; set; }
+        public DateTime? DataEncerramento { get; set; }
+        public string? Solucao { get; set; }
+        public int ChatId { get; set; }
+        public string PerguntaOriginal { get; set; } = string.Empty;
+        public string RespostaIA { get; set; } = string.Empty;
+    }
+
+    public class RelatorioDepartamentoDTO
+    {
+        public string Departamento { get; set; } = string.Empty;
+        public int TotalUsuarios { get; set; }
+        public int TotalTickets { get; set; }
+        public int TicketsAbertos { get; set; }
+        public int TicketsResolvidos { get; set; }
     }
 }
