@@ -183,6 +183,13 @@
             border-radius: 15px;
         }
 
+        .alert-success {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.2));
+            border: 1px solid rgba(16, 185, 129, 0.5);
+            color: #6ee7b7;
+            border-radius: 15px;
+        }
+
         .form-check-input {
             background-color: var(--darker-bg);
             border: 2px solid rgba(141, 75, 255, 0.3);
@@ -210,6 +217,45 @@
         .footer-text {
             color: #6b7280;
             font-size: 14px;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 25px 0;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid rgba(141, 75, 255, 0.3);
+        }
+
+        .divider span {
+            padding: 0 15px;
+            color: #9ca3af;
+            font-size: 13px;
+        }
+
+        .btn-register {
+            background: transparent;
+            border: 2px solid rgba(141, 75, 255, 0.3);
+            color: #e5e7eb;
+            border-radius: 15px;
+            padding: 16px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s;
+        }
+
+        .btn-register:hover {
+            background: rgba(141, 75, 255, 0.1);
+            border-color: var(--primary-purple);
+            color: var(--primary-purple);
+            transform: translateY(-3px);
         }
 
         @@media (max-width: 600px) {
@@ -247,6 +293,14 @@
                 {
                 <div class="alert alert-danger" role="alert">
                     <i class="bi bi-exclamation-triangle"></i> @ViewBag.Erro
+                </div>
+                }
+
+                <!-- Mensagem de Sucesso -->
+                @if (TempData["Sucesso"] != null)
+                {
+                <div class="alert alert-success" role="alert">
+                    <i class="bi bi-check-circle"></i> @TempData["Sucesso"]
                 </div>
                 }
 
@@ -300,6 +354,16 @@
                         Entrar <i class="bi bi-arrow-right"></i>
                     </button>
                 </form>
+
+                <!-- Divider -->
+                <div class="divider">
+                    <span>OU</span>
+                </div>
+
+                <!-- Botão de Registro -->
+                <a href="/Registro" class="btn btn-register w-100">
+                    <i class="bi bi-person-plus"></i> Criar Nova Conta
+                </a>
 
                 <!-- Footer -->
                 <div class="text-center mt-4">

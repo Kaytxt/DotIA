@@ -14,17 +14,6 @@ namespace DotIA.Web.Controllers
 
         public IActionResult Index()
         {
-            // Se já estiver logado, redireciona
-            var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
-            if (usuarioId != null)
-            {
-                var tipoUsuario = HttpContext.Session.GetString("TipoUsuario");
-                if (tipoUsuario == "tecnico")
-                    return RedirectToAction("Index", "Tecnico");
-                else
-                    return RedirectToAction("Index", "Chat");
-            }
-
             return View();
         }
 
@@ -37,16 +26,22 @@ namespace DotIA.Web.Controllers
 
                 if (resultado.Sucesso)
                 {
-                    // Salva informações na sessão
                     HttpContext.Session.SetInt32("UsuarioId", resultado.UsuarioId);
                     HttpContext.Session.SetString("Nome", resultado.Nome);
                     HttpContext.Session.SetString("TipoUsuario", resultado.TipoUsuario);
 
-                    // Redireciona de acordo com o tipo de usuário
-                    if (resultado.TipoUsuario == "tecnico")
+                    if (resultado.TipoUsuario == "Tecnico")
+                    {
                         return RedirectToAction("Index", "Tecnico");
+                    }
+                    else if (resultado.TipoUsuario == "Gerente")
+                    {
+                        return RedirectToAction("Index", "Gerente");
+                    }
                     else
+                    {
                         return RedirectToAction("Index", "Chat");
+                    }
                 }
                 else
                 {
@@ -56,7 +51,7 @@ namespace DotIA.Web.Controllers
             }
             catch (Exception ex)
             {
-                ViewBag.Erro = $"Erro ao fazer login: {ex.Message}";
+                ViewBag.Erro = "Erro ao conectar com o servidor: " + ex.Message;
                 return View("Index");
             }
         }
