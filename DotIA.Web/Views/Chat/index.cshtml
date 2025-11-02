@@ -92,10 +92,10 @@
             margin: 20px;
         }
 
-        .btn-new-chat:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(141, 75, 255, 0.4);
-        }
+            .btn-new-chat:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 20px rgba(141, 75, 255, 0.4);
+            }
 
         .history-container {
             flex: 1;
@@ -103,19 +103,19 @@
             padding: 0 20px 20px;
         }
 
-        .history-container::-webkit-scrollbar {
-            width: 6px;
-        }
+            .history-container::-webkit-scrollbar {
+                width: 6px;
+            }
 
-        .history-container::-webkit-scrollbar-track {
-            background: var(--card-bg);
-            border-radius: 10px;
-        }
+            .history-container::-webkit-scrollbar-track {
+                background: var(--card-bg);
+                border-radius: 10px;
+            }
 
-        .history-container::-webkit-scrollbar-thumb {
-            background: var(--primary-purple);
-            border-radius: 10px;
-        }
+            .history-container::-webkit-scrollbar-thumb {
+                background: var(--primary-purple);
+                border-radius: 10px;
+            }
 
         .history-title {
             font-size: 12px;
@@ -139,20 +139,20 @@
             position: relative;
         }
 
-        .history-item:hover {
-            background: var(--border-color);
-            border-color: var(--primary-purple);
-            transform: translateX(5px);
-        }
+            .history-item:hover {
+                background: var(--border-color);
+                border-color: var(--primary-purple);
+                transform: translateX(5px);
+            }
 
-        .history-item:hover .history-actions {
-            opacity: 1;
-        }
+                .history-item:hover .history-actions {
+                    opacity: 1;
+                }
 
-        .history-item.active {
-            border-color: var(--secondary-purple);
-            background: var(--border-color);
-        }
+            .history-item.active {
+                border-color: var(--secondary-purple);
+                background: var(--border-color);
+            }
 
         .history-actions {
             position: absolute;
@@ -179,13 +179,13 @@
             transition: all 0.3s;
         }
 
-        .history-action-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
+            .history-action-btn:hover {
+                background: rgba(255, 255, 255, 0.2);
+            }
 
-        .history-action-btn.delete:hover {
-            background: #ef4444;
-        }
+            .history-action-btn.delete:hover {
+                background: #ef4444;
+            }
 
         .status-badge {
             display: inline-block;
@@ -197,10 +197,25 @@
             text-transform: uppercase;
         }
 
-        .status-andamento { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
-        .status-concluido { background: rgba(16, 185, 129, 0.2); color: #10b981; }
-        .status-pendente { background: rgba(251, 191, 36, 0.2); color: #fbbf24; }
-        .status-resolvido { background: rgba(139, 92, 246, 0.2); color: #8b5cf6; }
+        .status-andamento {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+
+        .status-concluido {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .status-pendente {
+            background: rgba(251, 191, 36, 0.2);
+            color: #fbbf24;
+        }
+
+        .status-resolvido {
+            background: rgba(139, 92, 246, 0.2);
+            color: #8b5cf6;
+        }
 
         .user-info {
             padding: 20px;
@@ -247,19 +262,19 @@
             padding: 30px;
         }
 
-        .messages-container::-webkit-scrollbar {
-            width: 8px;
-        }
+            .messages-container::-webkit-scrollbar {
+                width: 8px;
+            }
 
-        .messages-container::-webkit-scrollbar-track {
-            background: var(--card-bg);
-            border-radius: 10px;
-        }
+            .messages-container::-webkit-scrollbar-track {
+                background: var(--card-bg);
+                border-radius: 10px;
+            }
 
-        .messages-container::-webkit-scrollbar-thumb {
-            background: var(--primary-purple);
-            border-radius: 10px;
-        }
+            .messages-container::-webkit-scrollbar-thumb {
+                background: var(--primary-purple);
+                border-radius: 10px;
+            }
 
         .welcome-screen {
             display: flex;
@@ -276,9 +291,14 @@
             animation: float 3s ease-in-out infinite;
         }
 
-        @@keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
+        @@keyframe float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
         }
 
         .welcome-title {
@@ -296,9 +316,16 @@
             animation: slideIn 0.3s ease-out;
         }
 
-        @@keyframes slideIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        @@keyframe slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .message.user {
@@ -375,53 +402,129 @@
             margin-top: 8px;
         }
 
-        .feedback-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 12px;
-            padding-top: 12px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        /* Área de Avaliação do Chat */
+        .chat-feedback-area {
+            padding: 20px 0;
+            animation: slideIn 0.4s ease-out;
         }
 
-        .btn-feedback {
+        .feedback-card {
+            background: linear-gradient(135deg, var(--card-bg), var(--darker-bg));
+            border: 2px solid var(--border-color);
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .feedback-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+            .feedback-header i {
+                font-size: 24px;
+                color: var(--primary-purple);
+            }
+
+        .feedback-buttons-chat {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .btn-feedback-chat {
             flex: 1;
-            padding: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-            color: white;
-            font-size: 13px;
+            max-width: 200px;
+            padding: 16px 24px;
+            border: 2px solid var(--border-color);
+            background: var(--darker-bg);
+            border-radius: 15px;
+            color: var(--text-color);
+            font-size: 15px;
+            font-weight: 600;
             transition: all 0.3s;
             cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
         }
 
-        .btn-feedback:hover:not(:disabled) {
-            background: rgba(255, 255, 255, 0.1);
-        }
+            .btn-feedback-chat i {
+                font-size: 28px;
+            }
 
-        .btn-feedback:disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
-        }
+            .btn-feedback-chat.btn-useful:hover {
+                background: rgba(16, 185, 129, 0.2);
+                border-color: #10b981;
+                color: #10b981;
+                transform: translateY(-3px);
+                box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+            }
 
-        .btn-feedback.selected {
-            background: rgba(16, 185, 129, 0.3);
-            border-color: #10b981;
+            .btn-feedback-chat.btn-not-useful:hover {
+                background: rgba(239, 68, 68, 0.2);
+                border-color: #ef4444;
+                color: #ef4444;
+                transform: translateY(-3px);
+                box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
+            }
+
+            .btn-feedback-chat:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+                transform: none !important;
+            }
+
+            .btn-feedback-chat.selected {
+                transform: scale(0.95);
+            }
+
+                .btn-feedback-chat.selected.btn-useful {
+                    background: rgba(16, 185, 129, 0.3);
+                    border-color: #10b981;
+                    color: #10b981;
+                }
+
+                .btn-feedback-chat.selected.btn-not-useful {
+                    background: rgba(239, 68, 68, 0.3);
+                    border-color: #ef4444;
+                    color: #ef4444;
+                }
+
+        .feedback-evaluated {
+            padding: 16px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid #10b981;
+            border-radius: 12px;
+            color: #10b981;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
         .typing-indicator {
             display: none;
         }
 
-        .typing-indicator.active {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 16px 20px;
-            background: var(--card-bg);
-            border-radius: 18px;
-            width: fit-content;
-        }
+            .typing-indicator.active {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 16px 20px;
+                background: var(--card-bg);
+                border-radius: 18px;
+                width: fit-content;
+            }
 
         .typing-dot {
             width: 8px;
@@ -431,12 +534,24 @@
             animation: typing 1.4s infinite;
         }
 
-        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
-        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+            .typing-dot:nth-child(2) {
+                animation-delay: 0.2s;
+            }
 
-        @@keyframes typing {
-            0%, 60%, 100% { transform: translateY(0); opacity: 0.7; }
-            30% { transform: translateY(-10px); opacity: 1; }
+            .typing-dot:nth-child(3) {
+                animation-delay: 0.4s;
+            }
+
+        @@keyframe typing {
+            0%, 60%, 100% {
+                transform: translateY(0);
+                opacity: 0.7;
+            }
+
+            30% {
+                transform: translateY(-10px);
+                opacity: 1;
+            }
         }
 
         .chat-blocked-notice {
@@ -466,15 +581,15 @@
             gap: 15px;
         }
 
-        .input-wrapper:focus-within {
-            border-color: var(--secondary-purple);
-            box-shadow: 0 0 0 3px rgba(141, 75, 255, 0.1);
-        }
+            .input-wrapper:focus-within {
+                border-color: var(--secondary-purple);
+                box-shadow: 0 0 0 3px rgba(141, 75, 255, 0.1);
+            }
 
-        .input-wrapper.disabled {
-            opacity: 0.5;
-            pointer-events: none;
-        }
+            .input-wrapper.disabled {
+                opacity: 0.5;
+                pointer-events: none;
+            }
 
         .input-icon {
             width: 50px;
@@ -501,9 +616,9 @@
             overflow-y: auto;
         }
 
-        #messageInput::placeholder {
-            color: #9ca3af;
-        }
+            #messageInput::placeholder {
+                color: #9ca3af;
+            }
 
         .btn-send {
             background: linear-gradient(135deg, var(--primary-purple), var(--secondary-purple));
@@ -517,15 +632,15 @@
             flex-shrink: 0;
         }
 
-        .btn-send:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(141, 75, 255, 0.4);
-        }
+            .btn-send:hover:not(:disabled) {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 20px rgba(141, 75, 255, 0.4);
+            }
 
-        .btn-send:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
+            .btn-send:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
 
         /* Modal para editar nome */
         .modal-content {
@@ -548,12 +663,12 @@
             color: var(--text-color);
         }
 
-        .form-control:focus {
-            background: var(--darker-bg);
-            border-color: var(--primary-purple);
-            color: var(--text-color);
-            box-shadow: 0 0 0 3px rgba(141, 75, 255, 0.1);
-        }
+            .form-control:focus {
+                background: var(--darker-bg);
+                border-color: var(--primary-purple);
+                color: var(--text-color);
+                box-shadow: 0 0 0 3px rgba(141, 75, 255, 0.1);
+            }
 
         @@media (max-width: 768px) {
             .chat-container {
@@ -619,6 +734,26 @@
                 </div>
 
                 <div id="messagesList"></div>
+
+                <!-- Área de Avaliação do Chat -->
+                <div class="chat-feedback-area" id="chatFeedbackArea" style="display: none;">
+                    <div class="feedback-card">
+                        <div class="feedback-header">
+                            <i class="bi bi-chat-heart"></i>
+                            <span>Esta conversa foi útil?</span>
+                        </div>
+                        <div class="feedback-buttons-chat">
+                            <button class="btn-feedback-chat btn-useful" onclick="avaliarChatCompleto(true)">
+                                <i class="bi bi-hand-thumbs-up"></i>
+                                <span>Sim, foi útil!</span>
+                            </button>
+                            <button class="btn-feedback-chat btn-not-useful" onclick="avaliarChatCompleto(false)">
+                                <i class="bi bi-hand-thumbs-down"></i>
+                                <span>Não ajudou</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="typing-indicator" id="typingIndicator">
                     <div class="d-flex gap-2">
@@ -774,6 +909,10 @@
                     chatAtualId = data.chatId;
                     chatAtualStatus = 1; // Em andamento
                     adicionarMensagem(data.resposta, 'bot', mensagem, data.chatId);
+
+                    // ✅ MOSTRA OS BOTÕES DE AVALIAÇÃO
+                    mostrarBotoesAvaliacao(mensagem, data.resposta, data.chatId);
+
                     await carregarHistorico();
                 } else {
                     adicionarMensagem('Desculpe, ocorreu um erro ao processar sua pergunta.', 'bot');
@@ -802,34 +941,19 @@
                 badge = '<div class="tech-badge">✓ Resposta do Técnico</div>';
             }
 
-            let feedbackHTML = '';
-            if (tipo === 'bot' && chatId) {
-                feedbackHTML = `
-            <div class="feedback-buttons" id="feedback-${chatId}">
-                <button class="btn-feedback" data-chat-id="${chatId}" onclick="avaliarResposta('${escapeHtml(perguntaOriginal)}', '${escapeHtml(texto)}', true, ${chatId}, this)">
-                    👍 Foi útil
-                </button>
-                <button class="btn-feedback" data-chat-id="${chatId}" onclick="avaliarResposta('${escapeHtml(perguntaOriginal)}', '${escapeHtml(texto)}', false, ${chatId}, this)">
-                    👎 Não ajudou
-                </button>
-            </div>
-        `;
-            }
-
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${tipo}`;
             if (chatId) messageDiv.dataset.chatId = chatId;
             messageDiv.innerHTML = `
-        <div class="message-content">
-            <div class="message-avatar">${avatar}</div>
-            <div class="message-bubble">
-                ${badge}
-                <div class="message-text">${texto}</div>
-                <div class="message-time">${time}</div>
-                ${feedbackHTML}
-            </div>
-        </div>
-    `;
+                    <div class="message-content">
+                        <div class="message-avatar">${avatar}</div>
+                        <div class="message-bubble">
+                            ${badge}
+                            <div class="message-text">${texto}</div>
+                            <div class="message-time">${time}</div>
+                        </div>
+                    </div>
+                `;
 
             messagesList.appendChild(messageDiv);
 
@@ -843,10 +967,34 @@
             return div.innerHTML.replace(/'/g, "\\'");
         }
 
-        async function avaliarResposta(pergunta, resposta, foiUtil, chatId, button) {
-            const buttons = button.parentElement.querySelectorAll('.btn-feedback');
+        // ✅ NOVA FUNÇÃO: Mostra botões de avaliação
+        function mostrarBotoesAvaliacao(pergunta, resposta, chatId) {
+            const feedbackArea = document.getElementById('chatFeedbackArea');
+            feedbackArea.style.display = 'block';
+
+            // Armazena dados para avaliação
+            feedbackArea.dataset.pergunta = pergunta;
+            feedbackArea.dataset.resposta = resposta;
+            feedbackArea.dataset.chatId = chatId;
+
+            // Scroll para mostrar os botões
+            setTimeout(() => {
+                feedbackArea.scrollIntoView({ behavior: 'smooth', block: 'end' });
+            }, 300);
+        }
+
+        // ✅ NOVA FUNÇÃO: Avalia o chat completo
+        async function avaliarChatCompleto(foiUtil) {
+            const feedbackArea = document.getElementById('chatFeedbackArea');
+            const pergunta = feedbackArea.dataset.pergunta;
+            const resposta = feedbackArea.dataset.resposta;
+            const chatId = parseInt(feedbackArea.dataset.chatId);
+
+            const buttons = feedbackArea.querySelectorAll('.btn-feedback-chat');
             buttons.forEach(btn => btn.disabled = true);
-            button.classList.add('selected');
+
+            const btnClicado = event.currentTarget;
+            btnClicado.classList.add('selected');
 
             try {
                 const response = await fetch('/Chat/AvaliarResposta', {
@@ -871,11 +1019,35 @@
                             iniciarPolling(chatId);
                         }
 
+                        // Substitui os botões por mensagem de sucesso
+                        feedbackArea.innerHTML = `
+                                <div class="feedback-card">
+                                    <div class="feedback-evaluated">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                        <span>Ticket criado! Um técnico irá ajudá-lo em breve.</span>
+                                    </div>
+                                    <div style="margin-top: 15px; color: #9ca3af; font-size: 14px;">
+                                        💡 Você pode criar novos chats clicando em "Novo Chat"
+                                    </div>
+                                </div>
+                            `;
+
                         mostrarNotificacao('✅ Ticket criado! Este chat agora está com um técnico. Você pode criar novos chats para conversar com a IA!', 'success');
                     } else {
                         if (chatAtualId === chatId) {
                             chatAtualStatus = 2;
                         }
+
+                        // Substitui os botões por mensagem de agradecimento
+                        feedbackArea.innerHTML = `
+                                <div class="feedback-card">
+                                    <div class="feedback-evaluated">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                        <span>Obrigado pelo feedback! Ficamos felizes em ajudar! 😊</span>
+                                    </div>
+                                </div>
+                            `;
+
                         mostrarNotificacao('Avaliação registrada! Obrigado pelo feedback. 😊', 'success');
                     }
 
@@ -884,19 +1056,19 @@
             } catch (error) {
                 console.error('Erro ao avaliar:', error);
                 buttons.forEach(btn => btn.disabled = false);
-                button.classList.remove('selected');
+                btnClicado.classList.remove('selected');
             }
         }
 
         function bloquearChatParaIA() {
             const noticeDiv = document.getElementById('chatBlockedNotice');
             noticeDiv.innerHTML = `
-        <div class="chat-blocked-notice">
-            <i class="bi bi-chat-dots"></i> <strong>Chat com Técnico Ativo</strong><br>
-            Este chat está em atendimento com técnico. Suas mensagens aqui vão para ele. 
-            <strong>Você pode criar novos chats</strong> clicando em "Novo Chat"!
-        </div>
-    `;
+                    <div class="chat-blocked-notice">
+                        <i class="bi bi-chat-dots"></i> <strong>Chat com Técnico Ativo</strong><br>
+                        Este chat está em atendimento com técnico. Suas mensagens aqui vão para ele.
+                        <strong>Você pode criar novos chats</strong> clicando em "Novo Chat"!
+                    </div>
+                `;
         }
 
         function desbloquearChatParaIA() {
@@ -975,19 +1147,19 @@
 
             const notif = document.createElement('div');
             notif.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: ${cores[tipo]};
-        padding: 15px 25px;
-        border-radius: 12px;
-        color: white;
-        font-weight: 600;
-        z-index: 10000;
-        animation: slideInRight 0.3s ease-out;
-        max-width: 400px;
-        box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-    `;
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: ${cores[tipo]};
+                    padding: 15px 25px;
+                    border-radius: 12px;
+                    color: white;
+                    font-weight: 600;
+                    z-index: 10000;
+                    animation: slideInRight 0.3s ease-out;
+                    max-width: 400px;
+                    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+                `;
             notif.innerHTML = mensagem;
             document.body.appendChild(notif);
             setTimeout(() => notif.remove(), 5000);
@@ -1003,10 +1175,10 @@
 
                 if (historico.length === 0) {
                     historyList.innerHTML = `
-                <div style="text-align: center; padding: 20px; color: #9ca3af; font-size: 13px;">
-                    Nenhum histórico ainda.<br>Comece uma conversa!
-                </div>
-            `;
+                            <div style="text-align: center; padding: 20px; color: #9ca3af; font-size: 13px;">
+                                Nenhum histórico ainda.<br>Comece uma conversa!
+                            </div>
+                        `;
                     return;
                 }
 
@@ -1025,17 +1197,17 @@
                     else if (chat.status === 4) badgeClass = 'status-resolvido';
 
                     item.innerHTML = `
-                <div class="history-actions">
-                    <button class="history-action-btn" onclick="editarNomeChat(event, ${chat.id}, '${escapeHtml(chat.titulo)}')">
-                        <i class="bi bi-pencil"></i>
-                    </button>
-                    <button class="history-action-btn delete" onclick="excluirChat(event, ${chat.id})">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                </div>
-                <div>${chat.titulo || chat.pergunta.substring(0, 30) + '...'}</div>
-                <div class="status-badge ${badgeClass}">${chat.statusTexto}</div>
-            `;
+                            <div class="history-actions">
+                                <button class="history-action-btn" onclick="editarNomeChat(event, ${chat.id}, '${escapeHtml(chat.titulo)}')">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="history-action-btn delete" onclick="excluirChat(event, ${chat.id})">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                            <div>${chat.titulo || chat.pergunta.substring(0, 30) + '...'}</div>
+                            <div class="status-badge ${badgeClass}">${chat.statusTexto}</div>
+                        `;
                     item.onclick = () => carregarChat(chat);
                     historyList.appendChild(item);
                 });
@@ -1140,20 +1312,58 @@
                 desbloquearChatParaIA();
             }
 
-            if (chat.status !== 1) {
-                setTimeout(() => {
-                    const feedbackDiv = document.querySelector(`#feedback-${chat.id}`);
-                    if (feedbackDiv) {
-                        const buttons = feedbackDiv.querySelectorAll('.btn-feedback');
-                        buttons.forEach(btn => {
-                            btn.disabled = true;
-                            if ((chat.status === 2 && btn.textContent.includes('útil')) ||
-                                (chat.status >= 3 && btn.textContent.includes('Não'))) {
-                                btn.classList.add('selected');
-                            }
-                        });
-                    }
-                }, 100);
+            // ✅ Controla exibição dos botões de avaliação baseado no status
+            const feedbackArea = document.getElementById('chatFeedbackArea');
+            if (chat.status === 1) {
+                // Chat em andamento - mostra botões de avaliação
+                feedbackArea.style.display = 'block';
+                feedbackArea.dataset.pergunta = chat.pergunta;
+                feedbackArea.dataset.resposta = chat.resposta;
+                feedbackArea.dataset.chatId = chat.id;
+
+                // Restaura os botões originais
+                feedbackArea.innerHTML = `
+                        <div class="feedback-card">
+                            <div class="feedback-header">
+                                <i class="bi bi-chat-heart"></i>
+                                <span>Esta conversa foi útil?</span>
+                            </div>
+                            <div class="feedback-buttons-chat">
+                                <button class="btn-feedback-chat btn-useful" onclick="avaliarChatCompleto(true)">
+                                    <i class="bi bi-hand-thumbs-up"></i>
+                                    <span>Sim, foi útil!</span>
+                                </button>
+                                <button class="btn-feedback-chat btn-not-useful" onclick="avaliarChatCompleto(false)">
+                                    <i class="bi bi-hand-thumbs-down"></i>
+                                    <span>Não ajudou</span>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+            } else if (chat.status === 2) {
+                // Concluído - mostra que foi avaliado positivamente
+                feedbackArea.style.display = 'block';
+                feedbackArea.innerHTML = `
+                        <div class="feedback-card">
+                            <div class="feedback-evaluated">
+                                <i class="bi bi-check-circle-fill"></i>
+                                <span>Você avaliou esta conversa como útil! 😊</span>
+                            </div>
+                        </div>
+                    `;
+            } else if (chat.status === 3 || chat.status === 4) {
+                // Pendente ou Resolvido pelo técnico
+                feedbackArea.style.display = 'block';
+                feedbackArea.innerHTML = `
+                        <div class="feedback-card">
+                            <div class="feedback-evaluated">
+                                <i class="bi bi-headset"></i>
+                                <span>${chat.status === 3 ? 'Aguardando resposta do técnico...' : 'Ticket resolvido pelo técnico!'}</span>
+                            </div>
+                        </div>
+                    `;
+            } else {
+                feedbackArea.style.display = 'none';
             }
 
             if (chat.idTicket) {
@@ -1228,6 +1438,9 @@
             document.getElementById('messageInput').value = '';
             document.getElementById('messageInput').focus();
             desbloquearChatParaIA();
+
+            // ✅ Esconde os botões de avaliação
+            document.getElementById('chatFeedbackArea').style.display = 'none';
 
             document.querySelectorAll('.history-item').forEach(item => {
                 item.classList.remove('active');
