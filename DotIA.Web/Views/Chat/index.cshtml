@@ -81,6 +81,71 @@
             -webkit-text-fill-color: transparent;
         }
 
+        /* ✅ NOVO: Botão de Refresh */
+        .refresh-button {
+            background: rgba(141, 75, 255, 0.1);
+            border: 2px solid var(--primary-purple);
+            border-radius: 12px;
+            padding: 10px;
+            color: var(--primary-purple);
+            font-weight: 600;
+            transition: all 0.3s;
+            margin: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .refresh-button:hover {
+            background: var(--primary-purple);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(141, 75, 255, 0.4);
+        }
+
+        .refresh-button:active {
+            transform: scale(0.95);
+        }
+
+        .refresh-button.spinning i {
+            animation: spin 1s linear infinite;
+        }
+
+        @@keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* ✅ NOVO: Indicador de sincronização ao vivo */
+        .live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 15px;
+            margin: 0 20px 10px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 10px;
+            font-size: 12px;
+            color: #10b981;
+            font-weight: 600;
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: pulse-live 2s ease-in-out infinite;
+        }
+
+        @@keyframes pulse-live {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.9); }
+        }
+
         .btn-new-chat {
             background: linear-gradient(135deg, var(--primary-purple), var(--secondary-purple));
             border: none;
@@ -92,10 +157,10 @@
             margin: 20px;
         }
 
-            .btn-new-chat:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 8px 20px rgba(141, 75, 255, 0.4);
-            }
+        .btn-new-chat:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(141, 75, 255, 0.4);
+        }
 
         .history-container {
             flex: 1;
@@ -103,19 +168,19 @@
             padding: 0 20px 20px;
         }
 
-            .history-container::-webkit-scrollbar {
-                width: 6px;
-            }
+        .history-container::-webkit-scrollbar {
+            width: 6px;
+        }
 
-            .history-container::-webkit-scrollbar-track {
-                background: var(--card-bg);
-                border-radius: 10px;
-            }
+        .history-container::-webkit-scrollbar-track {
+            background: var(--card-bg);
+            border-radius: 10px;
+        }
 
-            .history-container::-webkit-scrollbar-thumb {
-                background: var(--primary-purple);
-                border-radius: 10px;
-            }
+        .history-container::-webkit-scrollbar-thumb {
+            background: var(--primary-purple);
+            border-radius: 10px;
+        }
 
         .history-title {
             font-size: 12px;
@@ -139,20 +204,34 @@
             position: relative;
         }
 
-            .history-item:hover {
-                background: var(--border-color);
-                border-color: var(--primary-purple);
-                transform: translateX(5px);
-            }
+        .history-item:hover {
+            background: var(--border-color);
+            border-color: var(--primary-purple);
+            transform: translateX(5px);
+        }
 
-                .history-item:hover .history-actions {
-                    opacity: 1;
-                }
+        .history-item:hover .history-actions {
+            opacity: 1;
+        }
 
-            .history-item.active {
-                border-color: var(--secondary-purple);
-                background: var(--border-color);
-            }
+        .history-item.active {
+            border-color: var(--secondary-purple);
+            background: var(--border-color);
+        }
+
+        /* ✅ NOVO: Badge de atualização */
+        .history-item.new-update::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: pulse-live 2s ease-in-out infinite;
+        }
 
         .history-actions {
             position: absolute;
@@ -179,13 +258,13 @@
             transition: all 0.3s;
         }
 
-            .history-action-btn:hover {
-                background: rgba(255, 255, 255, 0.2);
-            }
+        .history-action-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
 
-            .history-action-btn.delete:hover {
-                background: #ef4444;
-            }
+        .history-action-btn.delete:hover {
+            background: #ef4444;
+        }
 
         .status-badge {
             display: inline-block;
@@ -245,6 +324,9 @@
             background: var(--dark-bg);
             border-bottom: 1px solid var(--border-color);
             padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .chat-title {
@@ -262,19 +344,19 @@
             padding: 30px;
         }
 
-            .messages-container::-webkit-scrollbar {
-                width: 8px;
-            }
+        .messages-container::-webkit-scrollbar {
+            width: 8px;
+        }
 
-            .messages-container::-webkit-scrollbar-track {
-                background: var(--card-bg);
-                border-radius: 10px;
-            }
+        .messages-container::-webkit-scrollbar-track {
+            background: var(--card-bg);
+            border-radius: 10px;
+        }
 
-            .messages-container::-webkit-scrollbar-thumb {
-                background: var(--primary-purple);
-                border-radius: 10px;
-            }
+        .messages-container::-webkit-scrollbar-thumb {
+            background: var(--primary-purple);
+            border-radius: 10px;
+        }
 
         .welcome-screen {
             display: flex;
@@ -291,7 +373,7 @@
             animation: float 3s ease-in-out infinite;
         }
 
-        @@keyframe float {
+        @@keyframes float {
             0%, 100% {
                 transform: translateY(0);
             }
@@ -316,7 +398,7 @@
             animation: slideIn 0.3s ease-out;
         }
 
-        @@keyframe slideIn {
+        @@keyframes slideIn {
             from {
                 opacity: 0;
                 transform: translateY(20px);
@@ -428,10 +510,10 @@
             color: var(--text-color);
         }
 
-            .feedback-header i {
-                font-size: 24px;
-                color: var(--primary-purple);
-            }
+        .feedback-header i {
+            font-size: 24px;
+            color: var(--primary-purple);
+        }
 
         .feedback-buttons-chat {
             display: flex;
@@ -457,47 +539,47 @@
             gap: 8px;
         }
 
-            .btn-feedback-chat i {
-                font-size: 28px;
-            }
+        .btn-feedback-chat i {
+            font-size: 28px;
+        }
 
-            .btn-feedback-chat.btn-useful:hover {
-                background: rgba(16, 185, 129, 0.2);
-                border-color: #10b981;
-                color: #10b981;
-                transform: translateY(-3px);
-                box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
-            }
+        .btn-feedback-chat.btn-useful:hover {
+            background: rgba(16, 185, 129, 0.2);
+            border-color: #10b981;
+            color: #10b981;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+        }
 
-            .btn-feedback-chat.btn-not-useful:hover {
-                background: rgba(239, 68, 68, 0.2);
-                border-color: #ef4444;
-                color: #ef4444;
-                transform: translateY(-3px);
-                box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
-            }
+        .btn-feedback-chat.btn-not-useful:hover {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: #ef4444;
+            color: #ef4444;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
+        }
 
-            .btn-feedback-chat:disabled {
-                opacity: 0.5;
-                cursor: not-allowed;
-                transform: none !important;
-            }
+        .btn-feedback-chat:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
 
-            .btn-feedback-chat.selected {
-                transform: scale(0.95);
-            }
+        .btn-feedback-chat.selected {
+            transform: scale(0.95);
+        }
 
-                .btn-feedback-chat.selected.btn-useful {
-                    background: rgba(16, 185, 129, 0.3);
-                    border-color: #10b981;
-                    color: #10b981;
-                }
+        .btn-feedback-chat.selected.btn-useful {
+            background: rgba(16, 185, 129, 0.3);
+            border-color: #10b981;
+            color: #10b981;
+        }
 
-                .btn-feedback-chat.selected.btn-not-useful {
-                    background: rgba(239, 68, 68, 0.3);
-                    border-color: #ef4444;
-                    color: #ef4444;
-                }
+        .btn-feedback-chat.selected.btn-not-useful {
+            background: rgba(239, 68, 68, 0.3);
+            border-color: #ef4444;
+            color: #ef4444;
+        }
 
         .feedback-evaluated {
             padding: 16px;
@@ -516,15 +598,15 @@
             display: none;
         }
 
-            .typing-indicator.active {
-                display: flex;
-                align-items: center;
-                gap: 12px;
-                padding: 16px 20px;
-                background: var(--card-bg);
-                border-radius: 18px;
-                width: fit-content;
-            }
+        .typing-indicator.active {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 20px;
+            background: var(--card-bg);
+            border-radius: 18px;
+            width: fit-content;
+        }
 
         .typing-dot {
             width: 8px;
@@ -534,15 +616,15 @@
             animation: typing 1.4s infinite;
         }
 
-            .typing-dot:nth-child(2) {
-                animation-delay: 0.2s;
-            }
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
 
-            .typing-dot:nth-child(3) {
-                animation-delay: 0.4s;
-            }
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
 
-        @@keyframe typing {
+        @@keyframes typing {
             0%, 60%, 100% {
                 transform: translateY(0);
                 opacity: 0.7;
@@ -581,15 +663,15 @@
             gap: 15px;
         }
 
-            .input-wrapper:focus-within {
-                border-color: var(--secondary-purple);
-                box-shadow: 0 0 0 3px rgba(141, 75, 255, 0.1);
-            }
+        .input-wrapper:focus-within {
+            border-color: var(--secondary-purple);
+            box-shadow: 0 0 0 3px rgba(141, 75, 255, 0.1);
+        }
 
-            .input-wrapper.disabled {
-                opacity: 0.5;
-                pointer-events: none;
-            }
+        .input-wrapper.disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
 
         .input-icon {
             width: 50px;
@@ -616,9 +698,9 @@
             overflow-y: auto;
         }
 
-            #messageInput::placeholder {
-                color: #9ca3af;
-            }
+        #messageInput::placeholder {
+            color: #9ca3af;
+        }
 
         .btn-send {
             background: linear-gradient(135deg, var(--primary-purple), var(--secondary-purple));
@@ -632,15 +714,15 @@
             flex-shrink: 0;
         }
 
-            .btn-send:hover:not(:disabled) {
-                transform: translateY(-2px);
-                box-shadow: 0 8px 20px rgba(141, 75, 255, 0.4);
-            }
+        .btn-send:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(141, 75, 255, 0.4);
+        }
 
-            .btn-send:disabled {
-                opacity: 0.5;
-                cursor: not-allowed;
-            }
+        .btn-send:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
 
         /* Modal para editar nome */
         .modal-content {
@@ -663,12 +745,12 @@
             color: var(--text-color);
         }
 
-            .form-control:focus {
-                background: var(--darker-bg);
-                border-color: var(--primary-purple);
-                color: var(--text-color);
-                box-shadow: 0 0 0 3px rgba(141, 75, 255, 0.1);
-            }
+        .form-control:focus {
+            background: var(--darker-bg);
+            border-color: var(--primary-purple);
+            color: var(--text-color);
+            box-shadow: 0 0 0 3px rgba(141, 75, 255, 0.1);
+        }
 
         @@media (max-width: 768px) {
             .chat-container {
@@ -690,6 +772,18 @@
                     <div class="logo-icon">🤖</div>
                     <div class="logo-text">DotIA</div>
                 </div>
+            </div>
+
+            <!-- ✅ NOVO: Botão de Refresh -->
+            <button class="refresh-button" onclick="atualizarHistorico()" id="refreshBtn">
+                <i class="bi bi-arrow-clockwise"></i>
+                <span>Atualizar</span>
+            </button>
+
+            <!-- ✅ NOVO: Indicador ao vivo -->
+            <div class="live-indicator" id="liveIndicator">
+                <div class="live-dot"></div>
+                <span>Sincronizando automaticamente</span>
             </div>
 
             <button class="btn-new-chat" onclick="novoChat()">
@@ -720,6 +814,10 @@
                     <span>💬</span>
                     <span id="chatTitle">DotIA - Assistente Inteligente</span>
                 </div>
+                <!-- ✅ NOVO: Botão de refresh no header também -->
+                <button class="btn btn-sm btn-outline-light" onclick="atualizarHistorico()" title="Atualizar">
+                    <i class="bi bi-arrow-clockwise"></i>
+                </button>
             </div>
 
             <div class="messages-container" id="messagesContainer">
@@ -808,10 +906,80 @@
         let pollingInterval = null;
         let chatEditandoId = null;
         let mensagensProcessadas = [];
+        let historicoAnterior = [];
+        let autoRefreshInterval = null;
 
         window.addEventListener('load', () => {
             carregarHistorico();
+            iniciarAutoRefresh();
         });
+
+        // ✅ NOVO: Auto-refresh a cada 5 segundos
+        function iniciarAutoRefresh() {
+            autoRefreshInterval = setInterval(() => {
+                atualizarHistoricoSilencioso();
+            }, 5000); // Atualiza a cada 5 segundos
+        }
+
+        // ✅ NOVO: Atualização manual (com feedback visual)
+        async function atualizarHistorico() {
+            const refreshBtn = document.getElementById('refreshBtn');
+            refreshBtn.classList.add('spinning');
+
+            await carregarHistorico();
+
+            setTimeout(() => {
+                refreshBtn.classList.remove('spinning');
+                mostrarNotificacao('✅ Atualizado!', 'success');
+            }, 500);
+        }
+
+        // ✅ NOVO: Atualização silenciosa em background
+        async function atualizarHistoricoSilencioso() {
+            try {
+                const response = await fetch('/Chat/ObterHistorico');
+                const historicoNovo = await response.json();
+
+                // Verifica se há mudanças
+                if (JSON.stringify(historicoNovo) !== JSON.stringify(historicoAnterior)) {
+                    console.log('📥 Novos dados detectados, atualizando...');
+
+                    // Identifica novos itens ou atualizações
+                    const novosOuAtualizados = historicoNovo.filter(novoItem => {
+                        const itemAntigo = historicoAnterior.find(h => h.id === novoItem.id);
+                        return !itemAntigo || JSON.stringify(itemAntigo) !== JSON.stringify(novoItem);
+                    });
+
+                    if (novosOuAtualizados.length > 0) {
+                        await carregarHistorico();
+
+                        // Destaca itens novos/atualizados por 3 segundos
+                        novosOuAtualizados.forEach(item => {
+                            const elemento = document.querySelector(`[data-chat-id="${item.id}"]`);
+                            if (elemento) {
+                                elemento.classList.add('new-update');
+                                setTimeout(() => {
+                                    elemento.classList.remove('new-update');
+                                }, 3000);
+                            }
+                        });
+
+                        // Se o chat atual foi atualizado, recarrega
+                        if (chatAtualId && novosOuAtualizados.some(item => item.id === chatAtualId)) {
+                            console.log('🔄 Chat atual foi atualizado, recarregando...');
+                            const chatAtual = historicoNovo.find(h => h.id === chatAtualId);
+                            if (chatAtual) {
+                                await carregarChat(chatAtual);
+                            }
+                        }
+                    }
+
+                    historicoAnterior = historicoNovo;
+                }
+            } catch (error) {
+                console.error('Erro na atualização silenciosa:', error);
+            }
+        }
 
         function autoResize(textarea) {
             textarea.style.height = 'auto';
@@ -833,7 +1001,6 @@
 
             document.getElementById('welcomeScreen').style.display = 'none';
 
-            // ✅ SE ESTÁ EM UM CHAT ESPECÍFICO, verifica o status DESSE chat
             if (chatAtualId) {
                 try {
                     const response = await fetch(`/Chat/verificar-resposta/${chatAtualId}`);
@@ -844,7 +1011,6 @@
                 }
             }
 
-            // ✅ SE O CHAT ATUAL está pendente (status 3), envia para técnico
             if (chatAtualStatus === 3 && chatAtualId) {
                 console.log('📤 Enviando mensagem para técnico (chat pendente)');
 
@@ -882,7 +1048,6 @@
                 return;
             }
 
-            // ✅ FLUXO NORMAL: Criar novo chat OU continuar chat em andamento
             console.log('🤖 Enviando mensagem para IA');
 
             adicionarMensagem(mensagem, 'user');
@@ -907,10 +1072,9 @@
 
                 if (data.sucesso) {
                     chatAtualId = data.chatId;
-                    chatAtualStatus = 1; // Em andamento
+                    chatAtualStatus = 1;
                     adicionarMensagem(data.resposta, 'bot', mensagem, data.chatId);
 
-                    // ✅ MOSTRA OS BOTÕES DE AVALIAÇÃO
                     mostrarBotoesAvaliacao(mensagem, data.resposta, data.chatId);
 
                     await carregarHistorico();
@@ -967,23 +1131,19 @@
             return div.innerHTML.replace(/'/g, "\\'");
         }
 
-        // ✅ NOVA FUNÇÃO: Mostra botões de avaliação
         function mostrarBotoesAvaliacao(pergunta, resposta, chatId) {
             const feedbackArea = document.getElementById('chatFeedbackArea');
             feedbackArea.style.display = 'block';
 
-            // Armazena dados para avaliação
             feedbackArea.dataset.pergunta = pergunta;
             feedbackArea.dataset.resposta = resposta;
             feedbackArea.dataset.chatId = chatId;
 
-            // Scroll para mostrar os botões
             setTimeout(() => {
                 feedbackArea.scrollIntoView({ behavior: 'smooth', block: 'end' });
             }, 300);
         }
 
-        // ✅ NOVA FUNÇÃO: Avalia o chat completo
         async function avaliarChatCompleto(foiUtil) {
             const feedbackArea = document.getElementById('chatFeedbackArea');
             const pergunta = feedbackArea.dataset.pergunta;
@@ -1012,14 +1172,12 @@
 
                 if (data.sucesso) {
                     if (!foiUtil) {
-                        // ✅ Atualiza o status deste chat específico
                         if (chatAtualId === chatId) {
                             chatAtualStatus = 3;
                             bloquearChatParaIA();
                             iniciarPolling(chatId);
                         }
 
-                        // Substitui os botões por mensagem de sucesso
                         feedbackArea.innerHTML = `
                                 <div class="feedback-card">
                                     <div class="feedback-evaluated">
@@ -1038,7 +1196,6 @@
                             chatAtualStatus = 2;
                         }
 
-                        // Substitui os botões por mensagem de agradecimento
                         feedbackArea.innerHTML = `
                                 <div class="feedback-card">
                                     <div class="feedback-evaluated">
@@ -1089,12 +1246,10 @@
                     if (data.temResposta && data.solucao) {
                         processarNovasMensagens(data.solucao);
 
-                        // Se o ticket foi fechado pelo técnico
                         if (data.statusTicket === 2) {
                             clearInterval(pollingInterval);
                             pollingInterval = null;
 
-                            // Só desbloqueia se for o chat atual
                             if (chatAtualId === chatId) {
                                 desbloquearChatParaIA();
                                 chatAtualStatus = 4;
@@ -1169,6 +1324,7 @@
             try {
                 const response = await fetch('/Chat/ObterHistorico');
                 const historico = await response.json();
+                historicoAnterior = historico;
 
                 const historyList = document.getElementById('historyList');
                 historyList.innerHTML = '';
@@ -1185,8 +1341,8 @@
                 historico.forEach(chat => {
                     const item = document.createElement('div');
                     item.className = 'history-item';
+                    item.dataset.chatId = chat.id;
 
-                    // Destaca chat atual
                     if (chat.id === chatAtualId) {
                         item.classList.add('active');
                     }
@@ -1304,7 +1460,6 @@
             adicionarMensagem(chat.pergunta, 'user');
             adicionarMensagem(chat.resposta, 'bot', chat.pergunta, chat.id);
 
-            // ✅ Mostra aviso apenas se ESTE chat específico está com técnico
             if (chat.status === 3) {
                 bloquearChatParaIA();
                 console.log('🔒 Chat bloqueado para IA - modo técnico ativo');
@@ -1312,16 +1467,13 @@
                 desbloquearChatParaIA();
             }
 
-            // ✅ Controla exibição dos botões de avaliação baseado no status
             const feedbackArea = document.getElementById('chatFeedbackArea');
             if (chat.status === 1) {
-                // Chat em andamento - mostra botões de avaliação
                 feedbackArea.style.display = 'block';
                 feedbackArea.dataset.pergunta = chat.pergunta;
                 feedbackArea.dataset.resposta = chat.resposta;
                 feedbackArea.dataset.chatId = chat.id;
 
-                // Restaura os botões originais
                 feedbackArea.innerHTML = `
                         <div class="feedback-card">
                             <div class="feedback-header">
@@ -1341,7 +1493,6 @@
                         </div>
                     `;
             } else if (chat.status === 2) {
-                // Concluído - mostra que foi avaliado positivamente
                 feedbackArea.style.display = 'block';
                 feedbackArea.innerHTML = `
                         <div class="feedback-card">
@@ -1352,7 +1503,6 @@
                         </div>
                     `;
             } else if (chat.status === 3 || chat.status === 4) {
-                // Pendente ou Resolvido pelo técnico
                 feedbackArea.style.display = 'block';
                 feedbackArea.innerHTML = `
                         <div class="feedback-card">
@@ -1399,7 +1549,6 @@
                             }
                         });
 
-                        // Se ainda está pendente, continua polling
                         if (data.statusTicket === 1 && chat.status === 3) {
                             iniciarPolling(chat.id);
                         }
@@ -1420,18 +1569,15 @@
         }
 
         function novoChat() {
-            // ✅ Para o polling apenas se houver um ativo
             if (pollingInterval) {
                 clearInterval(pollingInterval);
                 pollingInterval = null;
             }
 
-            // ✅ Reseta as variáveis do chat atual
             chatAtualId = null;
             chatAtualStatus = null;
             mensagensProcessadas = [];
 
-            // ✅ Limpa a tela
             document.getElementById('messagesList').innerHTML = '';
             document.getElementById('welcomeScreen').style.display = 'flex';
             document.getElementById('chatTitle').textContent = 'DotIA - Assistente Inteligente';
@@ -1439,7 +1585,6 @@
             document.getElementById('messageInput').focus();
             desbloquearChatParaIA();
 
-            // ✅ Esconde os botões de avaliação
             document.getElementById('chatFeedbackArea').style.display = 'none';
 
             document.querySelectorAll('.history-item').forEach(item => {
@@ -1452,6 +1597,9 @@
         window.addEventListener('beforeunload', () => {
             if (pollingInterval) {
                 clearInterval(pollingInterval);
+            }
+            if (autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
             }
         });
     </script>

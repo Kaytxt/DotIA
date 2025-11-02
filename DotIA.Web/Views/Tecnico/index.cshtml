@@ -76,6 +76,71 @@
             -webkit-text-fill-color: transparent;
         }
 
+        /* ✅ NOVO: Botão de Refresh */
+        .refresh-button {
+            background: rgba(16, 185, 129, 0.1);
+            border: 2px solid var(--primary-green);
+            border-radius: 12px;
+            padding: 10px;
+            color: var(--primary-green);
+            font-weight: 600;
+            transition: all 0.3s;
+            margin: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .refresh-button:hover {
+            background: var(--primary-green);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .refresh-button:active {
+            transform: scale(0.95);
+        }
+
+        .refresh-button.spinning i {
+            animation: spin 1s linear infinite;
+        }
+
+        @@keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* ✅ NOVO: Indicador de sincronização ao vivo */
+        .live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 15px;
+            margin: 0 20px 10px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 10px;
+            font-size: 12px;
+            color: #10b981;
+            font-weight: 600;
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: pulse-live 2s ease-in-out infinite;
+        }
+
+        @@keyframes pulse-live {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.9); }
+        }
+
         .stats-card {
             background: linear-gradient(135deg, var(--card-bg), var(--darker-bg));
             border: 1px solid var(--border-color);
@@ -125,6 +190,7 @@
             margin-bottom: 12px;
             cursor: pointer;
             transition: all 0.3s;
+            position: relative;
         }
 
         .ticket-card:hover {
@@ -135,6 +201,20 @@
         .ticket-card.active {
             border-color: var(--primary-green);
             background: linear-gradient(135deg, var(--card-bg), #1e3a32);
+        }
+
+        /* ✅ NOVO: Badge de atualização */
+        .ticket-card.new-update::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 8px;
+            height: 8px;
+            background: #fbbf24;
+            border-radius: 50%;
+            animation: pulse-live 2s ease-in-out infinite;
         }
 
         .badge-warning {
@@ -154,6 +234,9 @@
             background: var(--dark-bg);
             border-bottom: 1px solid var(--border-color);
             padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .ticket-avatar {
@@ -427,6 +510,18 @@
                 </div>
             </div>
 
+            <!-- ✅ NOVO: Botão de Refresh -->
+            <button class="refresh-button" onclick="atualizarTickets()" id="refreshBtn">
+                <i class="bi bi-arrow-clockwise"></i>
+                <span>Atualizar</span>
+            </button>
+
+            <!-- ✅ NOVO: Indicador ao vivo -->
+            <div class="live-indicator" id="liveIndicator">
+                <div class="live-dot"></div>
+                <span>Sincronizando automaticamente</span>
+            </div>
+
             <div class="stats-card">
                 <div class="stat-item">
                     <span class="text-muted">Tickets Pendentes</span>
@@ -463,6 +558,10 @@
                         </div>
                     </div>
                 </div>
+                <!-- ✅ NOVO: Botão de refresh no header também -->
+                <button class="btn btn-sm btn-outline-light" onclick="atualizarTickets()" title="Atualizar">
+                    <i class="bi bi-arrow-clockwise"></i>
+                </button>
             </div>
 
             <div class="conversation-area" id="conversationArea">
@@ -519,17 +618,89 @@
     <script>
         let ticketSelecionado = null;
         let tickets = [];
+        let ticketsAnterior = [];
         let conversationMessages = [];
         let pollingTecnicoInterval = null;
+        let autoRefreshInterval = null;
 
         window.addEventListener('load', () => {
             carregarTickets();
+            iniciarAutoRefresh();
         });
 
-        // ✅ Para o polling quando sair da página
+        // ✅ NOVO: Auto-refresh a cada 5 segundos
+        function iniciarAutoRefresh() {
+            autoRefreshInterval = setInterval(() => {
+                atualizarTicketsSilencioso();
+            }, 5000); // Atualiza a cada 5 segundos
+        }
+
+        // ✅ NOVO: Atualização manual (com feedback visual)
+        async function atualizarTickets() {
+            const refreshBtn = document.getElementById('refreshBtn');
+            refreshBtn.classList.add('spinning');
+
+            await carregarTickets();
+
+            setTimeout(() => {
+                refreshBtn.classList.remove('spinning');
+                mostrarNotificacao('✅ Atualizado!', 'success');
+            }, 500);
+        }
+
+        // ✅ NOVO: Atualização silenciosa em background
+        async function atualizarTicketsSilencioso() {
+            try {
+                const response = await fetch('/Tecnico/ObterTickets');
+                const ticketsNovo = await response.json();
+
+                // Verifica se há mudanças
+                if (JSON.stringify(ticketsNovo) !== JSON.stringify(ticketsAnterior)) {
+                    console.log('📥 Novos tickets ou atualizações detectadas!');
+
+                    // Identifica novos itens ou atualizações
+                    const novosOuAtualizados = ticketsNovo.filter(novoItem => {
+                        const itemAntigo = ticketsAnterior.find(t => t.id === novoItem.id);
+                        return !itemAntigo || JSON.stringify(itemAntigo) !== JSON.stringify(novoItem);
+                    });
+
+                    if (novosOuAtualizados.length > 0) {
+                        await carregarTickets();
+
+                        // Destaca itens novos/atualizados por 3 segundos
+                        novosOuAtualizados.forEach(item => {
+                            const elemento = document.querySelector(`[data-ticket-id="${item.id}"]`);
+                            if (elemento) {
+                                elemento.classList.add('new-update');
+                                setTimeout(() => {
+                                    elemento.classList.remove('new-update');
+                                }, 3000);
+                            }
+                        });
+
+                        // Se o ticket atual foi atualizado, recarrega
+                        if (ticketSelecionado && novosOuAtualizados.some(item => item.id === ticketSelecionado.id)) {
+                            console.log('🔄 Ticket atual foi atualizado, recarregando...');
+                            const ticketAtual = ticketsNovo.find(t => t.id === ticketSelecionado.id);
+                            if (ticketAtual) {
+                                await selecionarTicket(ticketAtual, true);
+                            }
+                        }
+                    }
+
+                    ticketsAnterior = ticketsNovo;
+                }
+            } catch (error) {
+                console.error('Erro na atualização silenciosa:', error);
+            }
+        }
+
         window.addEventListener('beforeunload', () => {
             if (pollingTecnicoInterval) {
                 clearInterval(pollingTecnicoInterval);
+            }
+            if (autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
             }
         });
 
@@ -544,6 +715,7 @@
             try {
                 const response = await fetch('/Tecnico/ObterTickets');
                 tickets = await response.json();
+                ticketsAnterior = tickets;
 
                 const ticketsList = document.getElementById('ticketsList');
                 ticketsList.innerHTML = '';
@@ -566,7 +738,13 @@
 
                     const ticketDiv = document.createElement('div');
                     ticketDiv.className = 'ticket-card';
+                    ticketDiv.dataset.ticketId = ticket.id;
                     ticketDiv.onclick = () => selecionarTicket(ticket);
+
+                    if (ticketSelecionado && ticketSelecionado.id === ticket.id) {
+                        ticketDiv.classList.add('active');
+                    }
+
                     ticketDiv.innerHTML = `
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <span class="fw-bold" style="color: var(--primary-green);">Ticket #${ticket.id}</span>
@@ -588,14 +766,16 @@
             }
         }
 
-        function selecionarTicket(ticket) {
+        async function selecionarTicket(ticket, isAutoRefresh = false) {
             ticketSelecionado = ticket;
             conversationMessages = [];
 
-            document.querySelectorAll('.ticket-card').forEach(item => {
-                item.classList.remove('active');
-            });
-            event.currentTarget.classList.add('active');
+            if (!isAutoRefresh) {
+                document.querySelectorAll('.ticket-card').forEach(item => {
+                    item.classList.remove('active');
+                });
+                event.currentTarget.classList.add('active');
+            }
 
             document.getElementById('ticketHeader').style.display = 'block';
             document.getElementById('headerTitle').textContent = `Ticket #${ticket.id}`;
@@ -604,27 +784,21 @@
             const conversationArea = document.getElementById('conversationArea');
             conversationArea.innerHTML = '';
 
-            // Adiciona pergunta do usuário
             adicionarMensagemAoChat('user', ticket.perguntaOriginal, ticket.nomeSolicitante);
-
-            // Adiciona resposta da IA
             adicionarMensagemAoChat('bot', ticket.respostaIA || 'A resposta automática não foi suficiente para resolver o problema do usuário.', 'DotIA');
 
-            // Se já tem solução anterior, processa e mostra cada mensagem (técnico E usuário)
             if (ticket.solucao) {
                 const mensagens = ticket.solucao.split('\n\n');
                 mensagens.forEach(mensagem => {
                     if (mensagem.trim()) {
                         let mensagemLimpa = mensagem.trim();
 
-                        // Verifica se é mensagem do usuário ou técnico
                         const usuarioRegex = /^\[USUÁRIO\s*-\s*\d{2}\/\d{2}\/\d{4}\s\d{2}:\d{2}\]\s*/;
                         const tecnicoRegex = /^\[TÉCNICO\s*-\s*\d{2}\/\d{2}\/\d{4}\s\d{2}:\d{2}\]\s*/;
 
                         const isUsuario = usuarioRegex.test(mensagemLimpa);
                         const isTecnico = tecnicoRegex.test(mensagemLimpa);
 
-                        // Remove timestamp
                         const timestampRegex = /^\[\w+\s*-\s*\d{2}\/\d{2}\/\d{4}\s\d{2}:\d{2}\]\s*/;
                         mensagemLimpa = mensagemLimpa.replace(timestampRegex, '');
 
@@ -634,7 +808,6 @@
                             } else if (isTecnico) {
                                 adicionarMensagemAoChat('tech', mensagemLimpa, 'Você (Técnico)');
                             } else {
-                                // Fallback: assume técnico
                                 adicionarMensagemAoChat('tech', mensagemLimpa, 'Você (Técnico)');
                             }
                         }
@@ -646,7 +819,6 @@
             document.getElementById('solutionInput').value = '';
             document.getElementById('successMessage').style.display = 'none';
 
-            // ✅ Inicia polling para receber novas mensagens do usuário
             iniciarPollingTecnico(ticket.id);
         }
 
@@ -676,7 +848,6 @@
 
             conversationArea.appendChild(messageDiv);
 
-            // Scroll suave para a última mensagem
             setTimeout(() => {
                 messageDiv.scrollIntoView({ behavior: 'smooth', block: 'end' });
             }, 100);
@@ -689,13 +860,11 @@
 
             const solucao = document.getElementById('solutionInput').value.trim();
 
-            // Se for resolver e fechar, não precisa de mensagem, mas pede confirmação
             if (marcarComoResolvido) {
                 if (!confirm('Tem certeza que deseja fechar este ticket? O cliente será notificado.')) {
                     return;
                 }
             } else {
-                // Se for apenas enviar mensagem, precisa de texto
                 if (!solucao) {
                     alert('Por favor, escreva uma mensagem para o cliente.');
                     return;
@@ -707,7 +876,6 @@
             respondBtn.disabled = true;
             resolveBtn.disabled = true;
 
-            // Mostra indicador de digitação apenas se tiver mensagem
             const conversationArea = document.getElementById('conversationArea');
             let typingDiv = null;
 
@@ -723,7 +891,6 @@
                     `;
                 conversationArea.appendChild(typingDiv);
 
-                // Scroll para o indicador
                 setTimeout(() => {
                     typingDiv.scrollIntoView({ behavior: 'smooth', block: 'end' });
                 }, 100);
@@ -742,14 +909,12 @@
 
                 const data = await response.json();
 
-                // Remove indicador de digitação
                 if (typingDiv) {
                     const tempTyping = document.getElementById('typing-temp');
                     if (tempTyping) tempTyping.remove();
                 }
 
                 if (data.sucesso) {
-                    // Adiciona mensagem do técnico ao chat apenas se houver texto (sem timestamp local)
                     if (solucao) {
                         adicionarMensagemAoChat('tech', solucao, 'Você (Técnico)');
                     }
@@ -760,7 +925,6 @@
                     successText.textContent = data.mensagem;
                     successMessage.style.display = 'block';
 
-                    // Limpa formulário
                     document.getElementById('solutionInput').value = '';
 
                     setTimeout(() => {
@@ -834,17 +998,13 @@
             setTimeout(() => notif.remove(), 5000);
         }
 
-        // ✅ NOVO: Polling para técnico receber mensagens do usuário
         function iniciarPollingTecnico(ticketId) {
-            // Limpa polling anterior se existir
             if (pollingTecnicoInterval) {
                 clearInterval(pollingTecnicoInterval);
             }
 
-            // Armazena hash das mensagens para detectar mudanças
             let ultimoHash = '';
 
-            // Verifica a cada 3 segundos (mais rápido que o do cliente)
             pollingTecnicoInterval = setInterval(async () => {
                 try {
                     const response = await fetch(`/Tecnico/ObterTicket/${ticketId}`);
@@ -853,19 +1013,15 @@
                     if (data && data.ticket && data.ticket.solucao) {
                         const hashAtual = data.ticket.solucao.length + '_' + data.ticket.solucao.substring(0, 50);
 
-                        // Se mudou, atualiza a conversa
                         if (hashAtual !== ultimoHash) {
                             ultimoHash = hashAtual;
 
-                            // Recarrega a conversa
                             const conversationArea = document.getElementById('conversationArea');
                             conversationArea.innerHTML = '';
 
-                            // Adiciona pergunta original
                             adicionarMensagemAoChat('user', ticketSelecionado.perguntaOriginal, ticketSelecionado.nomeSolicitante);
                             adicionarMensagemAoChat('bot', ticketSelecionado.respostaIA || 'A resposta automática não foi suficiente.', 'DotIA');
 
-                            // Processa todas as mensagens
                             const mensagens = data.ticket.solucao.split('\n\n');
                             mensagens.forEach(mensagem => {
                                 if (mensagem.trim()) {
@@ -896,7 +1052,6 @@
                         }
                     }
 
-                    // Se o ticket foi fechado, para o polling
                     if (data && data.ticket && data.ticket.idStatus === 2) {
                         clearInterval(pollingTecnicoInterval);
                         pollingTecnicoInterval = null;
@@ -904,7 +1059,7 @@
                 } catch (error) {
                     console.error('Erro no polling do técnico:', error);
                 }
-            }, 3000); // Verifica a cada 3 segundos
+            }, 3000);
         }
     </script>
 </body>
