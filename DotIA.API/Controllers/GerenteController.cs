@@ -490,6 +490,73 @@ namespace DotIA.API.Controllers
                 return StatusCode(500, new { erro = $"Erro ao gerar relatório: {ex.Message}" });
             }
         }
+
+        [HttpPut("usuarios/{usuarioId}/cargo")]
+        public async Task<ActionResult> AlterarCargoUsuario(int usuarioId, [FromBody] AlterarCargoRequest request)
+        {
+            try
+            {
+                var solicitante = await _context.Solicitantes.FindAsync(usuarioId);
+
+                if (solicitante == null)
+                {
+                    return NotFound(new { erro = "Usuário não encontrado" });
+                }
+
+                // Verifica se já existe como técnico
+                var tecnicoExistente = await _context.Tecnicos
+                    .FirstOrDefaultAsync(t => t.Email == solicitante.Email);
+
+                if (request.Cargo == "Solicitante")
+                {
+                    // Remove da tabela de técnicos se existir
+                    if (tecnicoExistente != null)
+                    {
+                        _context.Tecnicos.Remove(tecnicoExistente);
+                    }
+                }
+                else if (request.Cargo == "Tecnico" || request.Cargo == "Gerente")
+                {
+                    bool isGerente = request.Cargo == "Gerente";
+
+                    if (tecnicoExistente != null)
+                    {
+                        // Atualiza cargo existente
+                        tecnicoExistente.IsGerente = isGerente;
+                    }
+                    else
+                    {
+                        // Cria novo técnico/gerente
+                        var novoTecnico = new Tecnico
+                        {
+                            Nome = solicitante.Nome,
+                            Email = solicitante.Email,
+                            Senha = solicitante.Senha,
+                            IdEspecialidade = 1, // Valor padrão
+                            IsGerente = isGerente
+                        };
+                        _context.Tecnicos.Add(novoTecnico);
+                    }
+                }
+                else
+                {
+                    return BadRequest(new { erro = "Cargo inválido. Use: Solicitante, Tecnico ou Gerente" });
+                }
+
+                await _context.SaveChangesAsync();
+
+                return Ok(new
+                {
+                    sucesso = true,
+                    mensagem = $"Cargo alterado para {request.Cargo} com sucesso!"
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { erro = $"Erro ao alterar cargo: {ex.Message}" });
+            }
+        }
+
     }
 
     // ═══════════════════════════════════════════════════════════
@@ -513,5 +580,10 @@ namespace DotIA.API.Controllers
     public class AlterarSenhaRequest
     {
         public string NovaSenha { get; set; } = string.Empty;
+    }
+
+    public class AlterarCargoRequest
+    {
+        public string Cargo { get; set; } = string.Empty; // Solicitante, Tecnico, Gerente
     }
 }

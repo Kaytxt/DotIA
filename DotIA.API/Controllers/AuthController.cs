@@ -23,23 +23,7 @@ namespace DotIA.API.Controllers
         {
             try
             {
-                // ── 1) Login como Solicitante
-                var solicitante = await _context.Solicitantes
-                    .FirstOrDefaultAsync(s => s.Email == request.Email && s.Senha == request.Senha);
-
-                if (solicitante != null)
-                {
-                    return Ok(new LoginResponse
-                    {
-                        Sucesso = true,
-                        TipoUsuario = "Solicitante",
-                        UsuarioId = solicitante.Id,
-                        Nome = solicitante.Nome,
-                        Mensagem = "Login realizado com sucesso!"
-                    });
-                }
-
-                // ── 2) Login como Técnico / Gerente
+                // ── 1) PRIMEIRO: Verifica se é Técnico ou Gerente
                 var tecnico = await _context.Tecnicos
                     .FirstOrDefaultAsync(t => t.Email == request.Email && t.Senha == request.Senha);
 
@@ -57,7 +41,23 @@ namespace DotIA.API.Controllers
                     });
                 }
 
-                // ── 3) Falha
+                // ── 2) SE NÃO FOR TÉCNICO/GERENTE: Verifica se é Solicitante
+                var solicitante = await _context.Solicitantes
+                    .FirstOrDefaultAsync(s => s.Email == request.Email && s.Senha == request.Senha);
+
+                if (solicitante != null)
+                {
+                    return Ok(new LoginResponse
+                    {
+                        Sucesso = true,
+                        TipoUsuario = "Solicitante",
+                        UsuarioId = solicitante.Id,
+                        Nome = solicitante.Nome,
+                        Mensagem = "Login realizado com sucesso!"
+                    });
+                }
+
+                // ── 3) Falha - Email ou senha incorretos
                 return Ok(new LoginResponse
                 {
                     Sucesso = false,

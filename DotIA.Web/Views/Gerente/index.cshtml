@@ -837,16 +837,16 @@
 
                 if (tickets.length === 0) {
                     tbody.innerHTML = `
-                            <tr>
-                                <td colspan="7">
-                                    <div class="empty-state">
-                                        <i class="bi bi-ticket-detailed"></i>
-                                        <h4>Nenhum ticket encontrado</h4>
-                                        <p>Quando houver tickets, eles aparecerão aqui</p>
-                                    </div>
-                                </td>
-                            </tr>
-                        `;
+                                <tr>
+                                    <td colspan="7">
+                                        <div class="empty-state">
+                                            <i class="bi bi-ticket-detailed"></i>
+                                            <h4>Nenhum ticket encontrado</h4>
+                                            <p>Quando houver tickets, eles aparecerão aqui</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            `;
                     return;
                 }
 
@@ -857,29 +857,29 @@
 
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
-                            <td><strong>#${ticket.id}</strong></td>
-                            <td>${ticket.nomeSolicitante}</td>
-                            <td><span class="badge badge-primary">${ticket.departamento}</span></td>
-                            <td style="max-width: 300px;">
-                                <div class="text-truncate">${ticket.descricaoProblema}</div>
-                            </td>
-                            <td><span class="badge badge-${statusClass}">${ticket.status}</span></td>
-                            <td>${dataAbertura}</td>
-                            <td class="text-center">
-                                ${ticket.idStatus === 1 ? `
-                                    <button class="btn-action btn-success" onclick="abrirModalResponder(${ticket.id})" title="Responder">
-                                        <i class="bi bi-reply"></i>
-                                    </button>
-                                ` : '<span class="text-muted">Resolvido</span>'}
-                            </td>
-                        `;
+                                <td><strong>#${ticket.id}</strong></td>
+                                <td>${ticket.nomeSolicitante}</td>
+                                <td><span class="badge badge-primary">${ticket.departamento}</span></td>
+                                <td style="max-width: 300px;">
+                                    <div class="text-truncate">${ticket.descricaoProblema}</div>
+                                </td>
+                                <td><span class="badge badge-${statusClass}">${ticket.status}</span></td>
+                                <td>${dataAbertura}</td>
+                                <td class="text-center">
+                                    ${ticket.idStatus === 1 ? `
+                                        <button class="btn-action btn-success" onclick="abrirModalResponder(${ticket.id})" title="Responder">
+                                            <i class="bi bi-reply"></i>
+                                        </button>
+                                    ` : '<span class="text-muted">Resolvido</span>'}
+                                </td>
+                            `;
                     tbody.appendChild(tr);
                 });
             } catch (error) {
                 console.error('Erro ao carregar tickets:', error);
                 document.getElementById('ticketsTableBody').innerHTML = `
-                        <tr><td colspan="7" class="text-center text-danger">Erro ao carregar tickets</td></tr>
-                    `;
+                            <tr><td colspan="7" class="text-center text-danger">Erro ao carregar tickets</td></tr>
+                        `;
             }
         }
 
@@ -960,15 +960,15 @@
 
                 if (usuarios.length === 0) {
                     tbody.innerHTML = `
-                            <tr>
-                                <td colspan="7">
-                                    <div class="empty-state">
-                                        <i class="bi bi-people"></i>
-                                        <h4>Nenhum usuário cadastrado</h4>
-                                    </div>
-                                </td>
-                            </tr>
-                        `;
+                                <tr>
+                                    <td colspan="7">
+                                        <div class="empty-state">
+                                            <i class="bi bi-people"></i>
+                                            <h4>Nenhum usuário cadastrado</h4>
+                                        </div>
+                                    </td>
+                                </tr>
+                            `;
                     return;
                 }
 
@@ -976,34 +976,37 @@
                 usuarios.forEach(usuario => {
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
-                            <td><strong>${usuario.nome}</strong></td>
-                            <td>${usuario.email}</td>
-                            <td><span class="badge badge-primary">${usuario.departamento}</span></td>
-                            <td><span class="badge badge-success">${usuario.totalTickets}</span></td>
-                            <td><span class="badge badge-warning">${usuario.ticketsAbertos}</span></td>
-                            <td><span class="badge badge-purple">${usuario.totalChats}</span></td>
-                            <td class="text-center">
-                                <button class="btn-action me-1" onclick="editarUsuario(${usuario.id})" title="Editar">
-                                    <i class="bi bi-pencil"></i>
-                                </button>
-                                <button class="btn-action me-1" onclick="abrirAlterarSenha(${usuario.id}, '${usuario.nome}')" title="Alterar Senha">
-                                    <i class="bi bi-key"></i>
-                                </button>
-                                <button class="btn-action me-1" onclick="verTicketsUsuario(${usuario.id}, '${usuario.nome}')" title="Ver Tickets">
-                                    <i class="bi bi-ticket"></i>
-                                </button>
-                                <button class="btn-action btn-danger" onclick="excluirUsuario(${usuario.id}, '${usuario.nome}')" title="Excluir">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </td>
-                        `;
+                                <td><strong>${usuario.nome}</strong></td>
+                                <td>${usuario.email}</td>
+                                <td><span class="badge badge-primary">${usuario.departamento}</span></td>
+                                <td><span class="badge badge-success">${usuario.totalTickets}</span></td>
+                                <td><span class="badge badge-warning">${usuario.ticketsAbertos}</span></td>
+                                <td><span class="badge badge-purple">${usuario.totalChats}</span></td>
+                                <td class="text-center">
+                                    <button class="btn-action me-1" onclick="editarUsuario(${usuario.id})" title="Editar">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button class="btn-action me-1" onclick="abrirAlterarCargo(${usuario.id}, '${usuario.nome}')" title="Alterar Cargo">
+                                        <i class="bi bi-shield-check"></i>
+                                    </button>
+                                    <button class="btn-action me-1" onclick="abrirAlterarSenha(${usuario.id}, '${usuario.nome}')" title="Alterar Senha">
+                                        <i class="bi bi-key"></i>
+                                    </button>
+                                    <button class="btn-action me-1" onclick="verTicketsUsuario(${usuario.id}, '${usuario.nome}')" title="Ver Tickets">
+                                        <i class="bi bi-ticket"></i>
+                                    </button>
+                                    <button class="btn-action btn-danger" onclick="excluirUsuario(${usuario.id}, '${usuario.nome}')" title="Excluir">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </td>
+                            `;
                     tbody.appendChild(tr);
                 });
             } catch (error) {
                 console.error('Erro ao carregar usuários:', error);
                 document.getElementById('usersTableBody').innerHTML = `
-                        <tr><td colspan="7" class="text-center text-danger">Erro ao carregar usuários</td></tr>
-                    `;
+                            <tr><td colspan="7" class="text-center text-danger">Erro ao carregar usuários</td></tr>
+                        `;
             }
         }
 
@@ -1159,12 +1162,12 @@
 
                 if (ticketsUsuario.length === 0) {
                     content.innerHTML = `
-                            <div class="empty-state">
-                                <i class="bi bi-ticket-detailed"></i>
-                                <h4>Nenhum ticket encontrado</h4>
-                                <p>O usuário ${nomeUsuario} não possui tickets</p>
-                            </div>
-                        `;
+                                <div class="empty-state">
+                                    <i class="bi bi-ticket-detailed"></i>
+                                    <h4>Nenhum ticket encontrado</h4>
+                                    <p>O usuário ${nomeUsuario} não possui tickets</p>
+                                </div>
+                            `;
                 } else {
                     let html = `<h6 class="mb-3">Tickets de <strong>${nomeUsuario}</strong></h6>`;
                     html += '<div class="list-group">';
@@ -1174,17 +1177,17 @@
                         const statusClass = ticket.idStatus === 1 ? 'warning' : 'success';
 
                         html += `
-                                <div class="list-group-item" style="background: var(--darker-bg); border: 1px solid var(--border-color); margin-bottom: 15px; border-radius: 12px; padding: 20px;">
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <h6 class="mb-0" style="font-weight: 700;">Ticket #${ticket.id}</h6>
-                                        <span class="badge badge-${statusClass}">${ticket.status}</span>
+                                    <div class="list-group-item" style="background: var(--darker-bg); border: 1px solid var(--border-color); margin-bottom: 15px; border-radius: 12px; padding: 20px;">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <h6 class="mb-0" style="font-weight: 700;">Ticket #${ticket.id}</h6>
+                                            <span class="badge badge-${statusClass}">${ticket.status}</span>
+                                        </div>
+                                        <p class="mb-2" style="color: #9ca3af;">${ticket.descricaoProblema}</p>
+                                        <small class="text-muted">
+                                            <i class="bi bi-calendar"></i> ${dataAbertura}
+                                        </small>
                                     </div>
-                                    <p class="mb-2" style="color: #9ca3af;">${ticket.descricaoProblema}</p>
-                                    <small class="text-muted">
-                                        <i class="bi bi-calendar"></i> ${dataAbertura}
-                                    </small>
-                                </div>
-                            `;
+                                `;
                     });
 
                     html += '</div>';
@@ -1216,14 +1219,14 @@
 
                     relatorio.forEach(dept => {
                         html += `
-                                <tr>
-                                    <td><strong>${dept.departamento}</strong></td>
-                                    <td><span class="badge badge-primary">${dept.totalUsuarios}</span></td>
-                                    <td><span class="badge badge-success">${dept.totalTickets}</span></td>
-                                    <td><span class="badge badge-warning">${dept.ticketsAbertos}</span></td>
-                                    <td><span class="badge badge-success">${dept.ticketsResolvidos}</span></td>
-                                </tr>
-                            `;
+                                    <tr>
+                                        <td><strong>${dept.departamento}</strong></td>
+                                        <td><span class="badge badge-primary">${dept.totalUsuarios}</span></td>
+                                        <td><span class="badge badge-success">${dept.totalTickets}</span></td>
+                                        <td><span class="badge badge-warning">${dept.ticketsAbertos}</span></td>
+                                        <td><span class="badge badge-success">${dept.ticketsResolvidos}</span></td>
+                                    </tr>
+                                `;
                     });
 
                     html += '</tbody></table></div>';
@@ -1237,14 +1240,14 @@
                         const li = document.createElement('div');
                         li.style.cssText = 'display: flex; justify-content: space-between; padding: 15px; background: var(--darker-bg); border-radius: 12px; margin-bottom: 12px; align-items: center;';
                         li.innerHTML = `
-                                <div style="display: flex; align-items: center; gap: 15px;">
-                                    <div style="width: 40px; height: 40px; background: linear-gradient(135deg, var(--primary-blue), var(--primary-purple)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 18px;">
-                                        ${index + 1}
+                                    <div style="display: flex; align-items: center; gap: 15px;">
+                                        <div style="width: 40px; height: 40px; background: linear-gradient(135deg, var(--primary-blue), var(--primary-purple)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 18px;">
+                                            ${index + 1}
+                                        </div>
+                                        <strong>${user.nome}</strong>
                                     </div>
-                                    <strong>${user.nome}</strong>
-                                </div>
-                                <span class="badge badge-warning" style="font-size: 14px;">${user.totalTickets} tickets</span>
-                            `;
+                                    <span class="badge badge-warning" style="font-size: 14px;">${user.totalTickets} tickets</span>
+                                `;
                         topUsersList.appendChild(li);
                     });
                 } else {
@@ -1268,19 +1271,19 @@
 
             const notif = document.createElement('div');
             notif.style.cssText = `
-                    position: fixed;
-                    top: 20px;
-                    right: 20px;
-                    background: ${cores[tipo]};
-                    padding: 18px 28px;
-                    border-radius: 15px;
-                    color: white;
-                    font-weight: 700;
-                    z-index: 10000;
-                    animation: slideInRight 0.4s ease-out;
-                    max-width: 450px;
-                    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-                `;
+                        position: fixed;
+                        top: 20px;
+                        right: 20px;
+                        background: ${cores[tipo]};
+                        padding: 18px 28px;
+                        border-radius: 15px;
+                        color: white;
+                        font-weight: 700;
+                        z-index: 10000;
+                        animation: slideInRight 0.4s ease-out;
+                        max-width: 450px;
+                        box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+                    `;
             notif.innerHTML = `<i class="bi bi-check-circle"></i> ${mensagem}`;
             document.body.appendChild(notif);
             setTimeout(() => {
@@ -1293,18 +1296,122 @@
         setInterval(() => {
             carregarDashboard();
         }, 30000);
+
+        function abrirAlterarCargo(usuarioId, nomeUsuario) {
+            document.getElementById('cargoUserId').value = usuarioId;
+            document.getElementById('cargoUserName').textContent = nomeUsuario;
+            document.getElementById('novoCargo').value = 'Solicitante';
+
+            const modal = new bootstrap.Modal(document.getElementById('alterarCargoModal'));
+            modal.show();
+        }
+
+        async function salvarCargo() {
+            const usuarioId = document.getElementById('cargoUserId').value;
+            const novoCargo = document.getElementById('novoCargo').value;
+
+            if (!novoCargo) {
+                alert('Selecione um cargo válido');
+                return;
+            }
+
+            const cargoTexto = {
+                'Solicitante': 'Usuário Normal',
+                'Tecnico': 'Técnico',
+                'Gerente': 'Gerente (Administrador)'
+            };
+
+            if (!confirm(`Tem certeza que deseja alterar o cargo para ${cargoTexto[novoCargo]}?`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch('/Gerente/AlterarCargo', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        usuarioId: parseInt(usuarioId),
+                        cargo: novoCargo
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.sucesso) {
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('alterarCargoModal'));
+                    modal.hide();
+                    mostrarNotificacao(`Cargo alterado para ${cargoTexto[novoCargo]} com sucesso!`, 'success');
+                    await carregarUsuarios();
+                    await carregarDashboard();
+                } else {
+                    alert('Erro ao alterar cargo');
+                }
+            } catch (error) {
+                console.error('Erro ao alterar cargo:', error);
+                alert('Erro ao conectar com o servidor');
+            }
+        }
+
     </script>
 
     <style>
         @@keyframes slideInRight {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
         }
 
         @@keyframes slideOutRight {
-            from { transform: translateX(0); opacity: 1; }
-            to { transform: translateX(100%); opacity: 0; }
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
         }
     </style>
+    <div class="modal fade" id="alterarCargoModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Alterar Cargo do Usuário</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="cargoUserId">
+                    <p style="color: #9ca3af; margin-bottom: 20px;">
+                        Alterando cargo de: <strong id="cargoUserName"></strong>
+                    </p>
+                    <div class="mb-3">
+                        <label class="form-label">Novo Cargo</label>
+                        <select class="form-select" id="novoCargo">
+                            <option value="Solicitante">Solicitante (Usuário Normal)</option>
+                            <option value="Tecnico">Técnico</option>
+                            <option value="Gerente">Gerente (Administrador)</option>
+                        </select>
+                    </div>
+                    <div class="alert alert-warning" style="background: rgba(251, 191, 36, 0.1); border: 1px solid #fbbf24; color: #fbbf24; border-radius: 12px;">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        <strong>Atenção:</strong> Ao promover para Técnico/Gerente, o usuário terá acesso ao painel administrativo.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="salvarCargo()">
+                        <i class="bi bi-shield-check"></i> Alterar Cargo
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

@@ -186,6 +186,21 @@ namespace DotIA.Web.Controllers
             var departamentos = await _apiClient.ObterDepartamentosAsync();
             return Json(departamentos);
         }
+
+        [HttpPut("Gerente/AlterarCargo")]
+        public async Task<IActionResult> AlterarCargo([FromBody] AlterarCargoWebRequest request)
+        {
+            var gerenteId = HttpContext.Session.GetInt32("UsuarioId");
+            if (gerenteId == null)
+                return Unauthorized();
+
+            var sucesso = await _apiClient.AlterarCargoUsuarioAsync(
+                request.UsuarioId,
+                request.Cargo
+            );
+
+            return Json(new { sucesso });
+        }
     }
 
     // ═══════════════════════════════════════════════════════════
@@ -211,5 +226,11 @@ namespace DotIA.Web.Controllers
     {
         public int UsuarioId { get; set; }
         public string NovaSenha { get; set; } = string.Empty;
+    }
+
+    public class AlterarCargoWebRequest
+    {
+        public int UsuarioId { get; set; }
+        public string Cargo { get; set; } = string.Empty;
     }
 }

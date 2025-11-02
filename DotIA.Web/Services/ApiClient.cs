@@ -535,7 +535,23 @@ namespace DotIA.Web.Services
                 return false;
             }
         }
-        // >>> Fim dos métodos movidos <<<
+
+        public async Task<bool> AlterarCargoUsuarioAsync(int usuarioId, string cargo)
+        {
+            try
+            {
+                var request = new { Cargo = cargo };
+                var json = JsonSerializer.Serialize(request);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                var response = await _httpClient.PutAsync($"api/Gerente/usuarios/{usuarioId}/cargo", content);
+                return response.IsSuccessStatusCode;
+            }
+            catch
+            {
+                return false;
+            }
+        }
     }
 
     // ═══════════════════════════════════════════════════════════
