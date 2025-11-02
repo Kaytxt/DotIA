@@ -112,7 +112,7 @@
             animation: spin 1s linear infinite;
         }
 
-        @@keyframe spin {
+        @@keyframes spin {
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
         }
@@ -139,7 +139,7 @@
             animation: pulse-live 2s ease-in-out infinite;
         }
 
-        @@keyframe pulse-live {
+        @@keyframes pulse-live {
             0%, 100% { opacity: 1; transform: scale(1); }
             50% { opacity: 0.5; transform: scale(0.9); }
         }
@@ -391,7 +391,7 @@
             animation: float 3s ease-in-out infinite;
         }
 
-        @@keyframe float {
+        @@keyframes float {
             0%, 100% {
                 transform: translateY(0);
             }
@@ -416,7 +416,7 @@
             animation: slideIn 0.3s ease-out;
         }
 
-        @@keyframe slideIn {
+        @@keyframes slideIn {
             from {
                 opacity: 0;
                 transform: translateY(20px);
@@ -641,7 +641,7 @@
             animation-delay: 0.4s;
         }
 
-        @@keyframe typing {
+        @@keyframes typing {
             0%, 60%, 100% {
                 transform: translateY(0);
                 opacity: 0.7;

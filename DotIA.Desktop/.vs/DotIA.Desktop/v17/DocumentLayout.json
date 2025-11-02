@@ -3,8 +3,56 @@
   "WorkspaceRootPath": "C:\\Users\\kauan\\Desktop\\DotIA\\DotIA.Desktop\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{A4A6793B-0F69-4246-BEA8-190E059BD32B}|DotIA.Desktop\\DotIA.Desktop.csproj|c:\\users\\kauan\\desktop\\dotia\\dotia.desktop\\dotia.desktop\\forms\\chatform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A4A6793B-0F69-4246-BEA8-190E059BD32B}|DotIA.Desktop\\DotIA.Desktop.csproj|solutionrelative:dotia.desktop\\forms\\chatform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A4A6793B-0F69-4246-BEA8-190E059BD32B}|DotIA.Desktop\\DotIA.Desktop.csproj|c:\\users\\kauan\\desktop\\dotia\\dotia.desktop\\dotia.desktop\\forms\\loginform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A4A6793B-0F69-4246-BEA8-190E059BD32B}|DotIA.Desktop\\DotIA.Desktop.csproj|solutionrelative:dotia.desktop\\forms\\loginform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A4A6793B-0F69-4246-BEA8-190E059BD32B}|DotIA.Desktop\\DotIA.Desktop.csproj|c:\\users\\kauan\\desktop\\dotia\\dotia.desktop\\dotia.desktop\\forms\\loginform.resx||{81828910-B8B3-4D2B-99A3-067027C180C1}",
+      "RelativeMoniker": "D:0:0:{A4A6793B-0F69-4246-BEA8-190E059BD32B}|DotIA.Desktop\\DotIA.Desktop.csproj|solutionrelative:dotia.desktop\\forms\\loginform.resx||{81828910-B8B3-4D2B-99A3-067027C180C1}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A4A6793B-0F69-4246-BEA8-190E059BD32B}|DotIA.Desktop\\DotIA.Desktop.csproj|c:\\users\\kauan\\desktop\\dotia\\dotia.desktop\\dotia.desktop\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A4A6793B-0F69-4246-BEA8-190E059BD32B}|DotIA.Desktop\\DotIA.Desktop.csproj|solutionrelative:dotia.desktop\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A4A6793B-0F69-4246-BEA8-190E059BD32B}|DotIA.Desktop\\DotIA.Desktop.csproj|c:\\users\\kauan\\desktop\\dotia\\dotia.desktop\\dotia.desktop\\form1.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A4A6793B-0F69-4246-BEA8-190E059BD32B}|DotIA.Desktop\\DotIA.Desktop.csproj|solutionrelative:dotia.desktop\\form1.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{A4A6793B-0F69-4246-BEA8-190E059BD32B}|DotIA.Desktop\\DotIA.Desktop.csproj|c:\\users\\kauan\\desktop\\dotia\\dotia.desktop\\dotia.desktop\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
       "RelativeMoniker": "D:0:0:{A4A6793B-0F69-4246-BEA8-190E059BD32B}|DotIA.Desktop\\DotIA.Desktop.csproj|solutionrelative:dotia.desktop\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A4A6793B-0F69-4246-BEA8-190E059BD32B}|DotIA.Desktop\\DotIA.Desktop.csproj|c:\\users\\kauan\\desktop\\dotia\\dotia.desktop\\dotia.desktop\\forms\\gerenteform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{A4A6793B-0F69-4246-BEA8-190E059BD32B}|DotIA.Desktop\\DotIA.Desktop.csproj|solutionrelative:dotia.desktop\\forms\\gerenteform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A4A6793B-0F69-4246-BEA8-190E059BD32B}|DotIA.Desktop\\DotIA.Desktop.csproj|c:\\users\\kauan\\desktop\\dotia\\dotia.desktop\\dotia.desktop\\forms\\chatform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{A4A6793B-0F69-4246-BEA8-190E059BD32B}|DotIA.Desktop\\DotIA.Desktop.csproj|solutionrelative:dotia.desktop\\forms\\chatform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A4A6793B-0F69-4246-BEA8-190E059BD32B}|DotIA.Desktop\\DotIA.Desktop.csproj|c:\\users\\kauan\\desktop\\dotia\\dotia.desktop\\dotia.desktop\\services\\apiclient.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A4A6793B-0F69-4246-BEA8-190E059BD32B}|DotIA.Desktop\\DotIA.Desktop.csproj|solutionrelative:dotia.desktop\\services\\apiclient.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A4A6793B-0F69-4246-BEA8-190E059BD32B}|DotIA.Desktop\\DotIA.Desktop.csproj|c:\\users\\kauan\\desktop\\dotia\\dotia.desktop\\dotia.desktop\\dotia.desktop.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{A4A6793B-0F69-4246-BEA8-190E059BD32B}|DotIA.Desktop\\DotIA.Desktop.csproj|solutionrelative:dotia.desktop\\dotia.desktop.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A4A6793B-0F69-4246-BEA8-190E059BD32B}|DotIA.Desktop\\DotIA.Desktop.csproj|c:\\users\\kauan\\desktop\\dotia\\dotia.desktop\\dotia.desktop\\forms\\registroform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{A4A6793B-0F69-4246-BEA8-190E059BD32B}|DotIA.Desktop\\DotIA.Desktop.csproj|solutionrelative:dotia.desktop\\forms\\registroform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A4A6793B-0F69-4246-BEA8-190E059BD32B}|DotIA.Desktop\\DotIA.Desktop.csproj|c:\\users\\kauan\\desktop\\dotia\\dotia.desktop\\dotia.desktop\\forms\\tecnicoform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{A4A6793B-0F69-4246-BEA8-190E059BD32B}|DotIA.Desktop\\DotIA.Desktop.csproj|solutionrelative:dotia.desktop\\forms\\tecnicoform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A4A6793B-0F69-4246-BEA8-190E059BD32B}|DotIA.Desktop\\DotIA.Desktop.csproj|c:\\users\\kauan\\desktop\\dotia\\dotia.desktop\\dotia.desktop\\forms\\tecnicoform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A4A6793B-0F69-4246-BEA8-190E059BD32B}|DotIA.Desktop\\DotIA.Desktop.csproj|solutionrelative:dotia.desktop\\forms\\tecnicoform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -14,11 +62,166 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 12,
           "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{cce594b6-0c39-4442-ba28-10c64ac7e89f}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "LoginForm.cs",
+              "DocumentMoniker": "C:\\Users\\kauan\\Desktop\\DotIA\\DotIA.Desktop\\DotIA.Desktop\\Forms\\LoginForm.cs",
+              "RelativeDocumentMoniker": "DotIA.Desktop\\Forms\\LoginForm.cs",
+              "ToolTip": "C:\\Users\\kauan\\Desktop\\DotIA\\DotIA.Desktop\\DotIA.Desktop\\Forms\\LoginForm.cs",
+              "RelativeToolTip": "DotIA.Desktop\\Forms\\LoginForm.cs",
+              "ViewState": "AgIAAAMBAAAAAAAAAAAuwBYBAAAkAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-02T20:42:15.652Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "LoginForm.resx",
+              "DocumentMoniker": "C:\\Users\\kauan\\Desktop\\DotIA\\DotIA.Desktop\\DotIA.Desktop\\Forms\\LoginForm.resx",
+              "RelativeDocumentMoniker": "DotIA.Desktop\\Forms\\LoginForm.resx",
+              "ToolTip": "C:\\Users\\kauan\\Desktop\\DotIA\\DotIA.Desktop\\DotIA.Desktop\\Forms\\LoginForm.resx",
+              "RelativeToolTip": "DotIA.Desktop\\Forms\\LoginForm.resx",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001005|",
+              "WhenOpened": "2025-11-02T20:42:13.158Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\kauan\\Desktop\\DotIA\\DotIA.Desktop\\DotIA.Desktop\\Program.cs",
+              "RelativeDocumentMoniker": "DotIA.Desktop\\Program.cs",
+              "ToolTip": "C:\\Users\\kauan\\Desktop\\DotIA\\DotIA.Desktop\\DotIA.Desktop\\Program.cs",
+              "RelativeToolTip": "DotIA.Desktop\\Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-02T20:42:10.139Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Form1.Designer.cs",
+              "DocumentMoniker": "C:\\Users\\kauan\\Desktop\\DotIA\\DotIA.Desktop\\DotIA.Desktop\\Form1.Designer.cs",
+              "RelativeDocumentMoniker": "DotIA.Desktop\\Form1.Designer.cs",
+              "ToolTip": "C:\\Users\\kauan\\Desktop\\DotIA\\DotIA.Desktop\\DotIA.Desktop\\Form1.Designer.cs",
+              "RelativeToolTip": "DotIA.Desktop\\Form1.Designer.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-02T20:42:07.046Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "DotIA.Desktop",
+              "DocumentMoniker": "C:\\Users\\kauan\\Desktop\\DotIA\\DotIA.Desktop\\DotIA.Desktop\\DotIA.Desktop.csproj",
+              "RelativeDocumentMoniker": "DotIA.Desktop\\DotIA.Desktop.csproj",
+              "ToolTip": "C:\\Users\\kauan\\Desktop\\DotIA\\DotIA.Desktop\\DotIA.Desktop\\DotIA.Desktop.csproj",
+              "RelativeToolTip": "DotIA.Desktop\\DotIA.Desktop.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAKAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2025-11-02T20:30:00.323Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "ChatForm.cs [Projeto]",
+              "DocumentMoniker": "C:\\Users\\kauan\\Desktop\\DotIA\\DotIA.Desktop\\DotIA.Desktop\\Forms\\ChatForm.cs",
+              "RelativeDocumentMoniker": "DotIA.Desktop\\Forms\\ChatForm.cs",
+              "ToolTip": "C:\\Users\\kauan\\Desktop\\DotIA\\DotIA.Desktop\\DotIA.Desktop\\Forms\\ChatForm.cs [Projeto]",
+              "RelativeToolTip": "DotIA.Desktop\\Forms\\ChatForm.cs [Projeto]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-02T20:28:50.652Z",
+              "EditorCaption": " [Projeto]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "GerenteForm.cs [Projeto]",
+              "DocumentMoniker": "C:\\Users\\kauan\\Desktop\\DotIA\\DotIA.Desktop\\DotIA.Desktop\\Forms\\GerenteForm.cs",
+              "RelativeDocumentMoniker": "DotIA.Desktop\\Forms\\GerenteForm.cs",
+              "ToolTip": "C:\\Users\\kauan\\Desktop\\DotIA\\DotIA.Desktop\\DotIA.Desktop\\Forms\\GerenteForm.cs [Projeto]",
+              "RelativeToolTip": "DotIA.Desktop\\Forms\\GerenteForm.cs [Projeto]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-02T20:28:49.538Z",
+              "EditorCaption": " [Projeto]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "RegistroForm.cs [Projeto]",
+              "DocumentMoniker": "C:\\Users\\kauan\\Desktop\\DotIA\\DotIA.Desktop\\DotIA.Desktop\\Forms\\RegistroForm.cs",
+              "RelativeDocumentMoniker": "DotIA.Desktop\\Forms\\RegistroForm.cs",
+              "ToolTip": "C:\\Users\\kauan\\Desktop\\DotIA\\DotIA.Desktop\\DotIA.Desktop\\Forms\\RegistroForm.cs [Projeto]",
+              "RelativeToolTip": "DotIA.Desktop\\Forms\\RegistroForm.cs [Projeto]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-02T20:28:48.292Z",
+              "EditorCaption": " [Projeto]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "TecnicoForm.cs [Projeto]",
+              "DocumentMoniker": "C:\\Users\\kauan\\Desktop\\DotIA\\DotIA.Desktop\\DotIA.Desktop\\Forms\\TecnicoForm.cs",
+              "RelativeDocumentMoniker": "DotIA.Desktop\\Forms\\TecnicoForm.cs",
+              "ToolTip": "C:\\Users\\kauan\\Desktop\\DotIA\\DotIA.Desktop\\DotIA.Desktop\\Forms\\TecnicoForm.cs [Projeto]",
+              "RelativeToolTip": "DotIA.Desktop\\Forms\\TecnicoForm.cs [Projeto]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-02T20:28:41.202Z",
+              "EditorCaption": " [Projeto]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "ApiClient.cs",
+              "DocumentMoniker": "C:\\Users\\kauan\\Desktop\\DotIA\\DotIA.Desktop\\DotIA.Desktop\\Services\\ApiClient.cs",
+              "RelativeDocumentMoniker": "DotIA.Desktop\\Services\\ApiClient.cs",
+              "ToolTip": "C:\\Users\\kauan\\Desktop\\DotIA\\DotIA.Desktop\\DotIA.Desktop\\Services\\ApiClient.cs",
+              "RelativeToolTip": "DotIA.Desktop\\Services\\ApiClient.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABUAAAAwAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-02T20:27:40.048Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "TecnicoForm.cs",
+              "DocumentMoniker": "C:\\Users\\kauan\\Desktop\\DotIA\\DotIA.Desktop\\DotIA.Desktop\\Forms\\TecnicoForm.cs",
+              "RelativeDocumentMoniker": "DotIA.Desktop\\Forms\\TecnicoForm.cs",
+              "ToolTip": "C:\\Users\\kauan\\Desktop\\DotIA\\DotIA.Desktop\\DotIA.Desktop\\Forms\\TecnicoForm.cs",
+              "RelativeToolTip": "DotIA.Desktop\\Forms\\TecnicoForm.cs",
+              "ViewState": "AgIAAOIBAAAAAAAAAAAqwPQBAAAsAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-02T20:24:45.673Z",
+              "EditorCaption": ""
+            },
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "ChatForm.cs",
+              "DocumentMoniker": "C:\\Users\\kauan\\Desktop\\DotIA\\DotIA.Desktop\\DotIA.Desktop\\Forms\\ChatForm.cs",
+              "RelativeDocumentMoniker": "DotIA.Desktop\\Forms\\ChatForm.cs",
+              "ToolTip": "C:\\Users\\kauan\\Desktop\\DotIA\\DotIA.Desktop\\DotIA.Desktop\\Forms\\ChatForm.cs",
+              "RelativeToolTip": "DotIA.Desktop\\Forms\\ChatForm.cs",
+              "ViewState": "AgIAAKABAAAAAAAAAAAuwLABAAA5AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-02T20:24:42.842Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
               "Title": "Form1.cs [Projeto]",
               "DocumentMoniker": "C:\\Users\\kauan\\Desktop\\DotIA\\DotIA.Desktop\\DotIA.Desktop\\Form1.cs",
               "RelativeDocumentMoniker": "DotIA.Desktop\\Form1.cs",

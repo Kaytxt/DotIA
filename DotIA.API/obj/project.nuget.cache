@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "aK8TSbNNcVI=",
+  "dgSpecHash": "6D5/7nQJupg=",
   "success": true,
-  "projectFilePath": "C:\\Users\\kauan\\Desktop\\DotIA\\DotIA.API\\DotIA.API.csproj",
+  "projectFilePath": "C:\\Users\\kauan\\Desktop\\DotIA\\dotia.api\\DotIA.API.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\kauan\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\kauan\\.nuget\\packages\\microsoft.aspnetcore.openapi\\9.0.9\\microsoft.aspnetcore.openapi.9.0.9.nupkg.sha512",
