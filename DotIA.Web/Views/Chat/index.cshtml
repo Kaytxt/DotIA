@@ -81,7 +81,6 @@
             -webkit-text-fill-color: transparent;
         }
 
-        /* ✅ NOVO: Botão de Refresh */
         .refresh-button {
             background: rgba(141, 75, 255, 0.1);
             border: 2px solid var(--primary-purple);
@@ -113,12 +112,11 @@
             animation: spin 1s linear infinite;
         }
 
-        @@keyframes spin {
+        @@keyframe spin {
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
         }
 
-        /* ✅ NOVO: Indicador de sincronização ao vivo */
         .live-indicator {
             display: flex;
             align-items: center;
@@ -141,7 +139,7 @@
             animation: pulse-live 2s ease-in-out infinite;
         }
 
-        @@keyframes pulse-live {
+        @@keyframe pulse-live {
             0%, 100% { opacity: 1; transform: scale(1); }
             50% { opacity: 0.5; transform: scale(0.9); }
         }
@@ -160,6 +158,27 @@
         .btn-new-chat:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(141, 75, 255, 0.4);
+        }
+
+        /* ✅ NOVO: Botão Abrir Ticket Direto */
+        .btn-open-ticket {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            border: none;
+            border-radius: 12px;
+            padding: 14px;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s;
+            margin: 0 20px 20px 20px;
+        }
+
+        .btn-open-ticket:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(251, 191, 36, 0.4);
+        }
+
+        .btn-open-ticket i {
+            margin-right: 8px;
         }
 
         .history-container {
@@ -219,7 +238,6 @@
             background: var(--border-color);
         }
 
-        /* ✅ NOVO: Badge de atualização */
         .history-item.new-update::before {
             content: '';
             position: absolute;
@@ -373,7 +391,7 @@
             animation: float 3s ease-in-out infinite;
         }
 
-        @@keyframes float {
+        @@keyframe float {
             0%, 100% {
                 transform: translateY(0);
             }
@@ -398,7 +416,7 @@
             animation: slideIn 0.3s ease-out;
         }
 
-        @@keyframes slideIn {
+        @@keyframe slideIn {
             from {
                 opacity: 0;
                 transform: translateY(20px);
@@ -484,7 +502,6 @@
             margin-top: 8px;
         }
 
-        /* Área de Avaliação do Chat */
         .chat-feedback-area {
             padding: 20px 0;
             animation: slideIn 0.4s ease-out;
@@ -624,7 +641,7 @@
             animation-delay: 0.4s;
         }
 
-        @@keyframes typing {
+        @@keyframe typing {
             0%, 60%, 100% {
                 transform: translateY(0);
                 opacity: 0.7;
@@ -646,7 +663,6 @@
             margin-bottom: 15px;
         }
 
-        /* INPUT AREA */
         .input-area {
             background: var(--dark-bg);
             border-top: 1px solid var(--border-color);
@@ -724,7 +740,6 @@
             cursor: not-allowed;
         }
 
-        /* Modal para editar nome */
         .modal-content {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -739,17 +754,32 @@
             border-top: 1px solid var(--border-color);
         }
 
-        .form-control {
+        .form-control, .form-control:focus {
             background: var(--darker-bg);
             border: 1px solid var(--border-color);
             color: var(--text-color);
         }
 
         .form-control:focus {
-            background: var(--darker-bg);
             border-color: var(--primary-purple);
-            color: var(--text-color);
             box-shadow: 0 0 0 3px rgba(141, 75, 255, 0.1);
+        }
+
+        .form-control::placeholder {
+            color: #6b7280;
+        }
+
+        .form-label {
+            color: var(--text-color);
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .alert-info {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid #3b82f6;
+            color: #60a5fa;
+            border-radius: 12px;
         }
 
         @@media (max-width: 768px) {
@@ -774,13 +804,11 @@
                 </div>
             </div>
 
-            <!-- ✅ NOVO: Botão de Refresh -->
             <button class="refresh-button" onclick="atualizarHistorico()" id="refreshBtn">
                 <i class="bi bi-arrow-clockwise"></i>
                 <span>Atualizar</span>
             </button>
 
-            <!-- ✅ NOVO: Indicador ao vivo -->
             <div class="live-indicator" id="liveIndicator">
                 <div class="live-dot"></div>
                 <span>Sincronizando automaticamente</span>
@@ -788,6 +816,11 @@
 
             <button class="btn-new-chat" onclick="novoChat()">
                 <i class="bi bi-plus-circle"></i> Novo Chat
+            </button>
+
+            <!-- ✅ NOVO: Botão Abrir Ticket Direto -->
+            <button class="btn-open-ticket" onclick="abrirModalTicketDireto()">
+                <i class="bi bi-ticket-detailed"></i> Abrir Ticket 
             </button>
 
             <div class="history-container">
@@ -814,7 +847,6 @@
                     <span>💬</span>
                     <span id="chatTitle">DotIA - Assistente Inteligente</span>
                 </div>
-                <!-- ✅ NOVO: Botão de refresh no header também -->
                 <button class="btn btn-sm btn-outline-light" onclick="atualizarHistorico()" title="Atualizar">
                     <i class="bi bi-arrow-clockwise"></i>
                 </button>
@@ -824,7 +856,7 @@
                 <div class="welcome-screen" id="welcomeScreen">
                     <div class="welcome-icon">🤖</div>
                     <div class="welcome-title">Bem-vindo ao DotIA!</div>
-                    <p class="text-muted" style="max-width: 600px; color: #9ca3af;">
+                    <p class="text-white" style="max-width: 600px;">
                         Sou sua assistente virtual especializada em suporte técnico de TI.
                         Faça qualquer pergunta sobre tecnologia, problemas técnicos ou funcionamento do sistema.
                         Estou aqui para ajudar! 🚀
@@ -833,7 +865,6 @@
 
                 <div id="messagesList"></div>
 
-                <!-- Área de Avaliação do Chat -->
                 <div class="chat-feedback-area" id="chatFeedbackArea" style="display: none;">
                     <div class="feedback-card">
                         <div class="feedback-header">
@@ -899,6 +930,65 @@
         </div>
     </div>
 
+    <!-- ✅ NOVO: Modal para abrir ticket direto -->
+    <div class="modal fade" id="abrirTicketModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-ticket-detailed"></i> Abrir Ticket Direto
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i>
+                        <strong>Precisa de ajuda urgente?</strong><br>
+                        Abra um ticket diretamente com um técnico sem passar pela IA.
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="bi bi-bookmark"></i> Título do Problema
+                        </label>
+                        <input type="text"
+                               class="form-control"
+                               id="ticketDiretoTitulo"
+                               placeholder="Ex: Problema com impressora"
+                               maxlength="100">
+                        <small class="text-muted">Dê um título breve e descritivo</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="bi bi-chat-left-text"></i> Descrição Detalhada
+                        </label>
+                        <textarea class="form-control"
+                                  id="ticketDiretoDescricao"
+                                  rows="6"
+                                  placeholder="Descreva seu problema em detalhes...
+
+Exemplo:
+- O que aconteceu?
+- Quando começou?
+- Já tentou alguma solução?"></textarea>
+                        <small class="text-muted">
+                            Quanto mais detalhes, mais rápido o técnico poderá ajudar!
+                        </small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        Cancelar
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="enviarTicketDireto()">
+                        <i class="bi bi-send"></i> Abrir Ticket
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         let chatAtualId = null;
@@ -914,14 +1004,12 @@
             iniciarAutoRefresh();
         });
 
-        // ✅ NOVO: Auto-refresh a cada 5 segundos
         function iniciarAutoRefresh() {
             autoRefreshInterval = setInterval(() => {
                 atualizarHistoricoSilencioso();
-            }, 5000); // Atualiza a cada 5 segundos
+            }, 5000);
         }
 
-        // ✅ NOVO: Atualização manual (com feedback visual)
         async function atualizarHistorico() {
             const refreshBtn = document.getElementById('refreshBtn');
             refreshBtn.classList.add('spinning');
@@ -934,17 +1022,14 @@
             }, 500);
         }
 
-        // ✅ NOVO: Atualização silenciosa em background
         async function atualizarHistoricoSilencioso() {
             try {
                 const response = await fetch('/Chat/ObterHistorico');
                 const historicoNovo = await response.json();
 
-                // Verifica se há mudanças
                 if (JSON.stringify(historicoNovo) !== JSON.stringify(historicoAnterior)) {
                     console.log('📥 Novos dados detectados, atualizando...');
 
-                    // Identifica novos itens ou atualizações
                     const novosOuAtualizados = historicoNovo.filter(novoItem => {
                         const itemAntigo = historicoAnterior.find(h => h.id === novoItem.id);
                         return !itemAntigo || JSON.stringify(itemAntigo) !== JSON.stringify(novoItem);
@@ -953,7 +1038,6 @@
                     if (novosOuAtualizados.length > 0) {
                         await carregarHistorico();
 
-                        // Destaca itens novos/atualizados por 3 segundos
                         novosOuAtualizados.forEach(item => {
                             const elemento = document.querySelector(`[data-chat-id="${item.id}"]`);
                             if (elemento) {
@@ -964,7 +1048,6 @@
                             }
                         });
 
-                        // Se o chat atual foi atualizado, recarrega
                         if (chatAtualId && novosOuAtualizados.some(item => item.id === chatAtualId)) {
                             console.log('🔄 Chat atual foi atualizado, recarregando...');
                             const chatAtual = historicoNovo.find(h => h.id === chatAtualId);
@@ -978,6 +1061,100 @@
                 }
             } catch (error) {
                 console.error('Erro na atualização silenciosa:', error);
+            }
+        }
+
+        // ✅ NOVO: Abrir modal para criar ticket direto
+        function abrirModalTicketDireto() {
+            document.getElementById('ticketDiretoTitulo').value = '';
+            document.getElementById('ticketDiretoDescricao').value = '';
+
+            const modal = new bootstrap.Modal(document.getElementById('abrirTicketModal'));
+            modal.show();
+        }
+
+        // ✅ NOVO: Enviar ticket direto
+        async function enviarTicketDireto() {
+            const titulo = document.getElementById('ticketDiretoTitulo').value.trim();
+            const descricao = document.getElementById('ticketDiretoDescricao').value.trim();
+
+            // Validações
+            if (!titulo) {
+                alert('Por favor, digite um título para o ticket');
+                document.getElementById('ticketDiretoTitulo').focus();
+                return;
+            }
+
+            if (titulo.length < 5) {
+                alert('O título deve ter pelo menos 5 caracteres');
+                document.getElementById('ticketDiretoTitulo').focus();
+                return;
+            }
+
+            if (!descricao) {
+                alert('Por favor, descreva seu problema');
+                document.getElementById('ticketDiretoDescricao').focus();
+                return;
+            }
+
+            if (descricao.length < 20) {
+                alert('Por favor, forneça uma descrição mais detalhada (mínimo 20 caracteres)');
+                document.getElementById('ticketDiretoDescricao').focus();
+                return;
+            }
+
+            // Desabilita o botão para evitar múltiplos cliques
+            const btnEnviar = event.target;
+            btnEnviar.disabled = true;
+            btnEnviar.innerHTML = '<i class="bi bi-hourglass-split"></i> Criando...';
+
+            try {
+                const response = await fetch('/Chat/AbrirTicketDireto', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        titulo: titulo,
+                        descricao: descricao
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.sucesso) {
+                    // Fecha o modal
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('abrirTicketModal'));
+                    modal.hide();
+
+                    // Mostra mensagem de sucesso
+                    mostrarNotificacao(
+                        '✅ Ticket criado com sucesso! Um técnico irá atendê-lo em breve. Você pode acompanhar pelo histórico.',
+                        'success'
+                    );
+
+                    // Recarrega o histórico para mostrar o novo ticket
+                    await carregarHistorico();
+
+                    // Opcional: Abre automaticamente o chat do ticket criado
+                    setTimeout(async () => {
+                        const historico = await fetch('/Chat/ObterHistorico');
+                        const chats = await historico.json();
+                        const chatCriado = chats.find(c => c.id === data.chatId);
+
+                        if (chatCriado) {
+                            await carregarChat(chatCriado);
+                        }
+                    }, 1000);
+
+                } else {
+                    alert('Erro ao criar ticket: ' + (data.mensagem || 'Erro desconhecido'));
+                    btnEnviar.disabled = false;
+                    btnEnviar.innerHTML = '<i class="bi bi-send"></i> Abrir Ticket';
+                }
+            } catch (error) {
+                console.error('Erro ao criar ticket:', error);
+                alert('Erro ao conectar com o servidor. Tente novamente.');
+                btnEnviar.disabled = false;
+                btnEnviar.innerHTML = '<i class="bi bi-send"></i> Abrir Ticket';
             }
         }
 
@@ -1109,15 +1286,15 @@
             messageDiv.className = `message ${tipo}`;
             if (chatId) messageDiv.dataset.chatId = chatId;
             messageDiv.innerHTML = `
-                    <div class="message-content">
-                        <div class="message-avatar">${avatar}</div>
-                        <div class="message-bubble">
-                            ${badge}
-                            <div class="message-text">${texto}</div>
-                            <div class="message-time">${time}</div>
+                        <div class="message-content">
+                            <div class="message-avatar">${avatar}</div>
+                            <div class="message-bubble">
+                                ${badge}
+                                <div class="message-text">${texto}</div>
+                                <div class="message-time">${time}</div>
+                            </div>
                         </div>
-                    </div>
-                `;
+                    `;
 
             messagesList.appendChild(messageDiv);
 
@@ -1179,16 +1356,16 @@
                         }
 
                         feedbackArea.innerHTML = `
-                                <div class="feedback-card">
-                                    <div class="feedback-evaluated">
-                                        <i class="bi bi-check-circle-fill"></i>
-                                        <span>Ticket criado! Um técnico irá ajudá-lo em breve.</span>
+                                    <div class="feedback-card">
+                                        <div class="feedback-evaluated">
+                                            <i class="bi bi-check-circle-fill"></i>
+                                            <span>Ticket criado! Um técnico irá ajudá-lo em breve.</span>
+                                        </div>
+                                        <div style="margin-top: 15px; color: #9ca3af; font-size: 14px;">
+                                            💡 Você pode criar novos chats clicando em "Novo Chat"
+                                        </div>
                                     </div>
-                                    <div style="margin-top: 15px; color: #9ca3af; font-size: 14px;">
-                                        💡 Você pode criar novos chats clicando em "Novo Chat"
-                                    </div>
-                                </div>
-                            `;
+                                `;
 
                         mostrarNotificacao('✅ Ticket criado! Este chat agora está com um técnico. Você pode criar novos chats para conversar com a IA!', 'success');
                     } else {
@@ -1197,13 +1374,13 @@
                         }
 
                         feedbackArea.innerHTML = `
-                                <div class="feedback-card">
-                                    <div class="feedback-evaluated">
-                                        <i class="bi bi-check-circle-fill"></i>
-                                        <span>Obrigado pelo feedback! Ficamos felizes em ajudar! 😊</span>
+                                    <div class="feedback-card">
+                                        <div class="feedback-evaluated">
+                                            <i class="bi bi-check-circle-fill"></i>
+                                            <span>Obrigado pelo feedback! Ficamos felizes em ajudar! 😊</span>
+                                        </div>
                                     </div>
-                                </div>
-                            `;
+                                `;
 
                         mostrarNotificacao('Avaliação registrada! Obrigado pelo feedback. 😊', 'success');
                     }
@@ -1220,12 +1397,12 @@
         function bloquearChatParaIA() {
             const noticeDiv = document.getElementById('chatBlockedNotice');
             noticeDiv.innerHTML = `
-                    <div class="chat-blocked-notice">
-                        <i class="bi bi-chat-dots"></i> <strong>Chat com Técnico Ativo</strong><br>
-                        Este chat está em atendimento com técnico. Suas mensagens aqui vão para ele.
-                        <strong>Você pode criar novos chats</strong> clicando em "Novo Chat"!
-                    </div>
-                `;
+                        <div class="chat-blocked-notice">
+                            <i class="bi bi-chat-dots"></i> <strong>Chat com Técnico Ativo</strong><br>
+                            Este chat está em atendimento com técnico. Suas mensagens aqui vão para ele.
+                            <strong>Você pode criar novos chats</strong> clicando em "Novo Chat"!
+                        </div>
+                    `;
         }
 
         function desbloquearChatParaIA() {
@@ -1302,19 +1479,19 @@
 
             const notif = document.createElement('div');
             notif.style.cssText = `
-                    position: fixed;
-                    top: 20px;
-                    right: 20px;
-                    background: ${cores[tipo]};
-                    padding: 15px 25px;
-                    border-radius: 12px;
-                    color: white;
-                    font-weight: 600;
-                    z-index: 10000;
-                    animation: slideInRight 0.3s ease-out;
-                    max-width: 400px;
-                    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-                `;
+                        position: fixed;
+                        top: 20px;
+                        right: 20px;
+                        background: ${cores[tipo]};
+                        padding: 15px 25px;
+                        border-radius: 12px;
+                        color: white;
+                        font-weight: 600;
+                        z-index: 10000;
+                        animation: slideInRight 0.3s ease-out;
+                        max-width: 400px;
+                        box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+                    `;
             notif.innerHTML = mensagem;
             document.body.appendChild(notif);
             setTimeout(() => notif.remove(), 5000);
@@ -1331,10 +1508,10 @@
 
                 if (historico.length === 0) {
                     historyList.innerHTML = `
-                            <div style="text-align: center; padding: 20px; color: #9ca3af; font-size: 13px;">
-                                Nenhum histórico ainda.<br>Comece uma conversa!
-                            </div>
-                        `;
+                                <div style="text-align: center; padding: 20px; color: #9ca3af; font-size: 13px;">
+                                    Nenhum histórico ainda.<br>Comece uma conversa!
+                                </div>
+                            `;
                     return;
                 }
 
@@ -1353,17 +1530,17 @@
                     else if (chat.status === 4) badgeClass = 'status-resolvido';
 
                     item.innerHTML = `
-                            <div class="history-actions">
-                                <button class="history-action-btn" onclick="editarNomeChat(event, ${chat.id}, '${escapeHtml(chat.titulo)}')">
-                                    <i class="bi bi-pencil"></i>
-                                </button>
-                                <button class="history-action-btn delete" onclick="excluirChat(event, ${chat.id})">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </div>
-                            <div>${chat.titulo || chat.pergunta.substring(0, 30) + '...'}</div>
-                            <div class="status-badge ${badgeClass}">${chat.statusTexto}</div>
-                        `;
+                                <div class="history-actions">
+                                    <button class="history-action-btn" onclick="editarNomeChat(event, ${chat.id}, '${escapeHtml(chat.titulo)}')">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button class="history-action-btn delete" onclick="excluirChat(event, ${chat.id})">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                                <div>${chat.titulo || chat.pergunta.substring(0, 30) + '...'}</div>
+                                <div class="status-badge ${badgeClass}">${chat.statusTexto}</div>
+                            `;
                     item.onclick = () => carregarChat(chat);
                     historyList.appendChild(item);
                 });
@@ -1475,43 +1652,43 @@
                 feedbackArea.dataset.chatId = chat.id;
 
                 feedbackArea.innerHTML = `
-                        <div class="feedback-card">
-                            <div class="feedback-header">
-                                <i class="bi bi-chat-heart"></i>
-                                <span>Esta conversa foi útil?</span>
+                            <div class="feedback-card">
+                                <div class="feedback-header">
+                                    <i class="bi bi-chat-heart"></i>
+                                    <span>Esta conversa foi útil?</span>
+                                </div>
+                                <div class="feedback-buttons-chat">
+                                    <button class="btn-feedback-chat btn-useful" onclick="avaliarChatCompleto(true)">
+                                        <i class="bi bi-hand-thumbs-up"></i>
+                                        <span>Sim, foi útil!</span>
+                                    </button>
+                                    <button class="btn-feedback-chat btn-not-useful" onclick="avaliarChatCompleto(false)">
+                                        <i class="bi bi-hand-thumbs-down"></i>
+                                        <span>Não ajudou</span>
+                                    </button>
+                                </div>
                             </div>
-                            <div class="feedback-buttons-chat">
-                                <button class="btn-feedback-chat btn-useful" onclick="avaliarChatCompleto(true)">
-                                    <i class="bi bi-hand-thumbs-up"></i>
-                                    <span>Sim, foi útil!</span>
-                                </button>
-                                <button class="btn-feedback-chat btn-not-useful" onclick="avaliarChatCompleto(false)">
-                                    <i class="bi bi-hand-thumbs-down"></i>
-                                    <span>Não ajudou</span>
-                                </button>
-                            </div>
-                        </div>
-                    `;
+                        `;
             } else if (chat.status === 2) {
                 feedbackArea.style.display = 'block';
                 feedbackArea.innerHTML = `
-                        <div class="feedback-card">
-                            <div class="feedback-evaluated">
-                                <i class="bi bi-check-circle-fill"></i>
-                                <span>Você avaliou esta conversa como útil! 😊</span>
+                            <div class="feedback-card">
+                                <div class="feedback-evaluated">
+                                    <i class="bi bi-check-circle-fill"></i>
+                                    <span>Você avaliou esta conversa como útil! 😊</span>
+                                </div>
                             </div>
-                        </div>
-                    `;
+                        `;
             } else if (chat.status === 3 || chat.status === 4) {
                 feedbackArea.style.display = 'block';
                 feedbackArea.innerHTML = `
-                        <div class="feedback-card">
-                            <div class="feedback-evaluated">
-                                <i class="bi bi-headset"></i>
-                                <span>${chat.status === 3 ? 'Aguardando resposta do técnico...' : 'Ticket resolvido pelo técnico!'}</span>
+                            <div class="feedback-card">
+                                <div class="feedback-evaluated">
+                                    <i class="bi bi-headset"></i>
+                                    <span>${chat.status === 3 ? 'Aguardando resposta do técnico...' : 'Ticket resolvido pelo técnico!'}</span>
+                                </div>
                             </div>
-                        </div>
-                    `;
+                        `;
             } else {
                 feedbackArea.style.display = 'none';
             }

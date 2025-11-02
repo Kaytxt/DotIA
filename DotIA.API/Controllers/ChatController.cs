@@ -224,6 +224,67 @@ namespace DotIA.API.Controllers
             }
         }
 
+        [HttpPost("abrir-ticket-direto")]
+        public async Task<ActionResult> AbrirTicketDireto([FromBody] AbrirTicketDiretoRequest request)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(request.Titulo))
+                {
+                    return BadRequest(new { erro = "O título é obrigatório" });
+                }
+
+                if (string.IsNullOrWhiteSpace(request.Descricao))
+                {
+                    return BadRequest(new { erro = "A descrição do problema é obrigatória" });
+                }
+
+                // Cria o ticket
+                var ticket = new Ticket
+                {
+                    IdSolicitante = request.UsuarioId,
+                    IdTecnico = 1, // Técnico padrão
+                    IdSubcategoria = 1, // Subcategoria padrão
+                    IdNivel = 1, // Nível padrão
+                    DescricaoProblema = request.Descricao,
+                    IdStatus = 1, // Pendente
+                    DataAbertura = DateTime.UtcNow
+                };
+
+                _context.Tickets.Add(ticket);
+                await _context.SaveChangesAsync();
+
+                // Cria o chat histórico vinculado ao ticket
+                var chatHistorico = new ChatHistorico
+                {
+                    IdSolicitante = request.UsuarioId,
+                    Titulo = request.Titulo.Length > 50
+                        ? request.Titulo.Substring(0, 50) + "..."
+                        : request.Titulo,
+                    Pergunta = request.Descricao,
+                    Resposta = "Ticket aberto diretamente. Aguardando atendimento do técnico.",
+                    DataHora = DateTime.UtcNow,
+                    Status = 3, // Pendente com Técnico
+                    IdTicket = ticket.Id
+                };
+
+                _context.ChatsHistorico.Add(chatHistorico);
+                await _context.SaveChangesAsync();
+
+                return Ok(new
+                {
+                    sucesso = true,
+                    mensagem = "Ticket criado com sucesso! Um técnico irá atendê-lo em breve.",
+                    ticketId = ticket.Id,
+                    chatId = chatHistorico.Id
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { erro = ex.Message });
+            }
+        }
+
         [HttpGet("verificar-resposta/{chatId}")]
         public async Task<ActionResult> VerificarRespostaTecnico(int chatId)
         {
@@ -383,5 +444,12 @@ namespace DotIA.API.Controllers
     public class EditarTituloRequest
     {
         public string NovoTitulo { get; set; } = string.Empty;
+    }
+
+    public class AbrirTicketDiretoRequest
+    {
+        public int UsuarioId { get; set; }
+        public string Titulo { get; set; } = string.Empty;
+        public string Descricao { get; set; } = string.Empty;
     }
 }

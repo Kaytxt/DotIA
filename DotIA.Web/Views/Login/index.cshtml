@@ -114,8 +114,16 @@
             border: 2px solid rgba(141, 75, 255, 0.3);
             border-radius: 15px;
             color: #e5e7eb;
-            padding: 14px 20px 14px 50px;
+            padding: 14px 50px 14px 16px;
             transition: all 0.3s;
+        }
+
+        #senha.form-control {
+            padding-right: 50px !important;
+        }
+
+        .with-icon-left {
+            padding-left: 44px !important; 
         }
 
         .form-control:focus {
@@ -311,7 +319,6 @@
                             <i class="bi bi-envelope"></i> Email
                         </label>
                         <div class="input-icon-wrapper">
-                            <span class="input-group-text">📧</span>
                             <input type="email"
                                    class="form-control"
                                    id="email"
@@ -327,7 +334,6 @@
                             <i class="bi bi-lock"></i> Senha
                         </label>
                         <div class="input-icon-wrapper">
-                            <span class="input-group-text">🔒</span>
                             <input type="password"
                                    class="form-control"
                                    id="senha"
@@ -347,7 +353,6 @@
                                 Lembrar-me
                             </label>
                         </div>
-                        <a href="#" class="link-purple">Esqueceu a senha?</a>
                     </div>
 
                     <button type="submit" class="btn btn-primary w-100 mb-3">

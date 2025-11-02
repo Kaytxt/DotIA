@@ -246,6 +246,31 @@ namespace DotIA.Web.Services
             }
         }
 
+        public async Task<AbrirTicketDiretoResponse> AbrirTicketDiretoAsync(int usuarioId, string titulo, string descricao)
+        {
+            try
+            {
+                var request = new { UsuarioId = usuarioId, Titulo = titulo, Descricao = descricao };
+                var json = JsonSerializer.Serialize(request);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                var response = await _httpClient.PostAsync("api/Chat/abrir-ticket-direto", content);
+                var result = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return JsonSerializer.Deserialize<AbrirTicketDiretoResponse>(result, _jsonOpts)
+                           ?? new AbrirTicketDiretoResponse { Sucesso = false, Mensagem = "Erro ao processar resposta" };
+                }
+
+                return new AbrirTicketDiretoResponse { Sucesso = false, Mensagem = "Erro ao abrir ticket" };
+            }
+            catch (Exception ex)
+            {
+                return new AbrirTicketDiretoResponse { Sucesso = false, Mensagem = $"Erro: {ex.Message}" };
+            }
+        }
+
         // ═══════════════════════════════════════════════════════════
         // TICKETS (usuário)
         // ═══════════════════════════════════════════════════════════
@@ -701,5 +726,13 @@ namespace DotIA.Web.Services
         public int TotalTickets { get; set; }
         public int TicketsAbertos { get; set; }
         public int TicketsResolvidos { get; set; }
+    }
+
+    public class AbrirTicketDiretoResponse
+    {
+        public bool Sucesso { get; set; }
+        public string Mensagem { get; set; } = string.Empty;
+        public int TicketId { get; set; }
+        public int ChatId { get; set; }
     }
 }

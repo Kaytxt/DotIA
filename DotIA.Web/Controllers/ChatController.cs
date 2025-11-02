@@ -107,6 +107,22 @@ namespace DotIA.Web.Controllers
             var sucesso = await _apiClient.ExcluirChatAsync(chatId);
             return Json(new { sucesso });
         }
+
+        [HttpPost("Chat/AbrirTicketDireto")]
+        public async Task<IActionResult> AbrirTicketDireto([FromBody] AbrirTicketDiretoWebRequest request)
+        {
+            var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
+            if (usuarioId == null)
+                return Unauthorized();
+
+            var resultado = await _apiClient.AbrirTicketDiretoAsync(
+                usuarioId.Value,
+                request.Titulo,
+                request.Descricao
+            );
+
+            return Json(resultado);
+        }
     }
 
     public class PerguntaRequest
@@ -131,5 +147,10 @@ namespace DotIA.Web.Controllers
     {
         public int ChatId { get; set; }
         public string Mensagem { get; set; } = string.Empty;
+    }
+    public class AbrirTicketDiretoWebRequest
+    {
+        public string Titulo { get; set; } = string.Empty;
+        public string Descricao { get; set; } = string.Empty;
     }
 }

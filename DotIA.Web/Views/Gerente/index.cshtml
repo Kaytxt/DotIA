@@ -6,630 +6,219 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"]</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet" />
+
     <style>
+        :root{
+            --primary-blue:#3b82f6;
+            --secondary-blue:#2563eb;
+            --primary-purple:#8b5cf6;
+            --primary-green:#10b981;
 
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
+            --dark-bg:#1a132f;
+            --darker-bg:#1e1433;
+
+            /* novos para painel/tabelas */
+            --panel-bg:#221a3d;          /* roxo escuro para fundos */
+            --panel-bg-2:#20173a;        /* um pouco mais escuro (thead) */
+            --panel-hover:#231a3f;       /* hover */
+            --panel-border:#3d2e6b;      /* divisão roxo claro */
+
+            --text-color:#e8e8ff;
+            --text-muted:#9ca3af;
         }
 
-        .refresh-section-btn {
-            background: rgba(59, 130, 246, 0.2);
-            border: 2px solid var(--primary-blue);
-            color: var(--primary-blue);
-            padding: 10px 20px;
-            border-radius: 12px;
-            font-weight: 600;
-            transition: all 0.3s;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .refresh-section-btn:hover {
-            background: rgba(59, 130, 246, 0.3);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
-        }
-
-        .refresh-section-btn.spinning i {
-            animation: spin 0.8s linear;
-        }
-
-        .refresh-button-float {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, var(--primary-blue), var(--primary-purple));
-            border: none;
-            border-radius: 50%;
-            color: white;
-            font-size: 24px;
-            cursor: pointer;
-            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
-            transition: all 0.3s;
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .refresh-button-float:hover {
-            transform: translateY(-5px) scale(1.1);
-            box-shadow: 0 12px 30px rgba(59, 130, 246, 0.6);
-        }
-
-        .refresh-button-float:active {
-            transform: translateY(-2px) scale(1.05);
-        }
-
-        .refresh-button-float.spinning {
-            animation: spin 1s linear;
-        }
-
-        @@keyframe spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        .refresh-badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: #ef4444;
-            color: white;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            font-weight: 700;
-            animation: pulse-badge 2s infinite;
-        }
-
-        @@keyframe pulse-badge {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-        }
-
-        .update-indicator {
-            position: fixed;
-            top: 20px;
-            right: 30px;
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: white;
-            padding: 12px 20px;
-            border-radius: 12px;
-            font-weight: 600;
-            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
-            z-index: 1001;
-            animation: slideInRight 0.3s ease-out;
-            display: none;
-        }
-
-        .update-indicator.show {
-            display: block;
-        }
-
-        @@keyframe slideInRight {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        .auto-refresh-status {
-            position: fixed;
-            bottom: 30px;
-            left: 30px;
-            background: rgba(59, 130, 246, 0.1);
-            border: 1px solid var(--primary-blue);
-            color: var(--primary-blue);
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            z-index: 999;
-        }
-
-        .auto-refresh-status .pulse-dot {
-            width: 8px;
-            height: 8px;
-            background: var(--primary-blue);
-            border-radius: 50%;
-            animation: pulse-dot 2s infinite;
-        }
-
-        @@keyframe pulse-dot {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
-        }
-
-        :root {
-            --primary-blue: #3b82f6;
-            --secondary-blue: #2563eb;
-            --primary-purple: #8b5cf6;
-            --primary-green: #10b981;
-            --dark-bg: #1a132f;
-            --darker-bg: #1e1433;
-            --card-bg: #2c204d;
-            --border-color: #3d2e6b;
-            --text-color: #e5e7eb;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
+        *{ box-sizing:border-box; margin:0; padding:0; }
+        body{
             background: var(--dark-bg);
             color: var(--text-color);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             overflow-x: hidden;
         }
 
-        .header {
-            background: linear-gradient(135deg, var(--darker-bg), var(--dark-bg));
-            border-bottom: 2px solid var(--border-color);
-            padding: 20px 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        /* Header */
+        .header{
+            background: linear-gradient(135deg,var(--darker-bg),var(--dark-bg));
+            border-bottom:2px solid var(--panel-border);
+            padding:20px 40px;
+            display:flex;justify-content:space-between;align-items:center;
+            position:sticky;top:0;z-index:100;
+            box-shadow:0 4px 20px rgba(0,0,0,.3);
+        }
+        .logo-container{ display:flex;align-items:center;gap:15px; }
+        .logo-icon{
+            width:55px;height:55px;border-radius:15px;
+            background:linear-gradient(135deg,var(--primary-blue),var(--primary-purple));
+            display:flex;align-items:center;justify-content:center;font-size:32px;
+            box-shadow:0 8px 20px rgba(59,130,246,.4);
+            animation:pulse 2s ease-in-out infinite;
+        }
+        @@keyframe pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+        .logo-text{
+            font-size:32px;font-weight:800;
+            background:linear-gradient(135deg,var(--primary-blue),var(--primary-purple));
+            -webkit-background-clip:text;-webkit-text-fill-color:transparent;
         }
 
-        .logo-container {
-            display: flex;
-            align-items: center;
-            gap: 15px;
+        .container-fluid{ padding:30px 40px; max-width:1800px; margin:0 auto; }
+
+        /* Cards */
+        .stats-grid{ display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:25px;margin-bottom:35px; }
+        .stat-card{
+            background: linear-gradient(135deg, var(--panel-bg), var(--darker-bg));
+            border:2px solid var(--panel-border);
+            border-radius:22px;
+            padding:28px; position:relative; overflow:hidden;
+            transition:.3s ease;
+        }
+        .stat-card:hover{ transform:translateY(-6px); border-color:var(--primary-blue); box-shadow:0 12px 34px rgba(59,130,246,.28); }
+        .stat-icon{
+            width:68px;height:68px;border-radius:18px;
+            display:flex;align-items:center;justify-content:center;font-size:34px;margin-bottom:18px;
+            box-shadow:0 8px 20px rgba(0,0,0,.28);
+        }
+        .stat-value{
+            font-size:42px;font-weight:800;margin-bottom:6px;
+            background:linear-gradient(135deg,var(--primary-blue),var(--primary-purple));
+            -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+        }
+        .stat-label{ color:var(--text-muted); font-size:14px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; }
+
+        /* Abas */
+        .tabs-nav{
+            display:flex; gap:14px; margin-bottom:26px; border-bottom:3px solid var(--panel-border); padding-bottom:0; flex-wrap:wrap;
+        }
+        .tab-btn{
+            background:transparent;border:none;padding:14px 26px;color:#bfbfe8;
+            font-weight:800;font-size:15px;border-bottom:4px solid transparent;cursor:pointer;transition:.2s;
+            display:flex;align-items:center;gap:10px;border-top-left-radius:12px;border-top-right-radius:12px;
+        }
+        .tab-btn:hover{ color:#fff; background:rgba(139,92,246,.12); }
+        .tab-btn.active{ color:#fff; border-bottom-color:var(--primary-blue); background:rgba(59,130,246,.12); }
+
+        .section-title{
+            font-size:26px;font-weight:800;margin:16px 0 18px;display:flex;align-items:center;gap:12px;
+            background:linear-gradient(135deg,var(--primary-blue),var(--primary-purple));
+            -webkit-background-clip:text;-webkit-text-fill-color:transparent;
         }
 
-        .logo-icon {
-            width: 55px;
-            height: 55px;
-            background: linear-gradient(135deg, var(--primary-blue), var(--primary-purple));
-            border-radius: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 32px;
-            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
-            animation: pulse 2s ease-in-out infinite;
-        }
-
-        @@keyframe pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
-        .logo-text {
-            font-size: 32px;
-            font-weight: 800;
-            background: linear-gradient(135deg, var(--primary-blue), var(--primary-purple));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .container-fluid {
-            padding: 30px 40px;
-            max-width: 1800px;
-            margin: 0 auto;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-            margin-bottom: 35px;
-        }
-
-        .stat-card {
-            background: linear-gradient(135deg, var(--card-bg), var(--darker-bg));
-            border: 2px solid var(--border-color);
-            border-radius: 20px;
-            padding: 30px;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
+        /* Contêiner tabelas/painéis */
+        .data-table-container{
+            background: var(--panel-bg);
+            border: 2px solid var(--panel-border);
+            border-radius: 22px;
             overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,.32);
         }
 
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), transparent);
-            opacity: 0;
-            transition: opacity 0.4s;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 40px rgba(59, 130, 246, 0.3);
-            border-color: var(--primary-blue);
-        }
-
-        .stat-card:hover::before {
-            opacity: 1;
-        }
-
-        .stat-icon {
-            width: 70px;
-            height: 70px;
-            border-radius: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 36px;
-            margin-bottom: 20px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        .stat-value {
-            font-size: 42px;
-            font-weight: 800;
-            margin-bottom: 8px;
-            background: linear-gradient(135deg, var(--primary-blue), var(--primary-purple));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .stat-label {
-            color: #9ca3af;
-            font-size: 15px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .section-title {
-            font-size: 28px;
-            font-weight: 800;
-            margin: 40px 0 25px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            background: linear-gradient(135deg, var(--primary-blue), var(--primary-purple));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .tabs-nav {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 30px;
-            border-bottom: 3px solid var(--border-color);
-            padding-bottom: 0;
-            flex-wrap: wrap;
-        }
-
-        .tab-btn {
-            background: transparent;
-            border: none;
-            padding: 15px 30px;
-            color: #9ca3af;
-            font-weight: 700;
-            font-size: 16px;
-            border-bottom: 4px solid transparent;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .tab-btn:hover {
+        /* Tabelas Dark */
+        .table{
+            --bs-table-bg: transparent;
+            --bs-table-striped-bg: rgba(255,255,255,.02);
+            --bs-table-striped-color: var(--text-color);
+            --bs-table-hover-bg: transparent;
+            --bs-table-hover-color: var(--text-color);
             color: var(--text-color);
-            background: rgba(59, 130, 246, 0.1);
+            margin:0;
+        }
+        .table thead,
+        .table thead tr,
+        .table thead th{
+            background: var(--panel-bg-2) !important;
+            color: #fff !important;
+            border-bottom: 1px solid var(--panel-border) !important;
+        }
+        .table th,
+        .table td{
+            color: var(--text-color) !important;
+            border-top: none !important;
+            background: transparent !important;
+            vertical-align: middle;
+            padding: 18px 20px;
+        }
+        .table tbody tr{
+            border-bottom: 1px solid var(--panel-border) !important;
+            transition: background .2s ease, transform .2s ease;
+        }
+        .table-hover tbody tr:hover{
+            background: var(--panel-hover) !important;
+            transform: scale(1.002);
         }
 
-        .tab-btn.active {
-            color: var(--primary-blue);
-            border-bottom-color: var(--primary-blue);
-            background: rgba(59, 130, 246, 0.1);
+        /* Badges */
+        .badge{ padding:8px 14px;border-radius:10px;font-weight:800;font-size:12px;text-transform:uppercase;letter-spacing:.4px; }
+        .badge-primary{ background: rgba(59,130,246,.16); color:#8fb8ff; border:1px solid rgba(59,130,246,.28); }
+        .badge-success{ background: rgba(16,185,129,.16); color:#7ae1bf; border:1px solid rgba(16,185,129,.28); }
+        .badge-warning{ background: rgba(251,191,36,.16); color:#ffd483; border:1px solid rgba(251,191,36,.28); }
+        .badge-purple{ background: rgba(139,92,246,.16); color:#ccb7ff; border:1px solid rgba(139,92,246,.28); }
+
+        /* Ícones & Botões utilitários */
+        .bi{ font-family: "bootstrap-icons" !important; font-style: normal; font-weight: normal; line-height: 1; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+        .btn-icon{
+            width:36px;height:36px; display:inline-flex; align-items:center; justify-content:center;
+            background:#211a3c; border:1px solid var(--panel-border); color:#dcd7ff;
+            border-radius:10px; margin:0 4px; transition:.18s ease; outline:0;
         }
+        .btn-icon i{ font-size:18px; }
+        .btn-icon:hover{
+            background: rgba(139,92,246,.18); border-color: var(--primary-purple); color:#fff; transform: translateY(-2px);
+        }
+        .btn-icon.danger{ border-color:#ef4444; color:#ff9f9f; }
+        .btn-icon.danger:hover{ background: rgba(239,68,68,.18); color:#fff; }
+
+        /* Modals */
+        .modal-content{ background: var(--panel-bg); border:2px solid var(--panel-border); color:var(--text-color); border-radius:20px; }
+        .modal-header{ border-bottom:2px solid var(--panel-border); padding:22px; }
+        .modal-title{
+            font-weight:800;font-size:22px;
+            background:linear-gradient(135deg,var(--primary-blue),var(--primary-purple));
+            -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+        }
+        .modal-footer{ border-top:2px solid var(--panel-border); padding:22px; }
+        .form-label{ font-weight:800; color:var(--text-color); margin-bottom:10px; font-size:13px; text-transform:uppercase; letter-spacing:.4px; }
+        .form-control,.form-select{
+            background: var(--darker-bg); border:1px solid var(--panel-border); color: var(--text-color);
+            border-radius:12px; padding:12px 14px;
+        }
+        .form-control:focus,.form-select:focus{ background:var(--darker-bg); border-color:var(--primary-blue); color:var(--text-color); box-shadow:0 0 0 4px rgba(59,130,246,.12); }
+
+        /* Util */
+        .empty-state{ text-align:center; padding:70px 12px; color:#8b8fb0; }
+        .empty-state i{ font-size:86px; opacity:.4; display:block; margin-bottom:18px; }
+        .loading-spinner{ display:flex; justify-content:center; align-items:center; padding:60px; }
+        .spinner-border{ width:56px;height:56px;border-width:6px; }
+
+        /* Notificações (animações) */
+        @@keyframe slideInRight{ from{ transform:translateX(100%); opacity:0 } to{ transform:translateX(0); opacity:1 } }
+        @@keyframe slideOutRight{ from{ transform:translateX(0); opacity:1 } to{ transform:translateX(100%); opacity:0 } }
 
         .tab-content {
             display: none;
-            animation: fadeInUp 0.4s ease-out;
         }
 
-        .tab-content.active {
-            display: block;
-        }
-
-        @@keyframe fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .data-table-container {
-            background: var(--card-bg);
-            border: 2px solid var(--border-color);
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        }
-
-        .table {
-            color: var(--text-color);
-            margin: 0;
-        }
-
-        .table thead {
-            background: linear-gradient(135deg, var(--darker-bg), var(--card-bg));
-        }
-
-        .table thead th {
-            padding: 20px;
-            font-weight: 700;
-            text-transform: uppercase;
-            font-size: 13px;
-            letter-spacing: 0.5px;
-            border: none;
-        }
-
-        .table tbody tr {
-            border-bottom: 1px solid var(--border-color);
-            transition: all 0.3s;
-        }
-
-        .table tbody tr:hover {
-            background: rgba(59, 130, 246, 0.1);
-            transform: scale(1.01);
-        }
-
-        .table tbody td {
-            padding: 18px 20px;
-            vertical-align: middle;
-        }
-
-        .badge {
-            padding: 8px 16px;
-            border-radius: 10px;
-            font-weight: 700;
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .badge-primary { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
-        .badge-success { background: rgba(16, 185, 129, 0.2); color: #10b981; }
-        .badge-warning { background: rgba(251, 191, 36, 0.2); color: #fbbf24; }
-        .badge-danger { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
-        .badge-purple { background: rgba(139, 92, 246, 0.2); color: #8b5cf6; }
-
-        .btn-action {
-            background: transparent;
-            border: 2px solid var(--border-color);
-            color: var(--text-color);
-            padding: 8px 16px;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 600;
-            transition: all 0.3s;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .btn-action:hover {
-            background: rgba(59, 130, 246, 0.2);
-            border-color: var(--primary-blue);
-            color: var(--primary-blue);
-            transform: translateY(-2px);
-        }
-
-        .btn-action.btn-success {
-            border-color: var(--primary-green);
-            color: var(--primary-green);
-        }
-
-        .btn-action.btn-success:hover {
-            background: rgba(16, 185, 129, 0.2);
-        }
-
-        .btn-action.btn-danger {
-            border-color: #ef4444;
-            color: #ef4444;
-        }
-
-        .btn-action.btn-danger:hover {
-            background: rgba(239, 68, 68, 0.2);
-        }
-
-        .modal-content {
-            background: var(--card-bg);
-            border: 2px solid var(--border-color);
-            color: var(--text-color);
-            border-radius: 20px;
-        }
-
-        .modal-header {
-            border-bottom: 2px solid var(--border-color);
-            padding: 25px;
-        }
-
-        .modal-title {
-            font-weight: 800;
-            font-size: 24px;
-            background: linear-gradient(135deg, var(--primary-blue), var(--primary-purple));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .modal-body {
-            padding: 30px;
-        }
-
-        .modal-footer {
-            border-top: 2px solid var(--border-color);
-            padding: 25px;
-        }
-
-        .form-label {
-            font-weight: 700;
-            color: var(--text-color);
-            margin-bottom: 10px;
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .form-control, .form-select {
-            background: var(--darker-bg);
-            border: 2px solid var(--border-color);
-            border-radius: 12px;
-            color: var(--text-color);
-            padding: 14px 18px;
-            font-size: 15px;
-            transition: all 0.3s;
-        }
-
-        .form-control:focus, .form-select:focus {
-            background: var(--darker-bg);
-            border-color: var(--primary-blue);
-            color: var(--text-color);
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
-        }
-
-        .form-control::placeholder {
-            color: #6b7280;
-        }
-
-        .form-select option {
-            background: var(--darker-bg);
-            color: var(--text-color);
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary-blue), var(--primary-purple));
-            border: none;
-            padding: 14px 28px;
-            border-radius: 12px;
-            font-weight: 700;
-            font-size: 15px;
-            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
-            transition: all 0.3s;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 30px rgba(59, 130, 246, 0.5);
-        }
-
-        .btn-secondary {
-            background: var(--card-bg);
-            border: 2px solid var(--border-color);
-            color: var(--text-color);
-            padding: 14px 28px;
-            border-radius: 12px;
-            font-weight: 700;
-            font-size: 15px;
-            transition: all 0.3s;
-        }
-
-        .btn-secondary:hover {
-            background: var(--border-color);
-            border-color: var(--primary-blue);
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 80px 20px;
-            color: #6b7280;
-        }
-
-        .empty-state i {
-            font-size: 100px;
-            margin-bottom: 30px;
-            opacity: 0.4;
-            display: block;
-        }
-
-        .empty-state h4 {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 10px;
-            color: var(--text-color);
-        }
-
-        .loading-spinner {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 60px;
-        }
-
-        .spinner-border {
-            width: 60px;
-            height: 60px;
-            border-width: 6px;
-        }
-
-        @@@@media (max-width: 768px) {
-            .stats-grid {
-                grid-template-columns: 1fr;
+            .tab-content.active {
+                display: block;
             }
 
-            .header {
-                padding: 15px 20px;
-            }
-
-            .container-fluid {
-                padding: 20px 15px;
-            }
-
-            .tabs-nav {
-                overflow-x: auto;
-            }
-        }
     </style>
 </head>
+
 <body>
     <div class="header">
         <div class="logo-container">
             <div class="logo-icon">👨‍💼</div>
             <div>
                 <div class="logo-text">DotIA Manager</div>
-                <small style="color: #9ca3af; font-weight: 600;">Painel de Gerenciamento</small>
+                <small style="color:#b7bce6;font-weight:700">Painel de Gerenciamento</small>
             </div>
         </div>
         <div class="d-flex align-items-center gap-3">
-            <span style="font-weight: 600;">Olá, <strong>@ViewBag.Nome</strong></span>
+            <span style="font-weight:700">Olá, <strong>@ViewBag.Nome</strong></span>
             <a href="/Login/Sair" class="btn btn-sm btn-outline-light">
                 <i class="bi bi-box-arrow-right"></i> Sair
             </a>
@@ -637,64 +226,50 @@
     </div>
 
     <div class="container-fluid">
-        <!-- DASHBOARD STATS -->
+        <!-- STATS -->
         <div class="stats-grid" id="statsGrid">
             <div class="stat-card">
-                <div class="stat-icon" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">👥</div>
+                <div class="stat-icon" style="background:linear-gradient(135deg,#3b82f6,#2563eb)">👥</div>
                 <div class="stat-value" id="statUsuarios">0</div>
                 <div class="stat-label">Total de Usuários</div>
             </div>
-
             <div class="stat-card">
-                <div class="stat-icon" style="background: linear-gradient(135deg, #fbbf24, #f59e0b);">🎫</div>
+                <div class="stat-icon" style="background:linear-gradient(135deg,#fbbf24,#f59e0b)">🎫</div>
                 <div class="stat-value" id="statTicketsAbertos">0</div>
                 <div class="stat-label">Tickets em Aberto</div>
             </div>
-
             <div class="stat-card">
-                <div class="stat-icon" style="background: linear-gradient(135deg, #10b981, #059669);">✅</div>
+                <div class="stat-icon" style="background:linear-gradient(135deg,#10b981,#059669)">✅</div>
                 <div class="stat-value" id="statTicketsResolvidos">0</div>
                 <div class="stat-label">Tickets Resolvidos</div>
             </div>
-
             <div class="stat-card">
-                <div class="stat-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">💬</div>
+                <div class="stat-icon" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed)">💬</div>
                 <div class="stat-value" id="statChats">0</div>
                 <div class="stat-label">Total de Chats</div>
             </div>
-
             <div class="stat-card">
-                <div class="stat-icon" style="background: linear-gradient(135deg, #ec4899, #db2777);">📊</div>
+                <div class="stat-icon" style="background:linear-gradient(135deg,#ec4899,#db2777)">📊</div>
                 <div class="stat-value" id="statResolvidosHoje">0</div>
                 <div class="stat-label">Resolvidos Hoje</div>
             </div>
-
             <div class="stat-card">
-                <div class="stat-icon" style="background: linear-gradient(135deg, #06b6d4, #0891b2);">🎯</div>
+                <div class="stat-icon" style="background:linear-gradient(135deg,#06b6d4,#0891b2)">🎯</div>
                 <div class="stat-value" id="statChatsResolvidos">0</div>
                 <div class="stat-label">Chats Concluídos</div>
             </div>
         </div>
 
-        <!-- TABS -->
+        <!-- ABAS -->
         <div class="tabs-nav">
-            <button class="tab-btn active" onclick="mudarTab('tickets')">
-                <i class="bi bi-ticket-detailed"></i> Tickets
-            </button>
-            <button class="tab-btn" onclick="mudarTab('usuarios')">
-                <i class="bi bi-people"></i> Usuários
-            </button>
-            <button class="tab-btn" onclick="mudarTab('relatorios')">
-                <i class="bi bi-bar-chart"></i> Relatórios
-            </button>
+            <button class="tab-btn active" onclick="mudarTab(event,'tickets')"><i class="bi bi-ticket-detailed"></i> Tickets</button>
+            <button class="tab-btn" onclick="mudarTab(event,'usuarios')"><i class="bi bi-people"></i> Usuários</button>
+            <button class="tab-btn" onclick="mudarTab(event,'relatorios')"><i class="bi bi-bar-chart"></i> Relatórios</button>
         </div>
 
-        <!-- TAB TICKETS -->
+        <!-- TICKETS -->
         <div class="tab-content active" id="tab-tickets">
-            <div class="section-title">
-                <i class="bi bi-ticket-detailed-fill"></i>
-                Gerenciamento de Tickets
-            </div>
+            <div class="section-title"><i class="bi bi-ticket-detailed-fill"></i> Gerenciamento de Tickets</div>
 
             <div class="data-table-container">
                 <table class="table table-hover">
@@ -706,15 +281,13 @@
                             <th>Descrição</th>
                             <th>Status</th>
                             <th>Data Abertura</th>
-                            <th class="text-center">Ações</th>
+                            <!-- Removido: coluna de Ações/Responder -->
                         </tr>
                     </thead>
                     <tbody id="ticketsTableBody">
                         <tr>
-                            <td colspan="7">
-                                <div class="loading-spinner">
-                                    <div class="spinner-border text-primary" role="status"></div>
-                                </div>
+                            <td colspan="6">
+                                <div class="loading-spinner"><div class="spinner-border text-primary" role="status"></div></div>
                             </td>
                         </tr>
                     </tbody>
@@ -722,12 +295,9 @@
             </div>
         </div>
 
-        <!-- TAB USUÁRIOS -->
+        <!-- USUÁRIOS -->
         <div class="tab-content" id="tab-usuarios">
-            <div class="section-title">
-                <i class="bi bi-people-fill"></i>
-                Gerenciamento de Usuários
-            </div>
+            <div class="section-title"><i class="bi bi-people-fill"></i> Gerenciamento de Usuários</div>
 
             <div class="data-table-container">
                 <table class="table table-hover">
@@ -745,9 +315,7 @@
                     <tbody id="usersTableBody">
                         <tr>
                             <td colspan="7">
-                                <div class="loading-spinner">
-                                    <div class="spinner-border text-primary" role="status"></div>
-                                </div>
+                                <div class="loading-spinner"><div class="spinner-border text-primary" role="status"></div></div>
                             </td>
                         </tr>
                     </tbody>
@@ -755,31 +323,26 @@
             </div>
         </div>
 
-        <!-- TAB RELATÓRIOS -->
+        <!-- RELATÓRIOS -->
         <div class="tab-content" id="tab-relatorios">
-            <div class="section-title">
+            <div class="d-flex align-items-center gap-2 mb-3">
                 <i class="bi bi-bar-chart-fill"></i>
-                Relatórios e Estatísticas
+                <h3 class="m-0" style="font-weight:800;background:linear-gradient(135deg,var(--primary-blue),var(--primary-purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Relatórios e Estatísticas</h3>
             </div>
 
             <div class="row">
                 <div class="col-md-6 mb-4">
                     <div class="data-table-container">
-                        <div style="padding: 30px;">
-                            <h5 class="mb-4" style="font-weight: 700;">
-                                <i class="bi bi-building"></i> Por Departamento
-                            </h5>
+                        <div style="padding:26px">
+                            <h5 class="mb-3" style="font-weight:800"><i class="bi bi-building"></i> Por Departamento</h5>
                             <div id="departamentosChart"></div>
                         </div>
                     </div>
                 </div>
-
                 <div class="col-md-6 mb-4">
                     <div class="data-table-container">
-                        <div style="padding: 30px;">
-                            <h5 class="mb-4" style="font-weight: 700;">
-                                <i class="bi bi-trophy"></i> Top Usuários
-                            </h5>
+                        <div style="padding:26px">
+                            <h5 class="mb-3" style="font-weight:800"><i class="bi bi-trophy"></i> Top Usuários</h5>
                             <div id="topUsersList"></div>
                         </div>
                     </div>
@@ -789,7 +352,7 @@
     </div>
 
     <!-- MODALS -->
-    <!-- Modal Editar Usuário -->
+    <!-- Editar Usuário -->
     <div class="modal fade" id="editUserModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -798,14 +361,14 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <input type="hidden" id="editUserId">
+                    <input type="hidden" id="editUserId" />
                     <div class="mb-3">
                         <label class="form-label">Nome</label>
-                        <input type="text" class="form-control" id="editUserName">
+                        <input type="text" class="form-control" id="editUserName" />
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Email</label>
-                        <input type="email" class="form-control" id="editUserEmail">
+                        <input type="email" class="form-control" id="editUserEmail" />
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Departamento</label>
@@ -822,7 +385,7 @@
         </div>
     </div>
 
-    <!-- Modal Alterar Senha -->
+    <!-- Alterar Senha -->
     <div class="modal fade" id="alterarSenhaModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -831,17 +394,15 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <input type="hidden" id="senhaUserId">
-                    <p style="color: #9ca3af; margin-bottom: 20px;">
-                        Alterando senha de: <strong id="senhaUserName"></strong>
-                    </p>
+                    <input type="hidden" id="senhaUserId" />
+                    <p style="color:#b9bde3;margin-bottom:18px">Alterando senha de: <strong id="senhaUserName"></strong></p>
                     <div class="mb-3">
                         <label class="form-label">Nova Senha</label>
-                        <input type="password" class="form-control" id="novaSenha" placeholder="Mínimo 6 caracteres" minlength="6">
+                        <input type="password" class="form-control" id="novaSenha" placeholder="Mínimo 6 caracteres" minlength="6" />
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Confirmar Senha</label>
-                        <input type="password" class="form-control" id="confirmarSenha" placeholder="Digite novamente">
+                        <input type="password" class="form-control" id="confirmarSenha" placeholder="Digite novamente" />
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -854,56 +415,7 @@
         </div>
     </div>
 
-    <!-- Modal Responder Ticket -->
-    <div class="modal fade" id="responderTicketModal" tabindex="-1">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Responder Ticket</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <input type="hidden" id="ticketId">
-
-                    <!-- Informações do Ticket -->
-                    <div style="background: var(--darker-bg); padding: 20px; border-radius: 12px; margin-bottom: 25px;">
-                        <h6 style="color: var(--primary-blue); margin-bottom: 15px; font-weight: 700;">
-                            <i class="bi bi-info-circle"></i> Informações do Ticket
-                        </h6>
-                        <div class="row">
-                            <div class="col-md-6 mb-2">
-                                <strong>Solicitante:</strong> <span id="ticketSolicitante"></span>
-                            </div>
-                            <div class="col-md-6 mb-2">
-                                <strong>Departamento:</strong> <span id="ticketDepartamento"></span>
-                            </div>
-                        </div>
-                        <div class="mt-3">
-                            <strong>Problema:</strong>
-                            <p id="ticketProblema" style="margin-top: 10px; color: #9ca3af;"></p>
-                        </div>
-                    </div>
-
-                    <!-- Campo de Resposta -->
-                    <div class="mb-3">
-                        <label class="form-label">Sua Resposta</label>
-                        <textarea class="form-control" id="ticketResposta" rows="6" placeholder="Digite sua resposta ao cliente..."></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn-action btn-success" onclick="enviarResposta(false)">
-                        <i class="bi bi-reply"></i> Enviar Resposta
-                    </button>
-                    <button type="button" class="btn btn-primary" onclick="enviarResposta(true)">
-                        <i class="bi bi-check-circle"></i> Resolver e Fechar
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Ver Tickets do Usuário -->
+    <!-- Ver Tickets do Usuário -->
     <div class="modal fade" id="userTicketsModal" tabindex="-1">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
@@ -913,15 +425,48 @@
                 </div>
                 <div class="modal-body">
                     <div id="userTicketsContent">
-                        <div class="loading-spinner">
-                            <div class="spinner-border text-primary" role="status"></div>
-                        </div>
+                        <div class="loading-spinner"><div class="spinner-border text-primary" role="status"></div></div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Alterar Cargo -->
+    <div class="modal fade" id="alterarCargoModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Alterar Cargo do Usuário</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="cargoUserId" />
+                    <p style="color:#b9bde3;margin-bottom:16px">Alterando cargo de: <strong id="cargoUserName"></strong></p>
+                    <div class="mb-3">
+                        <label class="form-label">Novo Cargo</label>
+                        <select class="form-select" id="novoCargo">
+                            <option value="Solicitante">Solicitante (Usuário Normal)</option>
+                            <option value="Tecnico">Técnico</option>
+                            <option value="Gerente">Gerente (Administrador)</option>
+                        </select>
+                    </div>
+                    <div class="alert alert-warning" style="background:rgba(251,191,36,.1);border:1px solid #fbbf24;color:#fbbf24;border-radius:12px">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        <strong>Atenção:</strong> Ao promover para Técnico/Gerente, o usuário terá acesso ao painel administrativo.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="salvarCargo()">
+                        <i class="bi bi-shield-check"></i> Alterar Cargo
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         let departamentos = [];
@@ -936,257 +481,143 @@
             carregarUsuarios();
         });
 
-        // ═══════════════════════════════════════════════════════════
-        // TABS
-        // ═══════════════════════════════════════════════════════════
+        function mudarTab(evt, tabName) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
 
-        function mudarTab(tabName) {
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            if (evt && evt.currentTarget) evt.currentTarget.classList.add('active');
+            const tab = document.getElementById(`tab-${tabName}`);
+            if (tab) tab.classList.add('active');
 
-            event.currentTarget.classList.add('active');
-            document.getElementById(`tab-${tabName}`).classList.add('active');
-
-            if (tabName === 'relatorios') {
-                carregarRelatorios();
-            } else if (tabName === 'tickets') {
-                carregarTickets();
-            } else if (tabName === 'usuarios') {
-                carregarUsuarios();
-            }
+            if (tabName === 'relatorios') { carregarRelatorios(); }
+            else if (tabName === 'tickets') { carregarTickets(); }
+            else if (tabName === 'usuarios') { carregarUsuarios(); }
         }
 
-        // ═══════════════════════════════════════════════════════════
-        // DASHBOARD
-        // ═══════════════════════════════════════════════════════════
-
+        /* DASHBOARD */
         async function carregarDashboard() {
             try {
-                const response = await fetch('/Gerente/ObterDashboard');
-                dashboard = await response.json();
-
+                const r = await fetch('/Gerente/ObterDashboard');
+                dashboard = await r.json();
                 document.getElementById('statUsuarios').textContent = dashboard.totalUsuarios || 0;
                 document.getElementById('statTicketsAbertos').textContent = dashboard.ticketsAbertos || 0;
                 document.getElementById('statTicketsResolvidos').textContent = dashboard.ticketsResolvidos || 0;
                 document.getElementById('statChats').textContent = dashboard.totalChats || 0;
                 document.getElementById('statResolvidosHoje').textContent = dashboard.ticketsResolvidosHoje || 0;
                 document.getElementById('statChatsResolvidos').textContent = dashboard.chatsResolvidos || 0;
-            } catch (error) {
-                console.error('Erro ao carregar dashboard:', error);
-            }
+            } catch (e) { console.error('Dashboard:', e); }
         }
 
-        // ═══════════════════════════════════════════════════════════
-        // TICKETS
-        // ═══════════════════════════════════════════════════════════
-
+        /* TICKETS (sem responder) */
         async function carregarTickets() {
             try {
-                const response = await fetch('/Gerente/ObterTodosTickets');
-                tickets = await response.json();
-
+                const r = await fetch('/Gerente/ObterTodosTickets');
+                tickets = await r.json();
                 const tbody = document.getElementById('ticketsTableBody');
 
-                if (tickets.length === 0) {
+                if (!tickets.length) {
                     tbody.innerHTML = `
-                                <tr>
-                                    <td colspan="7">
-                                        <div class="empty-state">
-                                            <i class="bi bi-ticket-detailed"></i>
-                                            <h4>Nenhum ticket encontrado</h4>
-                                            <p>Quando houver tickets, eles aparecerão aqui</p>
-                                        </div>
-                                    </td>
-                                </tr>
-                            `;
+                            <tr><td colspan="6">
+                                <div class="empty-state">
+                                    <i class="bi bi-ticket-detailed"></i>
+                                    <h4 style="color:#fff;font-weight:800">Nenhum ticket encontrado</h4>
+                                    <p>Quando houver tickets, eles aparecerão aqui</p>
+                                </div>
+                            </td></tr>`;
                     return;
                 }
 
                 tbody.innerHTML = '';
-                tickets.forEach(ticket => {
-                    const dataAbertura = new Date(ticket.dataAbertura).toLocaleDateString('pt-BR');
-                    const statusClass = ticket.idStatus === 1 ? 'warning' : 'success';
+                tickets.forEach(t => {
+                    const dataAbertura = new Date(t.dataAbertura).toLocaleDateString('pt-BR');
+                    const statusClass = t.idStatus === 1 ? 'warning' : 'success';
 
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
-                                <td><strong>#${ticket.id}</strong></td>
-                                <td>${ticket.nomeSolicitante}</td>
-                                <td><span class="badge badge-primary">${ticket.departamento}</span></td>
-                                <td style="max-width: 300px;">
-                                    <div class="text-truncate">${ticket.descricaoProblema}</div>
-                                </td>
-                                <td><span class="badge badge-${statusClass}">${ticket.status}</span></td>
-                                <td>${dataAbertura}</td>
-                                <td class="text-center">
-                                    ${ticket.idStatus === 1 ? `
-                                        <button class="btn-action btn-success" onclick="abrirModalResponder(${ticket.id})" title="Responder">
-                                            <i class="bi bi-reply"></i>
-                                        </button>
-                                    ` : '<span class="text-muted">Resolvido</span>'}
-                                </td>
-                            `;
+                            <td><strong>#${t.id}</strong></td>
+                            <td>${t.nomeSolicitante}</td>
+                            <td><span class="badge badge-primary">${t.departamento}</span></td>
+                            <td style="max-width:420px"><div class="text-truncate">${t.descricaoProblema}</div></td>
+                            <td><span class="badge badge-${statusClass}">${t.status}</span></td>
+                            <td>${dataAbertura}</td>`;
                     tbody.appendChild(tr);
                 });
-            } catch (error) {
-                console.error('Erro ao carregar tickets:', error);
-                document.getElementById('ticketsTableBody').innerHTML = `
-                            <tr><td colspan="7" class="text-center text-danger">Erro ao carregar tickets</td></tr>
-                        `;
+            } catch (e) {
+                console.error('Tickets:', e);
+                document.getElementById('ticketsTableBody').innerHTML =
+                    `<tr><td colspan="6" class="text-center text-danger">Erro ao carregar tickets</td></tr>`;
             }
         }
 
-        function abrirModalResponder(ticketId) {
-            const ticket = tickets.find(t => t.id === ticketId);
-            if (!ticket) return;
-
-            document.getElementById('ticketId').value = ticket.id;
-            document.getElementById('ticketSolicitante').textContent = ticket.nomeSolicitante;
-            document.getElementById('ticketDepartamento').textContent = ticket.departamento;
-            document.getElementById('ticketProblema').textContent = ticket.descricaoProblema;
-            document.getElementById('ticketResposta').value = '';
-
-            const modal = new bootstrap.Modal(document.getElementById('responderTicketModal'));
-            modal.show();
-        }
-
-        async function enviarResposta(marcarComoResolvido) {
-            const ticketId = document.getElementById('ticketId').value;
-            const resposta = document.getElementById('ticketResposta').value.trim();
-
-            if (!marcarComoResolvido && !resposta) {
-                alert('Por favor, escreva uma resposta');
-                return;
-            }
-
-            if (marcarComoResolvido && !confirm('Tem certeza que deseja marcar este ticket como resolvido?')) {
-                return;
-            }
-
-            try {
-                const response = await fetch('/Gerente/ResponderTicket', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        ticketId: parseInt(ticketId),
-                        resposta: resposta || "Ticket resolvido pelo gerente.",
-                        marcarComoResolvido: marcarComoResolvido
-                    })
-                });
-
-                const data = await response.json();
-
-                if (data.sucesso) {
-                    const modal = bootstrap.Modal.getInstance(document.getElementById('responderTicketModal'));
-                    modal.hide();
-                    mostrarNotificacao(marcarComoResolvido ? 'Ticket resolvido com sucesso!' : 'Resposta enviada!', 'success');
-                    await carregarTickets();
-                    await carregarDashboard();
-                } else {
-                    alert('Erro ao responder ticket');
-                }
-            } catch (error) {
-                console.error('Erro:', error);
-                alert('Erro ao conectar com o servidor');
-            }
-        }
-
-        // ═══════════════════════════════════════════════════════════
-        // USUÁRIOS
-        // ═══════════════════════════════════════════════════════════
-
+        /* DEPARTAMENTOS/USUÁRIOS */
         async function carregarDepartamentos() {
-            try {
-                const response = await fetch('/Gerente/ObterDepartamentos');
-                departamentos = await response.json();
-            } catch (error) {
-                console.error('Erro ao carregar departamentos:', error);
-            }
+            try { const r = await fetch('/Gerente/ObterDepartamentos'); departamentos = await r.json(); }
+            catch (e) { console.error('Departamentos:', e); }
         }
 
         async function carregarUsuarios() {
             try {
-                const response = await fetch('/Gerente/ObterUsuarios');
-                usuarios = await response.json();
-
+                const r = await fetch('/Gerente/ObterUsuarios');
+                usuarios = await r.json();
                 const tbody = document.getElementById('usersTableBody');
 
-                if (usuarios.length === 0) {
+                if (!usuarios.length) {
                     tbody.innerHTML = `
-                                <tr>
-                                    <td colspan="7">
-                                        <div class="empty-state">
-                                            <i class="bi bi-people"></i>
-                                            <h4>Nenhum usuário cadastrado</h4>
-                                        </div>
-                                    </td>
-                                </tr>
-                            `;
+                            <tr><td colspan="7">
+                                <div class="empty-state">
+                                    <i class="bi bi-people"></i>
+                                    <h4 style="color:#fff;font-weight:800">Nenhum usuário cadastrado</h4>
+                                </div>
+                            </td></tr>`;
                     return;
                 }
 
                 tbody.innerHTML = '';
-                usuarios.forEach(usuario => {
+                usuarios.forEach(u => {
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
-                                <td><strong>${usuario.nome}</strong></td>
-                                <td>${usuario.email}</td>
-                                <td><span class="badge badge-primary">${usuario.departamento}</span></td>
-                                <td><span class="badge badge-success">${usuario.totalTickets}</span></td>
-                                <td><span class="badge badge-warning">${usuario.ticketsAbertos}</span></td>
-                                <td><span class="badge badge-purple">${usuario.totalChats}</span></td>
-                                <td class="text-center">
-                                    <button class="btn-action me-1" onclick="editarUsuario(${usuario.id})" title="Editar">
-                                        <i class="bi bi-pencil"></i>
-                                    </button>
-                                    <button class="btn-action me-1" onclick="abrirAlterarCargo(${usuario.id}, '${usuario.nome}')" title="Alterar Cargo">
-                                        <i class="bi bi-shield-check"></i>
-                                    </button>
-                                    <button class="btn-action me-1" onclick="abrirAlterarSenha(${usuario.id}, '${usuario.nome}')" title="Alterar Senha">
-                                        <i class="bi bi-key"></i>
-                                    </button>
-                                    <button class="btn-action me-1" onclick="verTicketsUsuario(${usuario.id}, '${usuario.nome}')" title="Ver Tickets">
-                                        <i class="bi bi-ticket"></i>
-                                    </button>
-                                    <button class="btn-action btn-danger" onclick="excluirUsuario(${usuario.id}, '${usuario.nome}')" title="Excluir">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </td>
-                            `;
+                            <td><strong>${u.nome}</strong></td>
+                            <td>${u.email}</td>
+                            <td><span class="badge badge-primary">${u.departamento}</span></td>
+                            <td><span class="badge badge-success">${u.totalTickets}</span></td>
+                            <td><span class="badge badge-warning">${u.ticketsAbertos}</span></td>
+                            <td><span class="badge badge-purple">${u.totalChats}</span></td>
+                            <td class="text-center">
+                                <div class="d-inline-flex">
+                                    <button class="btn-icon" onclick="editarUsuario(${u.id})" title="Editar"><i class="bi bi-pencil"></i></button>
+                                    <button class="btn-icon" onclick="abrirAlterarCargo(${u.id}, '${u.nome}')" title="Alterar Cargo"><i class="bi bi-shield-check"></i></button>
+                                    <button class="btn-icon" onclick="abrirAlterarSenha(${u.id}, '${u.nome}')" title="Alterar Senha"><i class="bi bi-key"></i></button>
+                                    <button class="btn-icon" onclick="verTicketsUsuario(${u.id}, '${u.nome}')" title="Ver Tickets"><i class="bi bi-ticket-detailed"></i></button>
+                                    <button class="btn-icon danger" onclick="excluirUsuario(${u.id}, '${u.nome}')" title="Excluir"><i class="bi bi-trash"></i></button>
+                                </div>
+                            </td>`;
                     tbody.appendChild(tr);
                 });
-            } catch (error) {
-                console.error('Erro ao carregar usuários:', error);
-                document.getElementById('usersTableBody').innerHTML = `
-                            <tr><td colspan="7" class="text-center text-danger">Erro ao carregar usuários</td></tr>
-                        `;
+            } catch (e) {
+                console.error('Usuários:', e);
+                document.getElementById('usersTableBody').innerHTML =
+                    `<tr><td colspan="7" class="text-center text-danger">Erro ao carregar usuários</td></tr>`;
             }
         }
 
         async function editarUsuario(usuarioId) {
             try {
-                const response = await fetch(`/Gerente/ObterUsuario/${usuarioId}`);
-                const usuario = await response.json();
+                const r = await fetch(`/Gerente/ObterUsuario/${usuarioId}`);
+                const u = await r.json();
+                document.getElementById('editUserId').value = u.id;
+                document.getElementById('editUserName').value = u.nome;
+                document.getElementById('editUserEmail').value = u.email;
 
-                document.getElementById('editUserId').value = usuario.id;
-                document.getElementById('editUserName').value = usuario.nome;
-                document.getElementById('editUserEmail').value = usuario.email;
-
-                const selectDept = document.getElementById('editUserDepartamento');
-                selectDept.innerHTML = '';
-                departamentos.forEach(dept => {
-                    const option = document.createElement('option');
-                    option.value = dept.id;
-                    option.textContent = dept.nome;
-                    option.selected = dept.id === usuario.idDepartamento;
-                    selectDept.appendChild(option);
+                const sel = document.getElementById('editUserDepartamento');
+                sel.innerHTML = '';
+                departamentos.forEach(d => {
+                    const o = document.createElement('option');
+                    o.value = d.id; o.textContent = d.nome; o.selected = d.id === u.idDepartamento;
+                    sel.appendChild(o);
                 });
 
-                const modal = new bootstrap.Modal(document.getElementById('editUserModal'));
-                modal.show();
-            } catch (error) {
-                console.error('Erro ao carregar usuário:', error);
-                alert('Erro ao carregar dados do usuário');
-            }
+                new bootstrap.Modal(document.getElementById('editUserModal')).show();
+            } catch (e) { console.error('Obter usuário:', e); alert('Erro ao carregar dados do usuário'); }
         }
 
         async function salvarUsuario() {
@@ -1194,39 +625,20 @@
             const nome = document.getElementById('editUserName').value.trim();
             const email = document.getElementById('editUserEmail').value.trim();
             const idDepartamento = parseInt(document.getElementById('editUserDepartamento').value);
-
-            if (!nome || !email) {
-                alert('Preencha todos os campos obrigatórios');
-                return;
-            }
+            if (!nome || !email) { alert('Preencha todos os campos obrigatórios'); return; }
 
             try {
-                const response = await fetch('/Gerente/AtualizarUsuario', {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        usuarioId: parseInt(usuarioId),
-                        nome,
-                        email,
-                        idDepartamento
-                    })
+                const r = await fetch('/Gerente/AtualizarUsuario', {
+                    method: 'PUT', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ usuarioId: parseInt(usuarioId), nome, email, idDepartamento })
                 });
-
-                const data = await response.json();
-
+                const data = await r.json();
                 if (data.sucesso) {
-                    const modal = bootstrap.Modal.getInstance(document.getElementById('editUserModal'));
-                    modal.hide();
+                    bootstrap.Modal.getInstance(document.getElementById('editUserModal')).hide();
                     mostrarNotificacao('Usuário atualizado com sucesso!', 'success');
-                    await carregarUsuarios();
-                    await carregarDashboard();
-                } else {
-                    alert('Erro ao atualizar usuário');
-                }
-            } catch (error) {
-                console.error('Erro ao salvar usuário:', error);
-                alert('Erro ao conectar com o servidor');
-            }
+                    await carregarUsuarios(); await carregarDashboard();
+                } else { alert('Erro ao atualizar usuário'); }
+            } catch (e) { console.error('Salvar usuário:', e); alert('Erro ao conectar com o servidor'); }
         }
 
         function abrirAlterarSenha(usuarioId, nomeUsuario) {
@@ -1234,336 +646,172 @@
             document.getElementById('senhaUserName').textContent = nomeUsuario;
             document.getElementById('novaSenha').value = '';
             document.getElementById('confirmarSenha').value = '';
-
-            const modal = new bootstrap.Modal(document.getElementById('alterarSenhaModal'));
-            modal.show();
+            new bootstrap.Modal(document.getElementById('alterarSenhaModal')).show();
         }
 
         async function salvarSenha() {
             const usuarioId = document.getElementById('senhaUserId').value;
             const novaSenha = document.getElementById('novaSenha').value;
             const confirmarSenha = document.getElementById('confirmarSenha').value;
-
-            if (!novaSenha || novaSenha.length < 6) {
-                alert('A senha deve ter no mínimo 6 caracteres');
-                return;
-            }
-
-            if (novaSenha !== confirmarSenha) {
-                alert('As senhas não coincidem');
-                return;
-            }
+            if (!novaSenha || novaSenha.length < 6) { alert('A senha deve ter no mínimo 6 caracteres'); return; }
+            if (novaSenha !== confirmarSenha) { alert('As senhas não coincidem'); return; }
 
             try {
-                const response = await fetch('/Gerente/AlterarSenha', {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        usuarioId: parseInt(usuarioId),
-                        novaSenha: novaSenha
-                    })
+                const r = await fetch('/Gerente/AlterarSenha', {
+                    method: 'PUT', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ usuarioId: parseInt(usuarioId), novaSenha })
                 });
-
-                const data = await response.json();
-
+                const data = await r.json();
                 if (data.sucesso) {
-                    const modal = bootstrap.Modal.getInstance(document.getElementById('alterarSenhaModal'));
-                    modal.hide();
+                    bootstrap.Modal.getInstance(document.getElementById('alterarSenhaModal')).hide();
                     mostrarNotificacao('Senha alterada com sucesso!', 'success');
-                } else {
-                    alert('Erro ao alterar senha');
-                }
-            } catch (error) {
-                console.error('Erro ao alterar senha:', error);
-                alert('Erro ao conectar com o servidor');
-            }
+                } else { alert('Erro ao alterar senha'); }
+            } catch (e) { console.error('Alterar senha:', e); alert('Erro ao conectar com o servidor'); }
         }
 
         async function excluirUsuario(usuarioId, nomeUsuario) {
-            if (!confirm(`Tem certeza que deseja excluir o usuário "${nomeUsuario}"?\n\nISTO IRÁ DELETAR:\n✗ Todos os chats do usuário\n✗ Todos os tickets do usuário\n✗ Todo o histórico\n\nEsta ação não pode ser desfeita!`)) {
-                return;
-            }
-
+            if (!confirm(`Tem certeza que deseja excluir o usuário "${nomeUsuario}"?\n\nISTO IRÁ DELETAR:\n✗ Todos os chats\n✗ Todos os tickets\n✗ Todo o histórico\n\nEsta ação não pode ser desfeita!`)) return;
             try {
-                const response = await fetch(`/Gerente/ExcluirUsuario/${usuarioId}`, {
-                    method: 'DELETE'
-                });
-
-                const data = await response.json();
-
+                const r = await fetch(`/Gerente/ExcluirUsuario/${usuarioId}`, { method: 'DELETE' });
+                const data = await r.json();
                 if (data.sucesso) {
                     mostrarNotificacao('Usuário excluído com sucesso!', 'success');
-                    await carregarUsuarios();
-                    await carregarDashboard();
-                } else {
-                    alert('Erro ao excluir usuário');
-                }
-            } catch (error) {
-                console.error('Erro ao excluir usuário:', error);
-                alert('Erro ao conectar com o servidor');
-            }
+                    await carregarUsuarios(); await carregarDashboard();
+                } else { alert('Erro ao excluir usuário'); }
+            } catch (e) { console.error('Excluir usuário:', e); alert('Erro ao conectar com o servidor'); }
         }
 
         async function verTicketsUsuario(usuarioId, nomeUsuario) {
             try {
-                const response = await fetch(`/Gerente/ObterTicketsUsuario/${usuarioId}`);
-                const ticketsUsuario = await response.json();
-
-                const modal = new bootstrap.Modal(document.getElementById('userTicketsModal'));
+                const r = await fetch(`/Gerente/ObterTicketsUsuario/${usuarioId}`);
+                const lista = await r.json();
                 const content = document.getElementById('userTicketsContent');
+                const modal = new bootstrap.Modal(document.getElementById('userTicketsModal'));
 
-                if (ticketsUsuario.length === 0) {
+                if (!lista.length) {
                     content.innerHTML = `
-                                <div class="empty-state">
-                                    <i class="bi bi-ticket-detailed"></i>
-                                    <h4>Nenhum ticket encontrado</h4>
-                                    <p>O usuário ${nomeUsuario} não possui tickets</p>
-                                </div>
-                            `;
+                            <div class="empty-state">
+                                <i class="bi bi-ticket-detailed"></i>
+                                <h4 style="color:#fff;font-weight:800">Nenhum ticket encontrado</h4>
+                                <p>O usuário ${nomeUsuario} não possui tickets</p>
+                            </div>`;
                 } else {
-                    let html = `<h6 class="mb-3">Tickets de <strong>${nomeUsuario}</strong></h6>`;
-                    html += '<div class="list-group">';
-
-                    ticketsUsuario.forEach(ticket => {
-                        const dataAbertura = new Date(ticket.dataAbertura).toLocaleDateString('pt-BR');
-                        const statusClass = ticket.idStatus === 1 ? 'warning' : 'success';
-
+                    let html = `<h6 class="mb-3">Tickets de <strong>${nomeUsuario}</strong></h6><div class="list-group">`;
+                    lista.forEach(t => {
+                        const dataAbertura = new Date(t.dataAbertura).toLocaleDateString('pt-BR');
+                        const statusClass = t.idStatus === 1 ? 'warning' : 'success';
                         html += `
-                                    <div class="list-group-item" style="background: var(--darker-bg); border: 1px solid var(--border-color); margin-bottom: 15px; border-radius: 12px; padding: 20px;">
-                                        <div class="d-flex justify-content-between align-items-center mb-2">
-                                            <h6 class="mb-0" style="font-weight: 700;">Ticket #${ticket.id}</h6>
-                                            <span class="badge badge-${statusClass}">${ticket.status}</span>
-                                        </div>
-                                        <p class="mb-2" style="color: #9ca3af;">${ticket.descricaoProblema}</p>
-                                        <small class="text-muted">
-                                            <i class="bi bi-calendar"></i> ${dataAbertura}
-                                        </small>
-                                    </div>
-                                `;
+                              <div class="list-group-item" style="background:var(--darker-bg);border:1px solid var(--panel-border);margin-bottom:12px;border-radius:12px;padding:18px">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h6 class="mb-0" style="font-weight:800">Ticket #${t.id}</h6>
+                                    <span class="badge badge-${statusClass}">${t.status}</span>
+                                </div>
+                                <p class="mb-2" style="color:#b9bde3">${t.descricaoProblema}</p>
+                                <small class="text-muted"><i class="bi bi-calendar"></i> ${dataAbertura}</small>
+                              </div>`;
                     });
-
-                    html += '</div>';
+                    html += `</div>`;
                     content.innerHTML = html;
                 }
 
                 modal.show();
-            } catch (error) {
-                console.error('Erro ao carregar tickets:', error);
-                alert('Erro ao carregar tickets do usuário');
-            }
+            } catch (e) { console.error('Tickets usuário:', e); alert('Erro ao carregar tickets do usuário'); }
         }
 
-        // ═══════════════════════════════════════════════════════════
-        // RELATÓRIOS
-        // ═══════════════════════════════════════════════════════════
-
+        /* RELATÓRIOS */
         async function carregarRelatorios() {
             try {
-                const response = await fetch('/Gerente/ObterRelatorioDepartamentos');
-                const relatorio = await response.json();
-
+                const r = await fetch('/Gerente/ObterRelatorioDepartamentos');
+                const relatorio = await r.json();
                 const chartDiv = document.getElementById('departamentosChart');
-                if (relatorio.length === 0) {
+
+                if (!relatorio.length) {
                     chartDiv.innerHTML = '<div class="empty-state"><p>Nenhum dado disponível</p></div>';
                 } else {
-                    let html = '<div class="table-responsive"><table class="table table-sm">';
+                    let html = '<div class="table-responsive"><table class="table table-sm table-hover">';
                     html += '<thead><tr><th>Departamento</th><th>Usuários</th><th>Tickets</th><th>Abertos</th><th>Resolvidos</th></tr></thead><tbody>';
-
-                    relatorio.forEach(dept => {
+                    relatorio.forEach(d => {
                         html += `
-                                    <tr>
-                                        <td><strong>${dept.departamento}</strong></td>
-                                        <td><span class="badge badge-primary">${dept.totalUsuarios}</span></td>
-                                        <td><span class="badge badge-success">${dept.totalTickets}</span></td>
-                                        <td><span class="badge badge-warning">${dept.ticketsAbertos}</span></td>
-                                        <td><span class="badge badge-success">${dept.ticketsResolvidos}</span></td>
-                                    </tr>
-                                `;
+                              <tr>
+                                <td><strong>${d.departamento}</strong></td>
+                                <td><span class="badge badge-primary">${d.totalUsuarios}</span></td>
+                                <td><span class="badge badge-success">${d.totalTickets}</span></td>
+                                <td><span class="badge badge-warning">${d.ticketsAbertos}</span></td>
+                                <td><span class="badge badge-success">${d.ticketsResolvidos}</span></td>
+                              </tr>`;
                     });
-
                     html += '</tbody></table></div>';
                     chartDiv.innerHTML = html;
                 }
 
                 const topUsersList = document.getElementById('topUsersList');
-                if (dashboard.topUsuarios && dashboard.topUsuarios.length > 0) {
+                if (dashboard.topUsuarios && dashboard.topUsuarios.length) {
                     topUsersList.innerHTML = '';
-                    dashboard.topUsuarios.forEach((user, index) => {
-                        const li = document.createElement('div');
-                        li.style.cssText = 'display: flex; justify-content: space-between; padding: 15px; background: var(--darker-bg); border-radius: 12px; margin-bottom: 12px; align-items: center;';
-                        li.innerHTML = `
-                                    <div style="display: flex; align-items: center; gap: 15px;">
-                                        <div style="width: 40px; height: 40px; background: linear-gradient(135deg, var(--primary-blue), var(--primary-purple)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 18px;">
-                                            ${index + 1}
-                                        </div>
-                                        <strong>${user.nome}</strong>
-                                    </div>
-                                    <span class="badge badge-warning" style="font-size: 14px;">${user.totalTickets} tickets</span>
-                                `;
-                        topUsersList.appendChild(li);
+                    dashboard.topUsuarios.forEach((u, idx) => {
+                        const row = document.createElement('div');
+                        row.style.cssText = 'display:flex;justify-content:space-between;padding:14px;background:var(--darker-bg);border-radius:12px;margin-bottom:12px;align-items:center;border:1px solid var(--panel-border)';
+                        row.innerHTML = `
+                              <div style="display:flex;align-items:center;gap:14px">
+                                <div style="width:40px;height:40px;background:linear-gradient(135deg,var(--primary-blue),var(--primary-purple));border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px">${idx + 1}</div>
+                                <strong>${u.nome}</strong>
+                              </div>
+                              <span class="badge badge-warning" style="font-size:13px">${u.totalTickets} tickets</span>`;
+                        topUsersList.appendChild(row);
                     });
                 } else {
                     topUsersList.innerHTML = '<div class="empty-state"><p>Nenhum dado disponível</p></div>';
                 }
-            } catch (error) {
-                console.error('Erro ao carregar relatórios:', error);
-            }
+            } catch (e) { console.error('Relatórios:', e); }
         }
 
-        // ═══════════════════════════════════════════════════════════
-        // UTILITÁRIOS
-        // ═══════════════════════════════════════════════════════════
-
-        function mostrarNotificacao(mensagem, tipo = 'info') {
+        /* Notificação */
+        function mostrarNotificacao(msg, tipo = 'info') {
             const cores = {
-                success: 'linear-gradient(135deg, #10b981, #059669)',
-                warning: 'linear-gradient(135deg, #fbbf24, #f59e0b)',
-                info: 'linear-gradient(135deg, #3b82f6, #2563eb)'
+                success: 'linear-gradient(135deg,#10b981,#059669)',
+                warning: 'linear-gradient(135deg,#fbbf24,#f59e0b)',
+                info: 'linear-gradient(135deg,#3b82f6,#2563eb)'
             };
-
-            const notif = document.createElement('div');
-            notif.style.cssText = `
-                        position: fixed;
-                        top: 20px;
-                        right: 20px;
-                        background: ${cores[tipo]};
-                        padding: 18px 28px;
-                        border-radius: 15px;
-                        color: white;
-                        font-weight: 700;
-                        z-index: 10000;
-                        animation: slideInRight 0.4s ease-out;
-                        max-width: 450px;
-                        box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-                    `;
-            notif.innerHTML = `<i class="bi bi-check-circle"></i> ${mensagem}`;
-            document.body.appendChild(notif);
-            setTimeout(() => {
-                notif.style.animation = 'slideOutRight 0.4s ease-out';
-                setTimeout(() => notif.remove(), 400);
-            }, 4000);
+            const n = document.createElement('div');
+            n.style.cssText = `
+                      position:fixed;top:20px;right:20px;background:${cores[tipo]};
+                      padding:16px 24px;border-radius:14px;color:#fff;font-weight:800;z-index:10000;
+                      animation:slideInRight .3s ease-out;max-width:420px;box-shadow:0 10px 30px rgba(0,0,0,.4)`;
+            n.innerHTML = `<i class="bi bi-check-circle"></i> ${msg}`;
+            document.body.appendChild(n);
+            setTimeout(() => { n.style.animation = 'slideOutRight .3s ease-out'; setTimeout(() => n.remove(), 300); }, 3800);
         }
 
-        // Atualiza dashboard a cada 30 segundos
-        setInterval(() => {
-            carregarDashboard();
-        }, 30000);
+        /* Atualiza dashboard a cada 30s */
+        setInterval(carregarDashboard, 30000);
 
+        /* Alterar cargo */
         function abrirAlterarCargo(usuarioId, nomeUsuario) {
             document.getElementById('cargoUserId').value = usuarioId;
             document.getElementById('cargoUserName').textContent = nomeUsuario;
             document.getElementById('novoCargo').value = 'Solicitante';
-
-            const modal = new bootstrap.Modal(document.getElementById('alterarCargoModal'));
-            modal.show();
+            new bootstrap.Modal(document.getElementById('alterarCargoModal')).show();
         }
-
         async function salvarCargo() {
             const usuarioId = document.getElementById('cargoUserId').value;
             const novoCargo = document.getElementById('novoCargo').value;
+            if (!novoCargo) { alert('Selecione um cargo válido'); return; }
 
-            if (!novoCargo) {
-                alert('Selecione um cargo válido');
-                return;
-            }
-
-            const cargoTexto = {
-                'Solicitante': 'Usuário Normal',
-                'Tecnico': 'Técnico',
-                'Gerente': 'Gerente (Administrador)'
-            };
-
-            if (!confirm(`Tem certeza que deseja alterar o cargo para ${cargoTexto[novoCargo]}?`)) {
-                return;
-            }
+            const cargoTexto = { 'Solicitante': 'Usuário Normal', 'Tecnico': 'Técnico', 'Gerente': 'Gerente (Administrador)' };
+            if (!confirm(`Tem certeza que deseja alterar o cargo para ${cargoTexto[novoCargo]}?`)) return;
 
             try {
-                const response = await fetch('/Gerente/AlterarCargo', {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        usuarioId: parseInt(usuarioId),
-                        cargo: novoCargo
-                    })
+                const r = await fetch('/Gerente/AlterarCargo', {
+                    method: 'PUT', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ usuarioId: parseInt(usuarioId), cargo: novoCargo })
                 });
-
-                const data = await response.json();
-
+                const data = await r.json();
                 if (data.sucesso) {
-                    const modal = bootstrap.Modal.getInstance(document.getElementById('alterarCargoModal'));
-                    modal.hide();
+                    bootstrap.Modal.getInstance(document.getElementById('alterarCargoModal')).hide();
                     mostrarNotificacao(`Cargo alterado para ${cargoTexto[novoCargo]} com sucesso!`, 'success');
-                    await carregarUsuarios();
-                    await carregarDashboard();
-                } else {
-                    alert('Erro ao alterar cargo');
-                }
-            } catch (error) {
-                console.error('Erro ao alterar cargo:', error);
-                alert('Erro ao conectar com o servidor');
-            }
+                    await carregarUsuarios(); await carregarDashboard();
+                } else { alert('Erro ao alterar cargo'); }
+            } catch (e) { console.error('Alterar cargo:', e); alert('Erro ao conectar com o servidor'); }
         }
-
     </script>
-
-    <style>
-        @@keyframe slideInRight {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        @@keyframe slideOutRight {
-            from {
-                transform: translateX(0);
-                opacity: 1;
-            }
-
-            to {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-        }
-    </style>
-    <div class="modal fade" id="alterarCargoModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Alterar Cargo do Usuário</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <input type="hidden" id="cargoUserId">
-                    <p style="color: #9ca3af; margin-bottom: 20px;">
-                        Alterando cargo de: <strong id="cargoUserName"></strong>
-                    </p>
-                    <div class="mb-3">
-                        <label class="form-label">Novo Cargo</label>
-                        <select class="form-select" id="novoCargo">
-                            <option value="Solicitante">Solicitante (Usuário Normal)</option>
-                            <option value="Tecnico">Técnico</option>
-                            <option value="Gerente">Gerente (Administrador)</option>
-                        </select>
-                    </div>
-                    <div class="alert alert-warning" style="background: rgba(251, 191, 36, 0.1); border: 1px solid #fbbf24; color: #fbbf24; border-radius: 12px;">
-                        <i class="bi bi-exclamation-triangle"></i>
-                        <strong>Atenção:</strong> Ao promover para Técnico/Gerente, o usuário terá acesso ao painel administrativo.
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary" onclick="salvarCargo()">
-                        <i class="bi bi-shield-check"></i> Alterar Cargo
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
 </body>
 </html>
