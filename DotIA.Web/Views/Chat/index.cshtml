@@ -56,6 +56,21 @@
             border-bottom: 1px solid var(--border-color);
         }
 
+        .bot-glow {
+            width: 160px;
+            height: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 0 20px rgba(141, 75, 255, 0.8)) drop-shadow(0 0 40px rgba(168, 85, 247, 0.6));
+            animation: float 4s ease-in-out infinite;
+            transition: transform 0.3s ease, filter 0.3s ease;
+        }
+
+            .bot-glow:hover {
+                transform: scale(1.08);
+                filter: drop-shadow(0 0 30px rgba(141, 75, 255, 1)) drop-shadow(0 0 60px rgba(168, 85, 247, 0.9));
+            }
+
+
         .logo-container {
             display: flex;
             align-items: center;
@@ -63,15 +78,28 @@
         }
 
         .logo-icon {
-            width: 45px;
-            height: 45px;
-            background: linear-gradient(135deg, var(--primary-purple), var(--secondary-purple));
-            border-radius: 12px;
+            width: 40px;
+            height: 40px;
+            background: none;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
+            margin-right: 10px;
+            overflow: visible;
         }
+
+            .logo-icon img {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+                filter: drop-shadow(0 0 10px rgba(141, 75, 255, 0.5));
+                transition: transform 0.3s ease, filter 0.3s ease;
+            }
+
+                .logo-icon img:hover {
+                    transform: scale(1.1);
+                    filter: drop-shadow(0 0 20px rgba(168, 85, 247, 0.8));
+                }
 
         .logo-text {
             font-size: 24px;
@@ -385,11 +413,19 @@
             text-align: center;
         }
 
-        .welcome-icon {
-            font-size: 80px;
-            margin-bottom: 20px;
-            animation: float 3s ease-in-out infinite;
+        .bot-icon {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 50%;
+            filter: drop-shadow(0 0 10px rgba(141, 75, 255, 0.7)) drop-shadow(0 0 25px rgba(168, 85, 247, 0.5));
+            transition: transform 0.3s ease, filter 0.3s ease;
         }
+
+            .bot-icon:hover {
+                transform: scale(1.08);
+                filter: drop-shadow(0 0 20px rgba(141, 75, 255, 1)) drop-shadow(0 0 40px rgba(168, 85, 247, 0.8));
+            }
 
         @@keyframes float {
             0%, 100% {
@@ -443,14 +479,15 @@
         }
 
         .message-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
+            background: none !important; 
+            box-shadow: none !important;
+            width: 75px; 
+            height: 75px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
-            flex-shrink: 0;
+            padding: 0;
+            overflow: visible;
         }
 
         .message.user .message-avatar {
@@ -799,7 +836,9 @@
         <div class="sidebar">
             <div class="sidebar-header">
                 <div class="logo-container">
-                    <div class="logo-icon">🤖</div>
+                    <div class="logo-icon">
+                        <img src="/img/dotia-logo.png" alt="Logo DotIA"> 
+                    </div>
                     <div class="logo-text">DotIA</div>
                 </div>
             </div>
@@ -854,12 +893,14 @@
 
             <div class="messages-container" id="messagesContainer">
                 <div class="welcome-screen" id="welcomeScreen">
-                    <div class="welcome-icon">🤖</div>
+                    <div class="welcome-icon">
+                        <img src="/img/icon-bot.png" alt="DotIA Bot" class="bot-glow">
+                    </div>                    
                     <div class="welcome-title">Bem-vindo ao DotIA!</div>
                     <p class="text-white" style="max-width: 600px;">
                         Sou sua assistente virtual especializada em suporte técnico de TI.
                         Faça qualquer pergunta sobre tecnologia, problemas técnicos ou funcionamento do sistema.
-                        Estou aqui para ajudar! 🚀
+                        Estou aqui para ajudar! 
                     </p>
                 </div>
 
@@ -897,7 +938,9 @@
             <div class="input-area">
                 <div id="chatBlockedNotice"></div>
                 <div class="input-wrapper" id="inputWrapper">
-                    <div class="input-icon">💬</div>
+                    <div class="input-icon">
+                        <img src="/img/icon-bot.png" alt="Bot" style="width: 40px; height: 40px; border-radius: 10px;">
+                    </div>
                     <textarea id="messageInput"
                               placeholder="Digite sua pergunta aqui..."
                               rows="1"
@@ -1276,7 +1319,8 @@ Exemplo:
             let badge = '';
 
             if (tipo === 'user') avatar = '👤';
-            else if (tipo === 'bot') avatar = '🤖';
+            else if (tipo === 'bot') 
+                avatar = `<img src="/img/icon-bot.png" alt="Bot" class="bot-icon">`;
             else if (tipo === 'tech') {
                 avatar = '🛠️';
                 badge = '<div class="tech-badge">✓ Resposta do Técnico</div>';
