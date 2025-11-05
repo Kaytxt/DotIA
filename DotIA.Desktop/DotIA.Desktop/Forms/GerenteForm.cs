@@ -1,11 +1,9 @@
-// DotIA.Desktop/DotIA.Desktop/Forms/GerenteForm.cs
 using System;
-using System.Drawing;
-using System.Windows.Forms;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
+using System.Windows.Forms;
 using DotIA.Desktop.Services;
-using Microsoft.VisualBasic;
 
 namespace DotIA.Desktop.Forms
 {
@@ -15,12 +13,28 @@ namespace DotIA.Desktop.Forms
         private readonly int _usuarioId;
         private readonly string _nomeUsuario;
 
+        // Cores
+        private readonly Color PrimaryBlue = ColorTranslator.FromHtml("#3b82f6");
+        private readonly Color SecondaryBlue = ColorTranslator.FromHtml("#2563eb");
+        private readonly Color PrimaryPurple = ColorTranslator.FromHtml("#8b5cf6");
+        private readonly Color PrimaryGreen = ColorTranslator.FromHtml("#10b981");
+        private readonly Color DarkBg = ColorTranslator.FromHtml("#1a132f");
+        private readonly Color DarkerBg = ColorTranslator.FromHtml("#1e1433");
+        private readonly Color PanelBg = ColorTranslator.FromHtml("#221a3d");
+        private readonly Color PanelBg2 = ColorTranslator.FromHtml("#20173a");
+        private readonly Color PanelBorder = ColorTranslator.FromHtml("#3d2e6b");
+
+        // Layout
+        private Panel headerPanel;
+        private Panel contentPanel;
         private TabControl tabControl;
         private TabPage tabDashboard;
         private TabPage tabTickets;
         private TabPage tabUsuarios;
         private TabPage tabRelatorios;
 
+        // Dashboard
+        private FlowLayoutPanel statsPanel;
         private Label lblTotalUsuarios;
         private Label lblTicketsAbertos;
         private Label lblTicketsResolvidos;
@@ -28,364 +42,221 @@ namespace DotIA.Desktop.Forms
         private Label lblResolvidosHoje;
         private Label lblChatsResolvidos;
 
+        // Tickets
         private DataGridView dgvTickets;
-        private DataGridView dgvUsuarios;
-        private DataGridView dgvRelatorios;
 
-        private System.Windows.Forms.Timer refreshTimer;
-        private DashboardDTO dashboard;
-        private List<UsuarioDTO> usuarios;
-        private List<TicketGerenteDTO> tickets;
+        // Usuários
+        private DataGridView dgvUsuarios;
+        private Button btnNovoUsuario;
+        private Button btnEditarUsuario;
+        private Button btnExcluirUsuario;
+        private Button btnAlterarSenha;
+        private Button btnAlterarCargo;
+
+        // Relatórios
+        private DataGridView dgvRelatorio;
+        private ListBox lstTopUsuarios;
 
         public GerenteForm(int usuarioId, string nomeUsuario)
         {
             _usuarioId = usuarioId;
             _nomeUsuario = nomeUsuario;
             _apiClient = new ApiClient();
+
             InitializeComponent();
-            IniciarAutoRefresh();
-            CarregarDados();
+            MontarLayout();
+            CarregarDadosIniciais();
         }
 
         private void InitializeComponent()
         {
-            this.Text = "DotIA - Painel do Gerente";
-            this.Size = new Size(1400, 800);
-            this.StartPosition = FormStartPosition.CenterScreen;
-            this.BackColor = Color.FromArgb(26, 19, 47);
-            this.WindowState = FormWindowState.Maximized;
+            Text = "DotIA - Painel do Gerente";
+            StartPosition = FormStartPosition.CenterScreen;
+            BackColor = DarkBg;
+            Size = new Size(1600, 900);
+            FormBorderStyle = FormBorderStyle.Sizable;
+            WindowState = FormWindowState.Maximized;
+        }
 
-            // Header
-            Panel headerPanel = new Panel
+        private void MontarLayout()
+        {
+            // HEADER
+            headerPanel = new Panel
             {
-                Height = 80,
                 Dock = DockStyle.Top,
-                BackColor = Color.FromArgb(30, 20, 51),
+                Height = 80,
+                BackColor = DarkerBg,
+                Padding = new Padding(40, 20, 40, 20)
             };
 
-            Label lblTitulo = new Label
+            var logoIcon = new Panel
             {
-                Text = "????? DotIA Manager",
-                Font = new Font("Segoe UI", 24, FontStyle.Bold),
-                ForeColor = Color.FromArgb(139, 92, 246),
-                Location = new Point(30, 20),
-                AutoSize = true
+                Size = new Size(55, 55),
+                BackColor = PrimaryBlue,
+                Location = new Point(40, 12)
             };
 
-            Label lblSubtitulo = new Label
+            var logoText = new Label
+            {
+                Text = "DotIA Manager",
+                Font = new Font("Segoe UI", 20, FontStyle.Bold),
+                ForeColor = Color.White,
+                AutoSize = true,
+                Location = new Point(105, 15)
+            };
+
+            var lblSubtitle = new Label
             {
                 Text = "Painel de Gerenciamento",
-                Font = new Font("Segoe UI", 12),
-                ForeColor = Color.LightGray,
-                Location = new Point(30, 50),
-                AutoSize = true
+                Font = new Font("Segoe UI", 10),
+                ForeColor = Color.FromArgb(183, 188, 230),
+                AutoSize = true,
+                Location = new Point(105, 45)
             };
 
-            Label lblUsuario = new Label
+            var lblUser = new Label
             {
                 Text = $"Olá, {_nomeUsuario}",
-                Font = new Font("Segoe UI", 12, FontStyle.Bold),
+                Font = new Font("Segoe UI", 11, FontStyle.Bold),
                 ForeColor = Color.White,
-                Location = new Point(this.Width - 200, 30),
-                Anchor = AnchorStyles.Top | AnchorStyles.Right,
-                AutoSize = true
+                AutoSize = true,
+                Location = new Point(headerPanel.Width - 250, 20)
             };
+            lblUser.Anchor = AnchorStyles.Top | AnchorStyles.Right;
 
-            headerPanel.Controls.Add(lblTitulo);
-            headerPanel.Controls.Add(lblSubtitulo);
-            headerPanel.Controls.Add(lblUsuario);
+            var btnSair = new Button
+            {
+                Text = "?? Sair",
+                Size = new Size(100, 36),
+                Location = new Point(headerPanel.Width - 130, 22),
+                FlatStyle = FlatStyle.Flat,
+                BackColor = Color.Transparent,
+                ForeColor = Color.White,
+                Font = new Font("Segoe UI", 10, FontStyle.Bold),
+                Cursor = Cursors.Hand
+            };
+            btnSair.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnSair.FlatAppearance.BorderColor = PanelBorder;
+            btnSair.Click += (s, e) => { this.Hide(); new LoginForm().Show(); };
 
-            // TabControl
+            headerPanel.Controls.Add(logoIcon);
+            headerPanel.Controls.Add(logoText);
+            headerPanel.Controls.Add(lblSubtitle);
+            headerPanel.Controls.Add(lblUser);
+            headerPanel.Controls.Add(btnSair);
+            Controls.Add(headerPanel);
+
+            // CONTENT
+            contentPanel = new Panel
+            {
+                Dock = DockStyle.Fill,
+                BackColor = DarkBg,
+                Padding = new Padding(40, 30, 40, 30)
+            };
+            Controls.Add(contentPanel);
+
+            // TAB CONTROL
             tabControl = new TabControl
             {
                 Dock = DockStyle.Fill,
-                Font = new Font("Segoe UI", 11),
-                ItemSize = new Size(150, 40)
+                Font = new Font("Segoe UI", 11, FontStyle.Bold),
+                DrawMode = TabDrawMode.OwnerDrawFixed,
+                ItemSize = new Size(200, 50),
+                SizeMode = TabSizeMode.Fixed
             };
+            tabControl.DrawItem += TabControl_DrawItem;
+            contentPanel.Controls.Add(tabControl);
 
-            // ???????????????????????????????????????????????????????????
-            // TAB DASHBOARD
-            // ???????????????????????????????????????????????????????????
+            // TABS
             tabDashboard = new TabPage("?? Dashboard");
-            tabDashboard.BackColor = Color.FromArgb(30, 20, 51);
-
-            FlowLayoutPanel statsPanel = new FlowLayoutPanel
-            {
-                Dock = DockStyle.Top,
-                Height = 200,
-                FlowDirection = FlowDirection.LeftToRight,
-                Padding = new Padding(20)
-            };
-
-            // Cards de estatísticas
-            var statCards = new[]
-            {
-                CreateStatCard("??", "Total de Usuários", ref lblTotalUsuarios, Color.FromArgb(59, 130, 246)),
-                CreateStatCard("??", "Tickets em Aberto", ref lblTicketsAbertos, Color.FromArgb(251, 191, 36)),
-                CreateStatCard("?", "Tickets Resolvidos", ref lblTicketsResolvidos, Color.FromArgb(16, 185, 129)),
-                CreateStatCard("??", "Total de Chats", ref lblTotalChats, Color.FromArgb(139, 92, 246)),
-                CreateStatCard("??", "Resolvidos Hoje", ref lblResolvidosHoje, Color.FromArgb(236, 72, 153)),
-                CreateStatCard("??", "Chats Concluídos", ref lblChatsResolvidos, Color.FromArgb(6, 182, 212))
-            };
-
-            foreach (var card in statCards)
-            {
-                statsPanel.Controls.Add(card);
-            }
-
-            // Lista de Top Usuários
-            GroupBox grpTopUsuarios = new GroupBox
-            {
-                Text = "?? Top Usuários com Mais Tickets",
-                Location = new Point(20, 220),
-                Size = new Size(600, 300),
-                ForeColor = Color.White,
-                Font = new Font("Segoe UI", 12, FontStyle.Bold)
-            };
-
-            ListBox lstTopUsuarios = new ListBox
-            {
-                Name = "lstTopUsuarios",
-                Dock = DockStyle.Fill,
-                BackColor = Color.FromArgb(44, 32, 77),
-                ForeColor = Color.White,
-                Font = new Font("Segoe UI", 11),
-                BorderStyle = BorderStyle.None
-            };
-
-            grpTopUsuarios.Controls.Add(lstTopUsuarios);
-
-            tabDashboard.Controls.Add(grpTopUsuarios);
-            tabDashboard.Controls.Add(statsPanel);
-
-            // ???????????????????????????????????????????????????????????
-            // TAB TICKETS
-            // ???????????????????????????????????????????????????????????
             tabTickets = new TabPage("?? Tickets");
-            tabTickets.BackColor = Color.FromArgb(30, 20, 51);
-
-            dgvTickets = new DataGridView
-            {
-                Dock = DockStyle.Fill,
-                BackgroundColor = Color.FromArgb(30, 20, 51),
-                GridColor = Color.FromArgb(44, 32, 77),
-                BorderStyle = BorderStyle.None,
-                ColumnHeadersDefaultCellStyle = new DataGridViewCellStyle
-                {
-                    BackColor = Color.FromArgb(44, 32, 77),
-                    ForeColor = Color.White,
-                    Font = new Font("Segoe UI", 10, FontStyle.Bold),
-                    SelectionBackColor = Color.FromArgb(44, 32, 77)
-                },
-                DefaultCellStyle = new DataGridViewCellStyle
-                {
-                    BackColor = Color.FromArgb(30, 20, 51),
-                    ForeColor = Color.White,
-                    SelectionBackColor = Color.FromArgb(139, 92, 246),
-                    SelectionForeColor = Color.White
-                },
-                RowHeadersVisible = false,
-                AllowUserToAddRows = false,
-                AllowUserToDeleteRows = false,
-                ReadOnly = true,
-                AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill,
-                SelectionMode = DataGridViewSelectionMode.FullRowSelect
-            };
-
-            tabTickets.Controls.Add(dgvTickets);
-
-            // ???????????????????????????????????????????????????????????
-            // TAB USUÁRIOS
-            // ???????????????????????????????????????????????????????????
             tabUsuarios = new TabPage("?? Usuários");
-            tabUsuarios.BackColor = Color.FromArgb(30, 20, 51);
-
-            Panel toolbarUsuarios = new Panel
-            {
-                Height = 60,
-                Dock = DockStyle.Top,
-                BackColor = Color.FromArgb(26, 19, 47),
-                Padding = new Padding(10)
-            };
-
-            Button btnEditarUsuario = new Button
-            {
-                Text = "?? Editar",
-                Location = new Point(10, 10),
-                Size = new Size(100, 40),
-                BackColor = Color.FromArgb(59, 130, 246),
-                ForeColor = Color.White,
-                FlatStyle = FlatStyle.Flat,
-                Cursor = Cursors.Hand
-            };
-            btnEditarUsuario.Click += BtnEditarUsuario_Click;
-
-            Button btnAlterarSenha = new Button
-            {
-                Text = "?? Senha",
-                Location = new Point(120, 10),
-                Size = new Size(100, 40),
-                BackColor = Color.FromArgb(251, 191, 36),
-                ForeColor = Color.White,
-                FlatStyle = FlatStyle.Flat,
-                Cursor = Cursors.Hand
-            };
-            btnAlterarSenha.Click += BtnAlterarSenha_Click;
-
-            Button btnAlterarCargo = new Button
-            {
-                Text = "?? Cargo",
-                Location = new Point(230, 10),
-                Size = new Size(100, 40),
-                BackColor = Color.FromArgb(139, 92, 246),
-                ForeColor = Color.White,
-                FlatStyle = FlatStyle.Flat,
-                Cursor = Cursors.Hand
-            };
-            btnAlterarCargo.Click += BtnAlterarCargo_Click;
-
-            Button btnExcluirUsuario = new Button
-            {
-                Text = "??? Excluir",
-                Location = new Point(340, 10),
-                Size = new Size(100, 40),
-                BackColor = Color.FromArgb(239, 68, 68),
-                ForeColor = Color.White,
-                FlatStyle = FlatStyle.Flat,
-                Cursor = Cursors.Hand
-            };
-            btnExcluirUsuario.Click += BtnExcluirUsuario_Click;
-
-            toolbarUsuarios.Controls.Add(btnEditarUsuario);
-            toolbarUsuarios.Controls.Add(btnAlterarSenha);
-            toolbarUsuarios.Controls.Add(btnAlterarCargo);
-            toolbarUsuarios.Controls.Add(btnExcluirUsuario);
-
-            dgvUsuarios = new DataGridView
-            {
-                Dock = DockStyle.Fill,
-                BackgroundColor = Color.FromArgb(30, 20, 51),
-                GridColor = Color.FromArgb(44, 32, 77),
-                BorderStyle = BorderStyle.None,
-                ColumnHeadersDefaultCellStyle = new DataGridViewCellStyle
-                {
-                    BackColor = Color.FromArgb(44, 32, 77),
-                    ForeColor = Color.White,
-                    Font = new Font("Segoe UI", 10, FontStyle.Bold),
-                    SelectionBackColor = Color.FromArgb(44, 32, 77)
-                },
-                DefaultCellStyle = new DataGridViewCellStyle
-                {
-                    BackColor = Color.FromArgb(30, 20, 51),
-                    ForeColor = Color.White,
-                    SelectionBackColor = Color.FromArgb(139, 92, 246),
-                    SelectionForeColor = Color.White
-                },
-                RowHeadersVisible = false,
-                AllowUserToAddRows = false,
-                AllowUserToDeleteRows = false,
-                ReadOnly = true,
-                AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill,
-                SelectionMode = DataGridViewSelectionMode.FullRowSelect
-            };
-
-            tabUsuarios.Controls.Add(dgvUsuarios);
-            tabUsuarios.Controls.Add(toolbarUsuarios);
-
-            // ???????????????????????????????????????????????????????????
-            // TAB RELATÓRIOS
-            // ???????????????????????????????????????????????????????????
             tabRelatorios = new TabPage("?? Relatórios");
-            tabRelatorios.BackColor = Color.FromArgb(30, 20, 51);
 
-            dgvRelatorios = new DataGridView
-            {
-                Dock = DockStyle.Fill,
-                BackgroundColor = Color.FromArgb(30, 20, 51),
-                GridColor = Color.FromArgb(44, 32, 77),
-                BorderStyle = BorderStyle.None,
-                ColumnHeadersDefaultCellStyle = new DataGridViewCellStyle
-                {
-                    BackColor = Color.FromArgb(44, 32, 77),
-                    ForeColor = Color.White,
-                    Font = new Font("Segoe UI", 10, FontStyle.Bold),
-                    SelectionBackColor = Color.FromArgb(44, 32, 77)
-                },
-                DefaultCellStyle = new DataGridViewCellStyle
-                {
-                    BackColor = Color.FromArgb(30, 20, 51),
-                    ForeColor = Color.White,
-                    SelectionBackColor = Color.FromArgb(139, 92, 246),
-                    SelectionForeColor = Color.White
-                },
-                RowHeadersVisible = false,
-                AllowUserToAddRows = false,
-                AllowUserToDeleteRows = false,
-                ReadOnly = true,
-                AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
-            };
-
-            tabRelatorios.Controls.Add(dgvRelatorios);
-
-            // Adicionar tabs
             tabControl.TabPages.Add(tabDashboard);
             tabControl.TabPages.Add(tabTickets);
             tabControl.TabPages.Add(tabUsuarios);
             tabControl.TabPages.Add(tabRelatorios);
 
-            this.Controls.Add(tabControl);
-            this.Controls.Add(headerPanel);
-
-            // Botão Sair
-            Button btnSair = new Button
-            {
-                Text = "Sair",
-                Size = new Size(100, 30),
-                Location = new Point(this.Width - 120, 35),
-                Anchor = AnchorStyles.Top | AnchorStyles.Right,
-                BackColor = Color.FromArgb(239, 68, 68),
-                ForeColor = Color.White,
-                FlatStyle = FlatStyle.Flat,
-                Cursor = Cursors.Hand
-            };
-            btnSair.Click += (s, e) => Application.Restart();
-            headerPanel.Controls.Add(btnSair);
+            ConfigurarTabDashboard();
+            ConfigurarTabTickets();
+            ConfigurarTabUsuarios();
+            ConfigurarTabRelatorios();
         }
 
-        private Panel CreateStatCard(string icon, string label, ref Label valueLabel, Color color)
+        private void TabControl_DrawItem(object sender, DrawItemEventArgs e)
         {
-            Panel card = new Panel
+            var g = e.Graphics;
+            var tab = tabControl.TabPages[e.Index];
+            var bounds = tabControl.GetTabRect(e.Index);
+
+            var bgColor = e.Index == tabControl.SelectedIndex ? PrimaryBlue : DarkerBg;
+            using var bg = new SolidBrush(bgColor);
+            g.FillRectangle(bg, bounds);
+
+            using var sf = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center };
+            using var f = new Font("Segoe UI", 11, FontStyle.Bold);
+            g.DrawString(tab.Text, f, Brushes.White, bounds, sf);
+        }
+
+        private void ConfigurarTabDashboard()
+        {
+            tabDashboard.BackColor = DarkBg;
+            tabDashboard.Padding = new Padding(20);
+
+            // Stats Grid
+            statsPanel = new FlowLayoutPanel
             {
-                Size = new Size(200, 140),
-                BackColor = Color.FromArgb(44, 32, 77),
+                Dock = DockStyle.Top,
+                Height = 150,
+                FlowDirection = FlowDirection.LeftToRight,
+                WrapContents = true
+            };
+
+            statsPanel.Controls.Add(CriarStatCard("??", "Total de Usuários", out lblTotalUsuarios));
+            statsPanel.Controls.Add(CriarStatCard("??", "Tickets em Aberto", out lblTicketsAbertos));
+            statsPanel.Controls.Add(CriarStatCard("?", "Tickets Resolvidos", out lblTicketsResolvidos));
+            statsPanel.Controls.Add(CriarStatCard("??", "Total de Chats", out lblTotalChats));
+            statsPanel.Controls.Add(CriarStatCard("??", "Resolvidos Hoje", out lblResolvidosHoje));
+            statsPanel.Controls.Add(CriarStatCard("??", "Chats Concluídos", out lblChatsResolvidos));
+
+            tabDashboard.Controls.Add(statsPanel);
+        }
+
+        private Panel CriarStatCard(string icon, string label, out Label valueLabel)
+        {
+            var card = new Panel
+            {
+                Size = new Size(280, 120),
+                BackColor = PanelBg,
                 Margin = new Padding(10),
                 Padding = new Padding(20)
             };
 
-            Label lblIcon = new Label
+            var lblIcon = new Label
             {
                 Text = icon,
-                Font = new Font("Segoe UI", 32),
-                Location = new Point(20, 10),
-                Size = new Size(60, 60)
+                Font = new Font("Segoe UI Emoji", 32),
+                AutoSize = true,
+                Location = new Point(20, 15)
             };
 
             valueLabel = new Label
             {
                 Text = "0",
-                Font = new Font("Segoe UI", 28, FontStyle.Bold),
-                ForeColor = color,
-                Location = new Point(90, 20),
-                AutoSize = true
+                Font = new Font("Segoe UI", 32, FontStyle.Bold),
+                ForeColor = PrimaryBlue,
+                AutoSize = true,
+                Location = new Point(80, 20)
             };
 
-            Label lblLabel = new Label
+            var lblLabel = new Label
             {
                 Text = label,
                 Font = new Font("Segoe UI", 10),
-                ForeColor = Color.LightGray,
-                Location = new Point(20, 80),
-                AutoSize = true
+                ForeColor = Color.Silver,
+                AutoSize = true,
+                Location = new Point(20, 85)
             };
 
             card.Controls.Add(lblIcon);
@@ -395,27 +266,217 @@ namespace DotIA.Desktop.Forms
             return card;
         }
 
-        private void IniciarAutoRefresh()
+        private void ConfigurarTabTickets()
         {
-            refreshTimer = new System.Windows.Forms.Timer();
-            refreshTimer.Interval = 30000; // 30 segundos
-            refreshTimer.Tick += async (s, e) => await CarregarDados();
-            refreshTimer.Start();
+            tabTickets.BackColor = DarkBg;
+            tabTickets.Padding = new Padding(20);
+
+            var lblTitle = new Label
+            {
+                Text = "Gerenciamento de Tickets",
+                Font = new Font("Segoe UI", 18, FontStyle.Bold),
+                ForeColor = Color.White,
+                AutoSize = true,
+                Location = new Point(20, 20)
+            };
+            tabTickets.Controls.Add(lblTitle);
+
+            dgvTickets = new DataGridView
+            {
+                Location = new Point(20, 70),
+                Size = new Size(tabTickets.Width - 40, tabTickets.Height - 100),
+                Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right,
+                BackgroundColor = PanelBg,
+                ForeColor = Color.White,
+                GridColor = PanelBorder,
+                BorderStyle = BorderStyle.None,
+                AllowUserToAddRows = false,
+                AllowUserToDeleteRows = false,
+                ReadOnly = true,
+                AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill,
+                SelectionMode = DataGridViewSelectionMode.FullRowSelect,
+                MultiSelect = false
+            };
+
+            dgvTickets.ColumnHeadersDefaultCellStyle.BackColor = PanelBg2;
+            dgvTickets.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+            dgvTickets.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 10, FontStyle.Bold);
+            dgvTickets.RowsDefaultCellStyle.BackColor = PanelBg;
+            dgvTickets.RowsDefaultCellStyle.ForeColor = Color.White;
+            dgvTickets.AlternatingRowsDefaultCellStyle.BackColor = DarkerBg;
+
+            tabTickets.Controls.Add(dgvTickets);
         }
 
-        private async Task CarregarDados()
+        private void ConfigurarTabUsuarios()
         {
-            await CarregarDashboard();
-            await CarregarTickets();
-            await CarregarUsuarios();
-            await CarregarRelatorios();
+            tabUsuarios.BackColor = DarkBg;
+            tabUsuarios.Padding = new Padding(20);
+
+            var lblTitle = new Label
+            {
+                Text = "Gerenciamento de Usuários",
+                Font = new Font("Segoe UI", 18, FontStyle.Bold),
+                ForeColor = Color.White,
+                AutoSize = true,
+                Location = new Point(20, 20)
+            };
+            tabUsuarios.Controls.Add(lblTitle);
+
+            // Botões de ação
+            var btnPanel = new FlowLayoutPanel
+            {
+                Location = new Point(20, 60),
+                Height = 50,
+                Width = tabUsuarios.Width - 40,
+                FlowDirection = FlowDirection.LeftToRight
+            };
+
+            btnEditarUsuario = CriarBotaoAcao("? Editar");
+            btnAlterarCargo = CriarBotaoAcao("?? Alterar Cargo");
+            btnAlterarSenha = CriarBotaoAcao("?? Alterar Senha");
+            btnExcluirUsuario = CriarBotaoAcao("?? Excluir");
+
+            btnEditarUsuario.Click += async (s, e) => await EditarUsuarioAsync();
+            btnAlterarCargo.Click += async (s, e) => await AlterarCargoAsync();
+            btnAlterarSenha.Click += async (s, e) => await AlterarSenhaAsync();
+            btnExcluirUsuario.Click += async (s, e) => await ExcluirUsuarioAsync();
+
+            btnPanel.Controls.Add(btnEditarUsuario);
+            btnPanel.Controls.Add(btnAlterarCargo);
+            btnPanel.Controls.Add(btnAlterarSenha);
+            btnPanel.Controls.Add(btnExcluirUsuario);
+            tabUsuarios.Controls.Add(btnPanel);
+
+            dgvUsuarios = new DataGridView
+            {
+                Location = new Point(20, 120),
+                Size = new Size(tabUsuarios.Width - 40, tabUsuarios.Height - 150),
+                Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right,
+                BackgroundColor = PanelBg,
+                ForeColor = Color.White,
+                GridColor = PanelBorder,
+                BorderStyle = BorderStyle.None,
+                AllowUserToAddRows = false,
+                AllowUserToDeleteRows = false,
+                ReadOnly = true,
+                AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill,
+                SelectionMode = DataGridViewSelectionMode.FullRowSelect,
+                MultiSelect = false
+            };
+
+            dgvUsuarios.ColumnHeadersDefaultCellStyle.BackColor = PanelBg2;
+            dgvUsuarios.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+            dgvUsuarios.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 10, FontStyle.Bold);
+            dgvUsuarios.RowsDefaultCellStyle.BackColor = PanelBg;
+            dgvUsuarios.RowsDefaultCellStyle.ForeColor = Color.White;
+            dgvUsuarios.AlternatingRowsDefaultCellStyle.BackColor = DarkerBg;
+
+            tabUsuarios.Controls.Add(dgvUsuarios);
         }
 
-        private async Task CarregarDashboard()
+        private Button CriarBotaoAcao(string texto)
+        {
+            var btn = new Button
+            {
+                Text = texto,
+                Width = 150,
+                Height = 40,
+                FlatStyle = FlatStyle.Flat,
+                BackColor = PrimaryBlue,
+                ForeColor = Color.White,
+                Font = new Font("Segoe UI", 10, FontStyle.Bold),
+                Cursor = Cursors.Hand,
+                Margin = new Padding(0, 0, 10, 0)
+            };
+            btn.FlatAppearance.BorderSize = 0;
+            return btn;
+        }
+
+        private void ConfigurarTabRelatorios()
+        {
+            tabRelatorios.BackColor = DarkBg;
+            tabRelatorios.Padding = new Padding(20);
+
+            var lblTitle = new Label
+            {
+                Text = "Relatórios e Estatísticas",
+                Font = new Font("Segoe UI", 18, FontStyle.Bold),
+                ForeColor = Color.White,
+                AutoSize = true,
+                Location = new Point(20, 20)
+            };
+            tabRelatorios.Controls.Add(lblTitle);
+
+            // Relatório por Departamento
+            var lblDept = new Label
+            {
+                Text = "Por Departamento",
+                Font = new Font("Segoe UI", 14, FontStyle.Bold),
+                ForeColor = Color.White,
+                AutoSize = true,
+                Location = new Point(20, 70)
+            };
+            tabRelatorios.Controls.Add(lblDept);
+
+            dgvRelatorio = new DataGridView
+            {
+                Location = new Point(20, 100),
+                Size = new Size(700, 400),
+                BackgroundColor = PanelBg,
+                ForeColor = Color.White,
+                GridColor = PanelBorder,
+                BorderStyle = BorderStyle.None,
+                AllowUserToAddRows = false,
+                ReadOnly = true,
+                AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
+            };
+
+            dgvRelatorio.ColumnHeadersDefaultCellStyle.BackColor = PanelBg2;
+            dgvRelatorio.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+            dgvRelatorio.RowsDefaultCellStyle.BackColor = PanelBg;
+            dgvRelatorio.RowsDefaultCellStyle.ForeColor = Color.White;
+
+            tabRelatorios.Controls.Add(dgvRelatorio);
+
+            // Top Usuários
+            var lblTop = new Label
+            {
+                Text = "Top Usuários",
+                Font = new Font("Segoe UI", 14, FontStyle.Bold),
+                ForeColor = Color.White,
+                AutoSize = true,
+                Location = new Point(750, 70)
+            };
+            tabRelatorios.Controls.Add(lblTop);
+
+            lstTopUsuarios = new ListBox
+            {
+                Location = new Point(750, 100),
+                Size = new Size(400, 400),
+                BackColor = PanelBg,
+                ForeColor = Color.White,
+                BorderStyle = BorderStyle.None,
+                Font = new Font("Segoe UI", 10)
+            };
+            tabRelatorios.Controls.Add(lstTopUsuarios);
+        }
+
+        private async void CarregarDadosIniciais()
+        {
+            await CarregarDashboardAsync();
+            await CarregarTicketsAsync();
+            await CarregarUsuariosAsync();
+            await CarregarRelatoriosAsync();
+        }
+
+        // Continuação da classe GerenteForm - Métodos de dados e ações
+
+        private async System.Threading.Tasks.Task CarregarDashboardAsync()
         {
             try
             {
-                dashboard = await _apiClient.ObterDashboardAsync();
+                var dashboard = await _apiClient.ObterDashboardAsync();
 
                 lblTotalUsuarios.Text = dashboard.TotalUsuarios.ToString();
                 lblTicketsAbertos.Text = dashboard.TicketsAbertos.ToString();
@@ -423,489 +484,501 @@ namespace DotIA.Desktop.Forms
                 lblTotalChats.Text = dashboard.TotalChats.ToString();
                 lblResolvidosHoje.Text = dashboard.TicketsResolvidosHoje.ToString();
                 lblChatsResolvidos.Text = dashboard.ChatsResolvidos.ToString();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erro ao carregar dashboard: {ex.Message}", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
 
-                // Atualizar top usuários
-                var lstTopUsuarios = tabDashboard.Controls.Find("lstTopUsuarios", true).FirstOrDefault() as ListBox;
-                if (lstTopUsuarios != null && dashboard.TopUsuarios != null)
+        private async System.Threading.Tasks.Task CarregarTicketsAsync()
+        {
+            try
+            {
+                var tickets = await _apiClient.ObterTodosTicketsAsync();
+
+                dgvTickets.DataSource = null;
+                dgvTickets.Columns.Clear();
+
+                if (tickets != null && tickets.Count > 0)
                 {
-                    lstTopUsuarios.Items.Clear();
+                    var dataSource = tickets.Select(t => new
+                    {
+                        ID = t.Id,
+                        Solicitante = t.NomeSolicitante,
+                        Email = t.EmailSolicitante,
+                        Departamento = t.Departamento,
+                        Descrição = t.DescricaoProblema.Length > 50
+                            ? t.DescricaoProblema.Substring(0, 50) + "..."
+                            : t.DescricaoProblema,
+                        Status = t.Status,
+                        DataAbertura = t.DataAbertura.ToString("dd/MM/yyyy HH:mm")
+                    }).ToList();
+
+                    dgvTickets.DataSource = dataSource;
+
+                    // Ajusta largura das colunas
+                    dgvTickets.Columns["ID"].Width = 60;
+                    dgvTickets.Columns["Solicitante"].Width = 150;
+                    dgvTickets.Columns["Email"].Width = 200;
+                    dgvTickets.Columns["Departamento"].Width = 120;
+                    dgvTickets.Columns["Status"].Width = 100;
+                    dgvTickets.Columns["DataAbertura"].Width = 140;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erro ao carregar tickets: {ex.Message}", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private async System.Threading.Tasks.Task CarregarUsuariosAsync()
+        {
+            try
+            {
+                var usuarios = await _apiClient.ObterUsuariosAsync();
+
+                dgvUsuarios.DataSource = null;
+                dgvUsuarios.Columns.Clear();
+
+                if (usuarios != null && usuarios.Count > 0)
+                {
+                    var dataSource = usuarios.Select(u => new
+                    {
+                        ID = u.Id,
+                        Nome = u.Nome,
+                        Email = u.Email,
+                        Departamento = u.Departamento,
+                        TotalTickets = u.TotalTickets,
+                        TicketsAbertos = u.TicketsAbertos,
+                        TotalChats = u.TotalChats
+                    }).ToList();
+
+                    dgvUsuarios.DataSource = dataSource;
+
+                    // Ajusta largura das colunas
+                    dgvUsuarios.Columns["ID"].Width = 60;
+                    dgvUsuarios.Columns["Nome"].Width = 200;
+                    dgvUsuarios.Columns["Email"].Width = 250;
+                    dgvUsuarios.Columns["Departamento"].Width = 150;
+                    dgvUsuarios.Columns["TotalTickets"].Width = 120;
+                    dgvUsuarios.Columns["TicketsAbertos"].Width = 120;
+                    dgvUsuarios.Columns["TotalChats"].Width = 100;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erro ao carregar usuários: {ex.Message}", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private async System.Threading.Tasks.Task CarregarRelatoriosAsync()
+        {
+            try
+            {
+                // Relatório por Departamento
+                var relatorio = await _apiClient.ObterRelatorioDepartamentosAsync();
+
+                dgvRelatorio.DataSource = null;
+                dgvRelatorio.Columns.Clear();
+
+                if (relatorio != null && relatorio.Count > 0)
+                {
+                    var dataSource = relatorio.Select(r => new
+                    {
+                        Departamento = r.Departamento,
+                        Usuários = r.TotalUsuarios,
+                        Tickets = r.TotalTickets,
+                        Abertos = r.TicketsAbertos,
+                        Resolvidos = r.TicketsResolvidos
+                    }).ToList();
+
+                    dgvRelatorio.DataSource = dataSource;
+                }
+
+                // Top Usuários
+                var dashboard = await _apiClient.ObterDashboardAsync();
+                lstTopUsuarios.Items.Clear();
+
+                if (dashboard.TopUsuarios != null && dashboard.TopUsuarios.Count > 0)
+                {
                     int posicao = 1;
                     foreach (var usuario in dashboard.TopUsuarios)
                     {
-                        lstTopUsuarios.Items.Add($"{posicao}º - {usuario.Nome} - {usuario.TotalTickets} tickets");
+                        lstTopUsuarios.Items.Add($"{posicao}. {usuario.Nome} - {usuario.TotalTickets} tickets");
                         posicao++;
                     }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Erro ao carregar dashboard: {ex.Message}",
-                    "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Erro ao carregar relatórios: {ex.Message}", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
-        private async Task CarregarTickets()
-        {
-            try
-            {
-                tickets = await _apiClient.ObterTodosTicketsAsync();
-
-                dgvTickets.DataSource = null;
-                dgvTickets.DataSource = tickets.Select(t => new
-                {
-                    ID = t.Id,
-                    Solicitante = t.NomeSolicitante,
-                    Departamento = t.Departamento,
-                    Descrição = t.DescricaoProblema,
-                    Status = t.Status,
-                    Abertura = t.DataAbertura.ToString("dd/MM/yyyy HH:mm")
-                }).ToList();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Erro ao carregar tickets: {ex.Message}",
-                    "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private async Task CarregarUsuarios()
-        {
-            try
-            {
-                usuarios = await _apiClient.ObterUsuariosAsync();
-
-                dgvUsuarios.DataSource = null;
-                dgvUsuarios.DataSource = usuarios.Select(u => new
-                {
-                    ID = u.Id,
-                    Nome = u.Nome,
-                    Email = u.Email,
-                    Departamento = u.Departamento,
-                    Tickets = u.TotalTickets,
-                    Abertos = u.TicketsAbertos,
-                    Chats = u.TotalChats
-                }).ToList();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Erro ao carregar usuários: {ex.Message}",
-                    "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private async Task CarregarRelatorios()
-        {
-            try
-            {
-                var relatorio = await _apiClient.ObterRelatorioDepartamentosAsync();
-
-                dgvRelatorios.DataSource = null;
-                dgvRelatorios.DataSource = relatorio.Select(r => new
-                {
-                    Departamento = r.Departamento,
-                    Usuários = r.TotalUsuarios,
-                    Total_Tickets = r.TotalTickets,
-                    Abertos = r.TicketsAbertos,
-                    Resolvidos = r.TicketsResolvidos
-                }).ToList();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Erro ao carregar relatórios: {ex.Message}",
-                    "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private async void BtnEditarUsuario_Click(object sender, EventArgs e)
+        private async System.Threading.Tasks.Task EditarUsuarioAsync()
         {
             if (dgvUsuarios.SelectedRows.Count == 0)
             {
-                MessageBox.Show("Selecione um usuário para editar.",
-                    "Atenção", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Selecione um usuário para editar.", "Atenção", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            int userId = (int)dgvUsuarios.SelectedRows[0].Cells[0].Value;
-            var usuario = usuarios.FirstOrDefault(u => u.Id == userId);
-
-            if (usuario == null) return;
-
-            var form = new EditarUsuarioForm(usuario, _apiClient);
-            if (form.ShowDialog() == DialogResult.OK)
-            {
-                await CarregarUsuarios();
-            }
-        }
-
-        private async void BtnAlterarSenha_Click(object sender, EventArgs e)
-        {
-            if (dgvUsuarios.SelectedRows.Count == 0)
-            {
-                MessageBox.Show("Selecione um usuário para alterar a senha.",
-                    "Atenção", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            int userId = (int)dgvUsuarios.SelectedRows[0].Cells[0].Value;
-            string userName = dgvUsuarios.SelectedRows[0].Cells[1].Value.ToString();
-
-            string novaSenha = Microsoft.VisualBasic.Interaction.InputBox(
-                $"Digite a nova senha para {userName}:",
-                "Alterar Senha",
-                "");
-
-            if (string.IsNullOrEmpty(novaSenha) || novaSenha.Length < 6)
-            {
-                MessageBox.Show("A senha deve ter no mínimo 6 caracteres.",
-                    "Atenção", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
+            var usuarioId = Convert.ToInt32(dgvUsuarios.SelectedRows[0].Cells["ID"].Value);
 
             try
             {
-                var sucesso = await _apiClient.AlterarSenhaUsuarioAsync(userId, novaSenha);
-                if (sucesso)
+                var usuario = await _apiClient.ObterUsuarioAsync(usuarioId);
+
+                if (usuario == null)
                 {
-                    MessageBox.Show("Senha alterada com sucesso!",
-                        "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("Erro ao carregar dados do usuário.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
                 }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Erro ao alterar senha: {ex.Message}",
-                    "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
 
-        private async void BtnAlterarCargo_Click(object sender, EventArgs e)
-        {
-            if (dgvUsuarios.SelectedRows.Count == 0)
-            {
-                MessageBox.Show("Selecione um usuário para alterar o cargo.",
-                    "Atenção", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            int userId = (int)dgvUsuarios.SelectedRows[0].Cells[0].Value;
-            string userName = dgvUsuarios.SelectedRows[0].Cells[1].Value.ToString();
-
-            var form = new AlterarCargoForm(userId, userName, _apiClient);
-            if (form.ShowDialog() == DialogResult.OK)
-            {
-                await CarregarUsuarios();
-            }
-        }
-
-        private async void BtnExcluirUsuario_Click(object sender, EventArgs e)
-        {
-            if (dgvUsuarios.SelectedRows.Count == 0)
-            {
-                MessageBox.Show("Selecione um usuário para excluir.",
-                    "Atenção", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            int userId = (int)dgvUsuarios.SelectedRows[0].Cells[0].Value;
-            string userName = dgvUsuarios.SelectedRows[0].Cells[1].Value.ToString();
-
-            if (MessageBox.Show($"Tem certeza que deseja excluir o usuário '{userName}'?\n\n" +
-                               "ISTO IRÁ DELETAR:\n" +
-                               "• Todos os chats\n" +
-                               "• Todos os tickets\n" +
-                               "• Todo o histórico\n\n" +
-                               "Esta ação não pode ser desfeita!",
-                               "Confirmar Exclusão",
-                               MessageBoxButtons.YesNo,
-                               MessageBoxIcon.Warning) != DialogResult.Yes)
-            {
-                return;
-            }
-
-            try
-            {
-                var sucesso = await _apiClient.ExcluirUsuarioAsync(userId);
-                if (sucesso)
+                using var form = new Form
                 {
-                    MessageBox.Show("Usuário excluído com sucesso!",
-                        "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    await CarregarUsuarios();
-                    await CarregarDashboard();
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Erro ao excluir usuário: {ex.Message}",
-                    "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
+                    Text = "Editar Usuário",
+                    StartPosition = FormStartPosition.CenterParent,
+                    BackColor = DarkerBg,
+                    ForeColor = Color.White,
+                    Size = new Size(500, 350),
+                    FormBorderStyle = FormBorderStyle.FixedDialog,
+                    MaximizeBox = false,
+                    MinimizeBox = false
+                };
 
-        protected override void OnFormClosed(FormClosedEventArgs e)
-        {
-            refreshTimer?.Stop();
-            refreshTimer?.Dispose();
-            base.OnFormClosed(e);
-        }
-    }
+                var lblNome = new Label { Text = "Nome:", Location = new Point(20, 20), ForeColor = Color.White, AutoSize = true };
+                var txtNome = new TextBox { Location = new Point(20, 45), Width = 440, Text = usuario.Nome, BackColor = PanelBg, ForeColor = Color.White };
 
-    // Form auxiliar para editar usuário
-    public class EditarUsuarioForm : Form
-    {
-        private readonly UsuarioDTO _usuario;
-        private readonly ApiClient _apiClient;
-        private TextBox txtNome;
-        private TextBox txtEmail;
-        private ComboBox cboDepartamento;
+                var lblEmail = new Label { Text = "Email:", Location = new Point(20, 85), ForeColor = Color.White, AutoSize = true };
+                var txtEmail = new TextBox { Location = new Point(20, 110), Width = 440, Text = usuario.Email, BackColor = PanelBg, ForeColor = Color.White };
 
-        public EditarUsuarioForm(UsuarioDTO usuario, ApiClient apiClient)
-        {
-            _usuario = usuario;
-            _apiClient = apiClient;
-            InitializeComponent();
-        }
+                var lblDept = new Label { Text = "Departamento:", Location = new Point(20, 150), ForeColor = Color.White, AutoSize = true };
+                var cboDept = new ComboBox { Location = new Point(20, 175), Width = 440, BackColor = PanelBg, ForeColor = Color.White, DropDownStyle = ComboBoxStyle.DropDownList };
 
-        private async void InitializeComponent()
-        {
-            this.Text = "Editar Usuário";
-            this.Size = new Size(400, 300);
-            this.StartPosition = FormStartPosition.CenterParent;
-            this.BackColor = Color.FromArgb(30, 20, 51);
-
-            Label lblNome = new Label
-            {
-                Text = "Nome:",
-                ForeColor = Color.White,
-                Location = new Point(20, 20),
-                AutoSize = true
-            };
-
-            txtNome = new TextBox
-            {
-                Text = _usuario.Nome,
-                Location = new Point(20, 45),
-                Size = new Size(340, 25),
-                BackColor = Color.FromArgb(44, 32, 77),
-                ForeColor = Color.White
-            };
-
-            Label lblEmail = new Label
-            {
-                Text = "Email:",
-                ForeColor = Color.White,
-                Location = new Point(20, 80),
-                AutoSize = true
-            };
-
-            txtEmail = new TextBox
-            {
-                Text = _usuario.Email,
-                Location = new Point(20, 105),
-                Size = new Size(340, 25),
-                BackColor = Color.FromArgb(44, 32, 77),
-                ForeColor = Color.White
-            };
-
-            Label lblDepartamento = new Label
-            {
-                Text = "Departamento:",
-                ForeColor = Color.White,
-                Location = new Point(20, 140),
-                AutoSize = true
-            };
-
-            cboDepartamento = new ComboBox
-            {
-                Location = new Point(20, 165),
-                Size = new Size(340, 25),
-                BackColor = Color.FromArgb(44, 32, 77),
-                ForeColor = Color.White,
-                DropDownStyle = ComboBoxStyle.DropDownList
-            };
-
-            // Carregar departamentos
-            var departamentos = await _apiClient.ObterDepartamentosAsync();
-            foreach (var dept in departamentos)
-            {
-                cboDepartamento.Items.Add(dept.Nome);
-                if (dept.Id == _usuario.IdDepartamento)
-                    cboDepartamento.SelectedIndex = cboDepartamento.Items.Count - 1;
-            }
-
-            Button btnSalvar = new Button
-            {
-                Text = "Salvar",
-                Location = new Point(100, 210),
-                Size = new Size(80, 30),
-                BackColor = Color.FromArgb(16, 185, 129),
-                ForeColor = Color.White,
-                FlatStyle = FlatStyle.Flat,
-                DialogResult = DialogResult.OK
-            };
-            btnSalvar.Click += async (s, e) => await SalvarUsuario();
-
-            Button btnCancelar = new Button
-            {
-                Text = "Cancelar",
-                Location = new Point(200, 210),
-                Size = new Size(80, 30),
-                BackColor = Color.FromArgb(239, 68, 68),
-                ForeColor = Color.White,
-                FlatStyle = FlatStyle.Flat,
-                DialogResult = DialogResult.Cancel
-            };
-
-            this.Controls.Add(lblNome);
-            this.Controls.Add(txtNome);
-            this.Controls.Add(lblEmail);
-            this.Controls.Add(txtEmail);
-            this.Controls.Add(lblDepartamento);
-            this.Controls.Add(cboDepartamento);
-            this.Controls.Add(btnSalvar);
-            this.Controls.Add(btnCancelar);
-        }
-
-        private async Task SalvarUsuario()
-        {
-            try
-            {
+                // Carrega departamentos
                 var departamentos = await _apiClient.ObterDepartamentosAsync();
-                var deptSelecionado = departamentos[cboDepartamento.SelectedIndex];
-
-                var sucesso = await _apiClient.AtualizarUsuarioAsync(
-                    _usuario.Id,
-                    txtNome.Text,
-                    txtEmail.Text,
-                    deptSelecionado.Id
-                );
-
-                if (sucesso)
+                foreach (var dept in departamentos)
                 {
-                    MessageBox.Show("Usuário atualizado com sucesso!",
-                        "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    this.DialogResult = DialogResult.OK;
+                    cboDept.Items.Add(dept);
+                    cboDept.DisplayMember = "Nome";
+                    cboDept.ValueMember = "Id";
                 }
+
+                var deptSelecionado = departamentos.FirstOrDefault(d => d.Id == usuario.IdDepartamento);
+                if (deptSelecionado != null)
+                {
+                    cboDept.SelectedItem = deptSelecionado;
+                }
+
+                var btnSalvar = new Button
+                {
+                    Text = "Salvar",
+                    Location = new Point(280, 230),
+                    Width = 90,
+                    Height = 40,
+                    BackColor = PrimaryGreen,
+                    ForeColor = Color.White,
+                    FlatStyle = FlatStyle.Flat,
+                    Cursor = Cursors.Hand
+                };
+                btnSalvar.FlatAppearance.BorderSize = 0;
+
+                var btnCancelar = new Button
+                {
+                    Text = "Cancelar",
+                    Location = new Point(380, 230),
+                    Width = 80,
+                    Height = 40,
+                    BackColor = PanelBg,
+                    ForeColor = Color.White,
+                    FlatStyle = FlatStyle.Flat,
+                    Cursor = Cursors.Hand
+                };
+                btnCancelar.FlatAppearance.BorderSize = 0;
+                btnCancelar.Click += (s, e) => form.DialogResult = DialogResult.Cancel;
+
+                btnSalvar.Click += async (s, e) =>
+                {
+                    if (string.IsNullOrWhiteSpace(txtNome.Text) || string.IsNullOrWhiteSpace(txtEmail.Text) || cboDept.SelectedItem == null)
+                    {
+                        MessageBox.Show("Preencha todos os campos.", "Atenção", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    var deptSel = (DepartamentoDTO)cboDept.SelectedItem;
+                    var sucesso = await _apiClient.AtualizarUsuarioAsync(usuarioId, txtNome.Text, txtEmail.Text, deptSel.Id);
+
+                    if (sucesso)
+                    {
+                        MessageBox.Show("Usuário atualizado com sucesso!", "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        form.DialogResult = DialogResult.OK;
+                        await CarregarUsuariosAsync();
+                        await CarregarDashboardAsync();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Erro ao atualizar usuário.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                };
+
+                form.Controls.Add(lblNome);
+                form.Controls.Add(txtNome);
+                form.Controls.Add(lblEmail);
+                form.Controls.Add(txtEmail);
+                form.Controls.Add(lblDept);
+                form.Controls.Add(cboDept);
+                form.Controls.Add(btnSalvar);
+                form.Controls.Add(btnCancelar);
+
+                form.ShowDialog(this);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Erro ao salvar: {ex.Message}",
-                    "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Erro: {ex.Message}", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-    }
 
-    // Form auxiliar para alterar cargo
-    public class AlterarCargoForm : Form
-    {
-        private readonly int _userId;
-        private readonly string _userName;
-        private readonly ApiClient _apiClient;
-        private ComboBox cboCargo;
-
-        public AlterarCargoForm(int userId, string userName, ApiClient apiClient)
+        private async System.Threading.Tasks.Task AlterarSenhaAsync()
         {
-            _userId = userId;
-            _userName = userName;
-            _apiClient = apiClient;
-            InitializeComponent();
-        }
-
-        private void InitializeComponent()
-        {
-            this.Text = "Alterar Cargo";
-            this.Size = new Size(400, 250);
-            this.StartPosition = FormStartPosition.CenterParent;
-            this.BackColor = Color.FromArgb(30, 20, 51);
-
-            Label lblInfo = new Label
+            if (dgvUsuarios.SelectedRows.Count == 0)
             {
-                Text = $"Alterando cargo de: {_userName}",
+                MessageBox.Show("Selecione um usuário.", "Atenção", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var usuarioId = Convert.ToInt32(dgvUsuarios.SelectedRows[0].Cells["ID"].Value);
+            var nomeUsuario = dgvUsuarios.SelectedRows[0].Cells["Nome"].Value.ToString();
+
+            using var form = new Form
+            {
+                Text = $"Alterar Senha - {nomeUsuario}",
+                StartPosition = FormStartPosition.CenterParent,
+                BackColor = DarkerBg,
                 ForeColor = Color.White,
-                Location = new Point(20, 20),
-                AutoSize = true
+                Size = new Size(450, 280),
+                FormBorderStyle = FormBorderStyle.FixedDialog,
+                MaximizeBox = false,
+                MinimizeBox = false
             };
 
-            Label lblCargo = new Label
-            {
-                Text = "Novo Cargo:",
-                ForeColor = Color.White,
-                Location = new Point(20, 60),
-                AutoSize = true
-            };
+            var lblSenha = new Label { Text = "Nova Senha:", Location = new Point(20, 20), ForeColor = Color.White, AutoSize = true };
+            var txtSenha = new TextBox { Location = new Point(20, 45), Width = 390, PasswordChar = '?', BackColor = PanelBg, ForeColor = Color.White };
 
-            cboCargo = new ComboBox
-            {
-                Location = new Point(20, 85),
-                Size = new Size(340, 25),
-                BackColor = Color.FromArgb(44, 32, 77),
-                ForeColor = Color.White,
-                DropDownStyle = ComboBoxStyle.DropDownList
-            };
-            cboCargo.Items.Add("Solicitante (Usuário Normal)");
-            cboCargo.Items.Add("Técnico");
-            cboCargo.Items.Add("Gerente (Administrador)");
-            cboCargo.SelectedIndex = 0;
+            var lblConfirm = new Label { Text = "Confirmar Senha:", Location = new Point(20, 85), ForeColor = Color.White, AutoSize = true };
+            var txtConfirm = new TextBox { Location = new Point(20, 110), Width = 390, PasswordChar = '?', BackColor = PanelBg, ForeColor = Color.White };
 
-            Label lblAviso = new Label
-            {
-                Text = "?? Ao promover para Técnico/Gerente, o usuário terá acesso ao painel administrativo.",
-                ForeColor = Color.FromArgb(251, 191, 36),
-                Location = new Point(20, 120),
-                Size = new Size(340, 40)
-            };
-
-            Button btnSalvar = new Button
+            var btnSalvar = new Button
             {
                 Text = "Alterar",
-                Location = new Point(100, 180),
-                Size = new Size(80, 30),
-                BackColor = Color.FromArgb(139, 92, 246),
-                ForeColor = Color.White,
-                FlatStyle = FlatStyle.Flat
-            };
-            btnSalvar.Click += async (s, e) => await AlterarCargo();
-
-            Button btnCancelar = new Button
-            {
-                Text = "Cancelar",
-                Location = new Point(200, 180),
-                Size = new Size(80, 30),
-                BackColor = Color.FromArgb(239, 68, 68),
+                Location = new Point(230, 170),
+                Width = 90,
+                Height = 40,
+                BackColor = PrimaryGreen,
                 ForeColor = Color.White,
                 FlatStyle = FlatStyle.Flat,
-                DialogResult = DialogResult.Cancel
+                Cursor = Cursors.Hand
+            };
+            btnSalvar.FlatAppearance.BorderSize = 0;
+
+            var btnCancelar = new Button
+            {
+                Text = "Cancelar",
+                Location = new Point(330, 170),
+                Width = 80,
+                Height = 40,
+                BackColor = PanelBg,
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat,
+                Cursor = Cursors.Hand
+            };
+            btnCancelar.FlatAppearance.BorderSize = 0;
+            btnCancelar.Click += (s, e) => form.DialogResult = DialogResult.Cancel;
+
+            btnSalvar.Click += async (s, e) =>
+            {
+                if (txtSenha.Text.Length < 6)
+                {
+                    MessageBox.Show("A senha deve ter no mínimo 6 caracteres.", "Atenção", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                if (txtSenha.Text != txtConfirm.Text)
+                {
+                    MessageBox.Show("As senhas não coincidem.", "Atenção", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                var sucesso = await _apiClient.AlterarSenhaUsuarioAsync(usuarioId, txtSenha.Text);
+
+                if (sucesso)
+                {
+                    MessageBox.Show("Senha alterada com sucesso!", "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    form.DialogResult = DialogResult.OK;
+                }
+                else
+                {
+                    MessageBox.Show("Erro ao alterar senha.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             };
 
-            this.Controls.Add(lblInfo);
-            this.Controls.Add(lblCargo);
-            this.Controls.Add(cboCargo);
-            this.Controls.Add(lblAviso);
-            this.Controls.Add(btnSalvar);
-            this.Controls.Add(btnCancelar);
+            form.Controls.Add(lblSenha);
+            form.Controls.Add(txtSenha);
+            form.Controls.Add(lblConfirm);
+            form.Controls.Add(txtConfirm);
+            form.Controls.Add(btnSalvar);
+            form.Controls.Add(btnCancelar);
+
+            form.ShowDialog(this);
         }
 
-        private async Task AlterarCargo()
+        private async System.Threading.Tasks.Task AlterarCargoAsync()
         {
-            string cargo = cboCargo.SelectedIndex switch
+            if (dgvUsuarios.SelectedRows.Count == 0)
             {
-                0 => "Solicitante",
-                1 => "Tecnico",
-                2 => "Gerente",
-                _ => "Solicitante"
+                MessageBox.Show("Selecione um usuário.", "Atenção", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var usuarioId = Convert.ToInt32(dgvUsuarios.SelectedRows[0].Cells["ID"].Value);
+            var nomeUsuario = dgvUsuarios.SelectedRows[0].Cells["Nome"].Value.ToString();
+
+            using var form = new Form
+            {
+                Text = $"Alterar Cargo - {nomeUsuario}",
+                StartPosition = FormStartPosition.CenterParent,
+                BackColor = DarkerBg,
+                ForeColor = Color.White,
+                Size = new Size(450, 280),
+                FormBorderStyle = FormBorderStyle.FixedDialog,
+                MaximizeBox = false,
+                MinimizeBox = false
             };
+
+            var lblCargo = new Label { Text = "Novo Cargo:", Location = new Point(20, 20), ForeColor = Color.White, AutoSize = true };
+            var cboCargo = new ComboBox
+            {
+                Location = new Point(20, 45),
+                Width = 390,
+                BackColor = PanelBg,
+                ForeColor = Color.White,
+                DropDownStyle = ComboBoxStyle.DropDownList
+            };
+            cboCargo.Items.Add("Solicitante");
+            cboCargo.Items.Add("Tecnico");
+            cboCargo.Items.Add("Gerente");
+            cboCargo.SelectedIndex = 0;
+
+            var lblAviso = new Label
+            {
+                Text = "? Atenção: Ao promover para Técnico/Gerente,\no usuário terá acesso ao painel administrativo.",
+                Location = new Point(20, 90),
+                ForeColor = Color.FromArgb(251, 191, 36),
+                AutoSize = true
+            };
+
+            var btnSalvar = new Button
+            {
+                Text = "Alterar",
+                Location = new Point(230, 160),
+                Width = 90,
+                Height = 40,
+                BackColor = PrimaryGreen,
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat,
+                Cursor = Cursors.Hand
+            };
+            btnSalvar.FlatAppearance.BorderSize = 0;
+
+            var btnCancelar = new Button
+            {
+                Text = "Cancelar",
+                Location = new Point(330, 160),
+                Width = 80,
+                Height = 40,
+                BackColor = PanelBg,
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat,
+                Cursor = Cursors.Hand
+            };
+            btnCancelar.FlatAppearance.BorderSize = 0;
+            btnCancelar.Click += (s, e) => form.DialogResult = DialogResult.Cancel;
+
+            btnSalvar.Click += async (s, e) =>
+            {
+                var cargo = cboCargo.SelectedItem.ToString();
+
+                if (MessageBox.Show($"Tem certeza que deseja alterar o cargo para {cargo}?", "Confirmação", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
+                    return;
+
+                var sucesso = await _apiClient.AlterarCargoUsuarioAsync(usuarioId, cargo);
+
+                if (sucesso)
+                {
+                    MessageBox.Show($"Cargo alterado para {cargo} com sucesso!", "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    form.DialogResult = DialogResult.OK;
+                    await CarregarUsuariosAsync();
+                    await CarregarDashboardAsync();
+                }
+                else
+                {
+                    MessageBox.Show("Erro ao alterar cargo.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            };
+
+            form.Controls.Add(lblCargo);
+            form.Controls.Add(cboCargo);
+            form.Controls.Add(lblAviso);
+            form.Controls.Add(btnSalvar);
+            form.Controls.Add(btnCancelar);
+
+            form.ShowDialog(this);
+        }
+
+        private async System.Threading.Tasks.Task ExcluirUsuarioAsync()
+        {
+            if (dgvUsuarios.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Selecione um usuário para excluir.", "Atenção", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var usuarioId = Convert.ToInt32(dgvUsuarios.SelectedRows[0].Cells["ID"].Value);
+            var nomeUsuario = dgvUsuarios.SelectedRows[0].Cells["Nome"].Value.ToString();
+
+            if (MessageBox.Show(
+                $"Tem certeza que deseja excluir o usuário \"{nomeUsuario}\"?\n\n" +
+                "ISTO IRÁ DELETAR:\n" +
+                "? Todos os chats\n" +
+                "? Todos os tickets\n" +
+                "? Todo o histórico\n\n" +
+                "Esta ação não pode ser desfeita!",
+                "Confirmação",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Warning) != DialogResult.Yes)
+            {
+                return;
+            }
 
             try
             {
-                var sucesso = await _apiClient.AlterarCargoUsuarioAsync(_userId, cargo);
+                var sucesso = await _apiClient.ExcluirUsuarioAsync(usuarioId);
+
                 if (sucesso)
                 {
-                    MessageBox.Show("Cargo alterado com sucesso!",
-                        "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    this.DialogResult = DialogResult.OK;
+                    MessageBox.Show("Usuário excluído com sucesso!", "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    await CarregarUsuariosAsync();
+                    await CarregarDashboardAsync();
+                }
+                else
+                {
+                    MessageBox.Show("Erro ao excluir usuário.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Erro ao alterar cargo: {ex.Message}",
-                    "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Erro: {ex.Message}", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }

@@ -1,10 +1,10 @@
-// DotIA.Desktop/DotIA.Desktop/Forms/TecnicoForm.cs
 using System;
-using System.Drawing;
-using System.Windows.Forms;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
+using System.Windows.Forms;
 using DotIA.Desktop.Services;
+using WinTimer = System.Windows.Forms.Timer;
 
 namespace DotIA.Desktop.Forms
 {
@@ -13,534 +13,445 @@ namespace DotIA.Desktop.Forms
         private readonly ApiClient _apiClient;
         private readonly int _usuarioId;
         private readonly string _nomeUsuario;
-        private FlowLayoutPanel panelTickets;
-        private Panel panelDetalhes;
-        private RichTextBox rtbConversa;
+
+        // Cores
+        private readonly Color PrimaryGreen = ColorTranslator.FromHtml("#10b981");
+        private readonly Color SecondaryGreen = ColorTranslator.FromHtml("#059669");
+        private readonly Color DarkBg = ColorTranslator.FromHtml("#1a132f");
+        private readonly Color DarkerBg = ColorTranslator.FromHtml("#1e1433");
+        private readonly Color CardBg = ColorTranslator.FromHtml("#2c204d");
+        private readonly Color BorderColor = ColorTranslator.FromHtml("#3d2e6b");
+
+        // Estado
+        private TicketDTO _ticketSelecionado = null;
+        private readonly HashSet<string> _mensagensProcessadas = new HashSet<string>();
+
+        // Timers
+        private readonly WinTimer _timerRefresh = new WinTimer();
+        private readonly WinTimer _timerPolling = new WinTimer();
+
+        // Layout
+        private SplitContainer rootSplit;
+        private Panel sidebar;
+        private Panel statsCard;
+        private Label lblTotalTickets;
+        private Label lblResolvidosHoje;
+        private Button btnRefresh;
+        private Label lblLive;
+        private ListBox lstTickets;
+        private Panel workArea;
+        private Panel workHeader;
+        private Label lblTicketTitle;
+        private Panel conversationPanel;
+        private FlowLayoutPanel messagesList;
+        private Panel solutionArea;
         private TextBox txtSolucao;
         private Button btnResponder;
         private Button btnResolver;
-        private Label lblTicketInfo;
-        private Label lblTotalTickets;
-        private Label lblResolvidosHoje;
-        private TicketDTO ticketSelecionado;
-        private System.Windows.Forms.Timer refreshTimer;
-        private List<TicketDTO> tickets;
+        private Label lblSuccess;
 
         public TecnicoForm(int usuarioId, string nomeUsuario)
         {
             _usuarioId = usuarioId;
             _nomeUsuario = nomeUsuario;
             _apiClient = new ApiClient();
+
             InitializeComponent();
-            IniciarAutoRefresh();
-            CarregarTickets();
+            MontarLayout();
+            ConfigurarTimers();
+            CarregarTicketsAsync();
         }
 
         private void InitializeComponent()
         {
-            this.Text = "DotIA - Painel do Técnico";
-            this.Size = new Size(1200, 700);
-            this.StartPosition = FormStartPosition.CenterScreen;
-            this.BackColor = Color.FromArgb(26, 19, 47);
-            this.WindowState = FormWindowState.Maximized;
+            Text = "DotIA - Painel do Técnico";
+            StartPosition = FormStartPosition.CenterScreen;
+            BackColor = DarkBg;
+            Size = new Size(1600, 900);
+            FormBorderStyle = FormBorderStyle.Sizable;
+            WindowState = FormWindowState.Maximized;
+            MaximizeBox = true;
+        }
 
-            // Container principal
-            SplitContainer splitContainer = new SplitContainer
+        private void MontarLayout()
+        {
+            // SPLIT ROOT
+            rootSplit = new SplitContainer
             {
                 Dock = DockStyle.Fill,
-                SplitterDistance = 350,
-                BackColor = Color.FromArgb(44, 32, 77)
+                SplitterWidth = 2,
+                BackColor = BorderColor,
+                IsSplitterFixed = false,
+                FixedPanel = FixedPanel.Panel1
             };
+            Controls.Add(rootSplit);
 
-            // ???????????????????????????????????????????????????????????
-            // PAINEL ESQUERDO - Lista de Tickets
-            // ???????????????????????????????????????????????????????????
+            rootSplit.Panel1MinSize = 320;
+            rootSplit.Panel1.BackColor = DarkBg;
+            rootSplit.Panel2.BackColor = DarkerBg;
+            rootSplit.SplitterDistance = 350;
 
-            Panel leftPanel = new Panel
+            // ===== Sidebar =====
+            var sidebarTable = new TableLayoutPanel
             {
                 Dock = DockStyle.Fill,
-                BackColor = Color.FromArgb(26, 19, 47)
+                BackColor = DarkBg,
+                ColumnCount = 1,
+                RowCount = 5
             };
+            sidebarTable.RowStyles.Add(new RowStyle(SizeType.Absolute, 80));   // header
+            sidebarTable.RowStyles.Add(new RowStyle(SizeType.Absolute, 48));   // refresh
+            sidebarTable.RowStyles.Add(new RowStyle(SizeType.Absolute, 120));  // stats
+            sidebarTable.RowStyles.Add(new RowStyle(SizeType.Percent, 100));   // tickets
+            sidebarTable.RowStyles.Add(new RowStyle(SizeType.Absolute, 70));   // footer
+            rootSplit.Panel1.Controls.Add(sidebarTable);
 
             // Header
-            Panel headerPanel = new Panel
+            var header = new Panel { Dock = DockStyle.Fill, Padding = new Padding(20, 16, 20, 8) };
+            var logoIcon = new Panel
             {
-                Height = 80,
-                Dock = DockStyle.Top,
-                BackColor = Color.FromArgb(30, 20, 51),
-                Padding = new Padding(15)
+                Size = new Size(45, 45),
+                BackColor = PrimaryGreen,
+                Margin = new Padding(0, 0, 10, 0)
             };
-
-            Label lblTitulo = new Label
+            var lblLogo = new Label
             {
-                Text = "??? DotIA Tech",
-                Font = new Font("Segoe UI", 20, FontStyle.Bold),
-                ForeColor = Color.FromArgb(16, 185, 129),
-                AutoSize = true,
-                Location = new Point(15, 20)
-            };
-            headerPanel.Controls.Add(lblTitulo);
-
-            // Stats Panel
-            Panel statsPanel = new Panel
-            {
-                Height = 100,
-                Dock = DockStyle.Top,
-                BackColor = Color.FromArgb(44, 32, 77),
-                Padding = new Padding(15)
-            };
-
-            lblTotalTickets = new Label
-            {
-                Text = "Tickets Pendentes: 0",
-                Font = new Font("Segoe UI", 12, FontStyle.Bold),
-                ForeColor = Color.FromArgb(251, 191, 36),
-                Location = new Point(15, 20),
-                AutoSize = true
-            };
-
-            lblResolvidosHoje = new Label
-            {
-                Text = "Resolvidos Hoje: 0",
-                Font = new Font("Segoe UI", 12, FontStyle.Bold),
-                ForeColor = Color.FromArgb(16, 185, 129),
-                Location = new Point(15, 50),
-                AutoSize = true
-            };
-
-            statsPanel.Controls.Add(lblTotalTickets);
-            statsPanel.Controls.Add(lblResolvidosHoje);
-
-            // Botão Atualizar
-            Button btnRefresh = new Button
-            {
-                Text = "?? Atualizar",
-                Location = new Point(15, 10),
-                Size = new Size(320, 35),
-                BackColor = Color.FromArgb(16, 185, 129),
+                Text = "DotIA Tech",
                 ForeColor = Color.White,
+                Font = new Font("Segoe UI", 16, FontStyle.Bold),
+                AutoSize = true
+            };
+            var headerWrap = new FlowLayoutPanel { Dock = DockStyle.Fill, FlowDirection = FlowDirection.LeftToRight };
+            headerWrap.Controls.Add(logoIcon);
+            headerWrap.Controls.Add(lblLogo);
+            header.Controls.Add(headerWrap);
+            sidebarTable.Controls.Add(header, 0, 0);
+
+            // Refresh
+            btnRefresh = new Button
+            {
+                Text = "? Atualizar",
+                Dock = DockStyle.Fill,
                 FlatStyle = FlatStyle.Flat,
+                BackColor = Color.FromArgb(40, PrimaryGreen),
+                ForeColor = PrimaryGreen,
                 Font = new Font("Segoe UI", 10, FontStyle.Bold),
                 Cursor = Cursors.Hand
             };
-            btnRefresh.Click += async (s, e) => await CarregarTickets();
+            btnRefresh.FlatAppearance.BorderColor = PrimaryGreen;
+            btnRefresh.FlatAppearance.BorderSize = 2;
+            btnRefresh.Click += async (s, e) => await CarregarTicketsAsync();
+            sidebarTable.Controls.Add(Wrap(btnRefresh, 16, 8), 0, 1);
 
-            // Container de Tickets
-            panelTickets = new FlowLayoutPanel
+            // Stats
+            statsCard = new Panel { Dock = DockStyle.Fill, BackColor = CardBg, Padding = new Padding(15) };
+            var stats = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, RowCount = 2 };
+            lblTotalTickets = new Label { Text = "0", Font = new Font("Segoe UI", 24, FontStyle.Bold), ForeColor = PrimaryGreen, AutoSize = true };
+            lblResolvidosHoje = new Label { Text = "0", Font = new Font("Segoe UI", 24, FontStyle.Bold), ForeColor = Color.FromArgb(16, 185, 129), AutoSize = true };
+            stats.Controls.Add(new Label { Text = "Tickets Pendentes", ForeColor = Color.Silver, AutoSize = true }, 0, 0);
+            stats.Controls.Add(lblTotalTickets, 0, 1);
+            stats.Controls.Add(new Label { Text = "Resolvidos Hoje", ForeColor = Color.Silver, AutoSize = true }, 1, 0);
+            stats.Controls.Add(lblResolvidosHoje, 1, 1);
+            statsCard.Controls.Add(stats);
+            sidebarTable.Controls.Add(Wrap(statsCard, 16, 8), 0, 2);
+
+            // Lista de Tickets
+            var ticketsPanel = new Panel { Dock = DockStyle.Fill, Padding = new Padding(16) };
+            lstTickets = new ListBox
             {
                 Dock = DockStyle.Fill,
-                AutoScroll = true,
-                BackColor = Color.FromArgb(26, 19, 47),
+                BorderStyle = BorderStyle.None,
+                BackColor = CardBg,
+                ForeColor = Color.White,
+                IntegralHeight = false
+            };
+            lstTickets.DrawMode = DrawMode.OwnerDrawFixed;
+            lstTickets.ItemHeight = 80;
+            lstTickets.DrawItem += LstTickets_DrawItem;
+            lstTickets.DoubleClick += async (s, e) => await AbrirTicketSelecionadoAsync();
+            ticketsPanel.Controls.Add(lstTickets);
+            sidebarTable.Controls.Add(ticketsPanel, 0, 3);
+
+            // Footer
+            var footer = new Panel { Dock = DockStyle.Fill, BackColor = CardBg, Padding = new Padding(16) };
+            var btnSair = new Button
+            {
+                Text = "?? Sair",
+                Dock = DockStyle.Fill,
+                FlatStyle = FlatStyle.Flat,
+                BackColor = Color.Transparent,
+                ForeColor = Color.White,
+                Font = new Font("Segoe UI", 10, FontStyle.Bold),
+                Cursor = Cursors.Hand
+            };
+            btnSair.FlatAppearance.BorderColor = BorderColor;
+            btnSair.Click += (s, e) => { this.Hide(); new LoginForm().Show(); };
+            footer.Controls.Add(btnSair);
+            sidebarTable.Controls.Add(footer, 0, 4);
+
+            // ===== Work Area =====
+            var workTable = new TableLayoutPanel
+            {
+                Dock = DockStyle.Fill,
+                BackColor = DarkerBg,
+                ColumnCount = 1,
+                RowCount = 3
+            };
+            workTable.RowStyles.Add(new RowStyle(SizeType.Absolute, 80));  // header
+            workTable.RowStyles.Add(new RowStyle(SizeType.Percent, 100));  // messages
+            workTable.RowStyles.Add(new RowStyle(SizeType.Absolute, 180)); // solution
+            rootSplit.Panel2.Controls.Add(workTable);
+
+            // Work Header
+            workHeader = new Panel { Dock = DockStyle.Fill, BackColor = DarkBg, Padding = new Padding(20), Visible = false };
+            lblTicketTitle = new Label { Text = "Ticket #0", ForeColor = Color.White, Font = new Font("Segoe UI", 16, FontStyle.Bold), AutoSize = true };
+            workHeader.Controls.Add(lblTicketTitle);
+            workTable.Controls.Add(workHeader, 0, 0);
+
+            // Messages
+            conversationPanel = new Panel { Dock = DockStyle.Fill, BackColor = DarkerBg, AutoScroll = true, Padding = new Padding(20) };
+            messagesList = new FlowLayoutPanel
+            {
+                Dock = DockStyle.Top,
                 FlowDirection = FlowDirection.TopDown,
                 WrapContents = false,
-                Padding = new Padding(10)
-            };
-
-            leftPanel.Controls.Add(panelTickets);
-            leftPanel.Controls.Add(btnRefresh);
-            leftPanel.Controls.Add(statsPanel);
-            leftPanel.Controls.Add(headerPanel);
-
-            // ???????????????????????????????????????????????????????????
-            // PAINEL DIREITO - Detalhes e Conversa
-            // ???????????????????????????????????????????????????????????
-
-            panelDetalhes = new Panel
-            {
-                Dock = DockStyle.Fill,
-                BackColor = Color.FromArgb(30, 20, 51),
-                Visible = false
-            };
-
-            // Header do Ticket
-            Panel ticketHeader = new Panel
-            {
-                Height = 60,
-                Dock = DockStyle.Top,
-                BackColor = Color.FromArgb(26, 19, 47),
-                BorderStyle = BorderStyle.FixedSingle
-            };
-
-            lblTicketInfo = new Label
-            {
-                Text = "Selecione um ticket",
-                Font = new Font("Segoe UI", 14, FontStyle.Bold),
-                ForeColor = Color.White,
-                Location = new Point(20, 15),
                 AutoSize = true
             };
-            ticketHeader.Controls.Add(lblTicketInfo);
+            conversationPanel.Controls.Add(messagesList);
 
-            // Área de Conversa
-            rtbConversa = new RichTextBox
-            {
-                Dock = DockStyle.Fill,
-                BackColor = Color.FromArgb(30, 20, 51),
-                ForeColor = Color.White,
-                Font = new Font("Segoe UI", 11),
-                ReadOnly = true,
-                BorderStyle = BorderStyle.None
-            };
+            var emptyState = new Panel { Dock = DockStyle.Fill };
+            var emptyIcon = new Label { Text = "??", Font = new Font("Segoe UI Emoji", 80), ForeColor = Color.Silver, AutoSize = true, Location = new Point(20, 100) };
+            var emptyText = new Label { Text = "Selecione um Ticket", ForeColor = Color.White, Font = new Font("Segoe UI", 20, FontStyle.Bold), AutoSize = true, Location = new Point(20, 220) };
+            emptyState.Controls.Add(emptyIcon);
+            emptyState.Controls.Add(emptyText);
+            conversationPanel.Controls.Add(emptyState);
+            workTable.Controls.Add(conversationPanel, 0, 1);
 
-            // Área de Solução
-            Panel solutionPanel = new Panel
-            {
-                Height = 180,
-                Dock = DockStyle.Bottom,
-                BackColor = Color.FromArgb(26, 19, 47),
-                Padding = new Padding(20)
-            };
-
-            Label lblSolucao = new Label
-            {
-                Text = "Digite sua resposta:",
-                Font = new Font("Segoe UI", 10, FontStyle.Bold),
-                ForeColor = Color.FromArgb(16, 185, 129),
-                Location = new Point(20, 10),
-                AutoSize = true
-            };
-
-            txtSolucao = new TextBox
-            {
-                Location = new Point(20, 35),
-                Size = new Size(760, 60),
-                Multiline = true,
-                Font = new Font("Segoe UI", 10),
-                BackColor = Color.FromArgb(44, 32, 77),
-                ForeColor = Color.White,
-                ScrollBars = ScrollBars.Vertical
-            };
-
-            btnResponder = new Button
-            {
-                Text = "?? Enviar Mensagem",
-                Location = new Point(20, 105),
-                Size = new Size(370, 40),
-                BackColor = Color.FromArgb(59, 130, 246),
-                ForeColor = Color.White,
-                FlatStyle = FlatStyle.Flat,
-                Font = new Font("Segoe UI", 11, FontStyle.Bold),
-                Cursor = Cursors.Hand
-            };
-            btnResponder.Click += async (s, e) => await ResponderTicket(false);
-
-            btnResolver = new Button
-            {
-                Text = "? Resolver e Fechar",
-                Location = new Point(410, 105),
-                Size = new Size(370, 40),
-                BackColor = Color.FromArgb(16, 185, 129),
-                ForeColor = Color.White,
-                FlatStyle = FlatStyle.Flat,
-                Font = new Font("Segoe UI", 11, FontStyle.Bold),
-                Cursor = Cursors.Hand
-            };
-            btnResolver.Click += async (s, e) => await ResponderTicket(true);
-
-            solutionPanel.Controls.Add(lblSolucao);
-            solutionPanel.Controls.Add(txtSolucao);
-            solutionPanel.Controls.Add(btnResponder);
-            solutionPanel.Controls.Add(btnResolver);
-
-            panelDetalhes.Controls.Add(rtbConversa);
-            panelDetalhes.Controls.Add(solutionPanel);
-            panelDetalhes.Controls.Add(ticketHeader);
-
-            // Estado Vazio
-            Panel emptyState = new Panel
-            {
-                Dock = DockStyle.Fill,
-                BackColor = Color.FromArgb(30, 20, 51)
-            };
-
-            Label lblEmpty = new Label
-            {
-                Text = "??\n\nSelecione um ticket da lista\npara visualizar os detalhes",
-                Font = new Font("Segoe UI", 16),
-                ForeColor = Color.Gray,
-                TextAlign = ContentAlignment.MiddleCenter,
-                Dock = DockStyle.Fill
-            };
-            emptyState.Controls.Add(lblEmpty);
-
-            splitContainer.Panel1.Controls.Add(leftPanel);
-            splitContainer.Panel2.Controls.Add(panelDetalhes);
-            splitContainer.Panel2.Controls.Add(emptyState);
-
-            this.Controls.Add(splitContainer);
-
-            // Botão Sair no rodapé
-            Button btnSair = new Button
-            {
-                Text = "Sair",
-                Size = new Size(100, 30),
-                Location = new Point(this.Width - 120, this.Height - 50),
-                Anchor = AnchorStyles.Bottom | AnchorStyles.Right,
-                BackColor = Color.FromArgb(239, 68, 68),
-                ForeColor = Color.White,
-                FlatStyle = FlatStyle.Flat,
-                Cursor = Cursors.Hand
-            };
-            btnSair.Click += (s, e) => {
-                Application.Restart();
-            };
-            this.Controls.Add(btnSair);
-            btnSair.BringToFront();
+            // Solution Area
+            solutionArea = new Panel { Dock = DockStyle.Fill, BackColor = DarkBg, Padding = new Padding(20), Visible = false };
+            lblSuccess = new Label { Dock = DockStyle.Top, Height = 40, Visible = false, BackColor = Color.FromArgb(40, PrimaryGreen), ForeColor = PrimaryGreen, TextAlign = ContentAlignment.MiddleCenter };
+            txtSolucao = new TextBox { Dock = DockStyle.Top, Height = 80, Multiline = true, BackColor = CardBg, ForeColor = Color.White, BorderStyle = BorderStyle.FixedSingle, Font = new Font("Segoe UI", 10) };
+            var btnPanel = new FlowLayoutPanel { Dock = DockStyle.Bottom, Height = 50, FlowDirection = FlowDirection.RightToLeft };
+            btnResolver = new Button { Text = "? Resolver e Fechar", Width = 200, Height = 45, FlatStyle = FlatStyle.Flat, BackColor = PrimaryGreen, ForeColor = Color.White, Font = new Font("Segoe UI", 10, FontStyle.Bold), Cursor = Cursors.Hand };
+            btnResponder = new Button { Text = "?? Enviar Mensagem", Width = 200, Height = 45, FlatStyle = FlatStyle.Flat, BackColor = Color.FromArgb(59, 130, 246), ForeColor = Color.White, Font = new Font("Segoe UI", 10, FontStyle.Bold), Cursor = Cursors.Hand };
+            btnResolver.FlatAppearance.BorderSize = 0;
+            btnResponder.FlatAppearance.BorderSize = 0;
+            btnResolver.Click += async (s, e) => await ResponderTicketAsync(true);
+            btnResponder.Click += async (s, e) => await ResponderTicketAsync(false);
+            btnPanel.Controls.Add(btnResolver);
+            btnPanel.Controls.Add(btnResponder);
+            solutionArea.Controls.Add(lblSuccess);
+            solutionArea.Controls.Add(txtSolucao);
+            solutionArea.Controls.Add(btnPanel);
+            workTable.Controls.Add(solutionArea, 0, 2);
         }
 
-        private void IniciarAutoRefresh()
+        private Panel Wrap(Control c, int padH, int padV)
         {
-            refreshTimer = new System.Windows.Forms.Timer();
-            refreshTimer.Interval = 5000; // 5 segundos
-            refreshTimer.Tick += async (s, e) => await CarregarTickets();
-            refreshTimer.Start();
+            var p = new Panel { Dock = DockStyle.Fill, Padding = new Padding(padH, padV, padH, padV) };
+            p.Controls.Add(c);
+            return p;
         }
 
-        private async Task CarregarTickets()
+        private void ConfigurarTimers()
+        {
+            _timerRefresh.Interval = 30000; // 30 segundos
+            _timerRefresh.Tick += async (s, e) => await CarregarTicketsAsync();
+            _timerRefresh.Start();
+
+            _timerPolling.Interval = 3000; // 3 segundos
+            _timerPolling.Tick += async (s, e) => await PollingTicketAtualAsync();
+        }
+
+        private async System.Threading.Tasks.Task CarregarTicketsAsync()
         {
             try
             {
-                tickets = await _apiClient.ObterTicketsPendentesAsync();
+                var tickets = await _apiClient.ObterTicketsPendentesAsync();
+                lstTickets.Items.Clear();
+                foreach (var t in tickets)
+                    lstTickets.Items.Add(t);
 
-                lblTotalTickets.Text = $"Tickets Pendentes: {tickets.Count}";
-
-                panelTickets.Controls.Clear();
-
-                if (tickets.Count == 0)
-                {
-                    Label lblNoTickets = new Label
-                    {
-                        Text = "??\n\nNenhum ticket pendente!",
-                        Font = new Font("Segoe UI", 12),
-                        ForeColor = Color.Gray,
-                        TextAlign = ContentAlignment.MiddleCenter,
-                        Size = new Size(330, 100)
-                    };
-                    panelTickets.Controls.Add(lblNoTickets);
-                    return;
-                }
-
-                foreach (var ticket in tickets)
-                {
-                    Panel ticketCard = CreateTicketCard(ticket);
-                    panelTickets.Controls.Add(ticketCard);
-                }
+                lblTotalTickets.Text = tickets.Count.ToString();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Erro ao carregar tickets: {ex.Message}",
-                    "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Erro ao carregar tickets: " + ex.Message, "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
-        private Panel CreateTicketCard(TicketDTO ticket)
+        private void LstTickets_DrawItem(object sender, DrawItemEventArgs e)
         {
-            Panel card = new Panel
-            {
-                Size = new Size(330, 120),
-                BackColor = Color.FromArgb(44, 32, 77),
-                Margin = new Padding(5),
-                Padding = new Padding(10),
-                Cursor = Cursors.Hand
-            };
+            e.DrawBackground();
+            if (e.Index < 0 || e.Index >= lstTickets.Items.Count) return;
 
-            Label lblTicketId = new Label
-            {
-                Text = $"Ticket #{ticket.Id}",
-                Font = new Font("Segoe UI", 11, FontStyle.Bold),
-                ForeColor = Color.FromArgb(16, 185, 129),
-                Location = new Point(10, 10),
-                AutoSize = true
-            };
+            var ticket = (TicketDTO)lstTickets.Items[e.Index];
+            var g = e.Graphics;
+            var bounds = e.Bounds;
 
-            Label lblSolicitante = new Label
-            {
-                Text = $"?? {ticket.NomeSolicitante}",
-                Font = new Font("Segoe UI", 9),
-                ForeColor = Color.White,
-                Location = new Point(10, 35),
-                AutoSize = true
-            };
+            using var bg = new SolidBrush(e.State.HasFlag(DrawItemState.Selected) ? BorderColor : CardBg);
+            g.FillRectangle(bg, bounds);
 
-            Label lblDescricao = new Label
-            {
-                Text = ticket.DescricaoProblema.Length > 50
-                    ? ticket.DescricaoProblema.Substring(0, 50) + "..."
-                    : ticket.DescricaoProblema,
-                Font = new Font("Segoe UI", 9),
-                ForeColor = Color.LightGray,
-                Location = new Point(10, 60),
-                Size = new Size(310, 30)
-            };
+            using var white = new SolidBrush(Color.White);
+            using var gray = new SolidBrush(Color.Silver);
+            using var f = new Font("Segoe UI", 10, FontStyle.Bold);
+            using var f2 = new Font("Segoe UI", 9);
 
-            Label lblData = new Label
-            {
-                Text = $"?? {ticket.DataAbertura:dd/MM/yyyy}",
-                Font = new Font("Segoe UI", 8),
-                ForeColor = Color.Gray,
-                Location = new Point(10, 90),
-                AutoSize = true
-            };
+            g.DrawString($"Ticket #{ticket.Id}", f, white, bounds.Left + 10, bounds.Top + 10);
+            g.DrawString(ticket.NomeSolicitante, f2, gray, bounds.Left + 10, bounds.Top + 32);
 
-            card.Controls.Add(lblTicketId);
-            card.Controls.Add(lblSolicitante);
-            card.Controls.Add(lblDescricao);
-            card.Controls.Add(lblData);
-
-            card.Click += async (s, e) => await SelecionarTicket(ticket);
-            foreach (Control c in card.Controls)
-                c.Click += async (s, e) => await SelecionarTicket(ticket);
-
-            card.MouseEnter += (s, e) => card.BackColor = Color.FromArgb(61, 43, 109);
-            card.MouseLeave += (s, e) => card.BackColor = Color.FromArgb(44, 32, 77);
-
-            return card;
+            var desc = ticket.DescricaoProblema.Length > 50 ? ticket.DescricaoProblema.Substring(0, 50) + "..." : ticket.DescricaoProblema;
+            g.DrawString(desc, f2, gray, bounds.Left + 10, bounds.Top + 52);
         }
 
-        private async Task SelecionarTicket(TicketDTO ticket)
+        private async System.Threading.Tasks.Task AbrirTicketSelecionadoAsync()
         {
-            ticketSelecionado = ticket;
-            panelDetalhes.Visible = true;
+            if (lstTickets.SelectedItem is TicketDTO ticket)
+            {
+                await CarregarTicketAsync(ticket);
+            }
+        }
 
-            lblTicketInfo.Text = $"Ticket #{ticket.Id} - {ticket.NomeSolicitante}";
+        private async System.Threading.Tasks.Task CarregarTicketAsync(TicketDTO ticket)
+        {
+            _ticketSelecionado = ticket;
+            _mensagensProcessadas.Clear();
 
-            rtbConversa.Clear();
+            messagesList.Controls.Clear();
+            workHeader.Visible = true;
+            lblTicketTitle.Text = $"Ticket #{ticket.Id} - {ticket.NomeSolicitante}";
 
-            // Adicionar pergunta do usuário
-            rtbConversa.SelectionFont = new Font("Segoe UI", 11, FontStyle.Bold);
-            rtbConversa.SelectionColor = Color.FromArgb(141, 75, 255);
-            rtbConversa.AppendText($"?? {ticket.NomeSolicitante}:\n");
-            rtbConversa.SelectionFont = new Font("Segoe UI", 10, FontStyle.Regular);
-            rtbConversa.SelectionColor = Color.White;
-            rtbConversa.AppendText($"{ticket.PerguntaOriginal}\n\n");
+            AdicionarMensagem("user", ticket.PerguntaOriginal, ticket.NomeSolicitante);
+            AdicionarMensagem("bot", ticket.RespostaIA, "DotIA");
 
-            // Adicionar resposta da IA
-            rtbConversa.SelectionFont = new Font("Segoe UI", 11, FontStyle.Bold);
-            rtbConversa.SelectionColor = Color.FromArgb(59, 130, 246);
-            rtbConversa.AppendText("?? DotIA:\n");
-            rtbConversa.SelectionFont = new Font("Segoe UI", 10, FontStyle.Regular);
-            rtbConversa.SelectionColor = Color.White;
-            rtbConversa.AppendText($"{ticket.RespostaIA}\n\n");
-
-            // Se já houver solução do técnico
             if (!string.IsNullOrEmpty(ticket.Solucao))
             {
-                var mensagens = ticket.Solucao.Split(new[] { "\n\n" }, StringSplitOptions.RemoveEmptyEntries);
-                foreach (var msg in mensagens)
-                {
-                    if (msg.Contains("[USUÁRIO"))
-                    {
-                        rtbConversa.SelectionFont = new Font("Segoe UI", 11, FontStyle.Bold);
-                        rtbConversa.SelectionColor = Color.FromArgb(141, 75, 255);
-                        rtbConversa.AppendText("?? Usuário:\n");
-                        var conteudo = System.Text.RegularExpressions.Regex.Replace(msg, @"\[USUÁRIO.*?\]\s*", "");
-                        rtbConversa.SelectionFont = new Font("Segoe UI", 10, FontStyle.Regular);
-                        rtbConversa.SelectionColor = Color.White;
-                        rtbConversa.AppendText($"{conteudo}\n\n");
-                    }
-                    else if (msg.Contains("[TÉCNICO"))
-                    {
-                        rtbConversa.SelectionFont = new Font("Segoe UI", 11, FontStyle.Bold);
-                        rtbConversa.SelectionColor = Color.FromArgb(16, 185, 129);
-                        rtbConversa.AppendText("??? Você (Técnico):\n");
-                        var conteudo = System.Text.RegularExpressions.Regex.Replace(msg, @"\[TÉCNICO.*?\]\s*", "");
-                        rtbConversa.SelectionFont = new Font("Segoe UI", 10, FontStyle.Regular);
-                        rtbConversa.SelectionColor = Color.White;
-                        rtbConversa.AppendText($"{conteudo}\n\n");
-                    }
-                }
+                ProcessarMensagensTecnico(ticket.Solucao);
             }
 
+            solutionArea.Visible = true;
             txtSolucao.Clear();
-            txtSolucao.Focus();
+            lblSuccess.Visible = false;
+
+            _timerPolling.Start();
         }
 
-        private async Task ResponderTicket(bool marcarComoResolvido)
+        private void AdicionarMensagem(string tipo, string texto, string autor)
         {
-            if (ticketSelecionado == null)
+            var msgPanel = new Panel { AutoSize = true, MaximumSize = new Size(800, 0), Padding = new Padding(10), Margin = new Padding(0, 0, 0, 10) };
+
+            Color bgColor = tipo == "user" ? Color.FromArgb(141, 75, 255) : tipo == "bot" ? Color.FromArgb(59, 130, 246) : PrimaryGreen;
+            msgPanel.BackColor = bgColor;
+
+            var lblAutor = new Label { Text = autor, ForeColor = Color.White, Font = new Font("Segoe UI", 9, FontStyle.Bold), AutoSize = true, Dock = DockStyle.Top };
+            var lblTexto = new Label { Text = texto, ForeColor = Color.White, AutoSize = true, MaximumSize = new Size(780, 0), Dock = DockStyle.Top };
+
+            msgPanel.Controls.Add(lblTexto);
+            msgPanel.Controls.Add(lblAutor);
+            messagesList.Controls.Add(msgPanel);
+            messagesList.ScrollControlIntoView(msgPanel);
+        }
+
+        private void ProcessarMensagensTecnico(string solucao)
+        {
+            var blocos = solucao.Split(new[] { "\n\n" }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (var bloco in blocos)
             {
-                MessageBox.Show("Selecione um ticket primeiro.", "Atenção",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                var m = bloco.Trim();
+                if (string.IsNullOrEmpty(m) || _mensagensProcessadas.Contains(m)) continue;
+
+                var usuarioRegex = new System.Text.RegularExpressions.Regex(@"^\[USUÁRIO\s*-\s*\d{2}/\d{2}/\d{4}\s+\d{2}:\d{2}\]\s*");
+                var tecnicoRegex = new System.Text.RegularExpressions.Regex(@"^\[TÉCNICO\s*-\s*\d{2}/\d{2}/\d{4}\s+\d{2}:\d{2}\]\s*");
+
+                var isUsuario = usuarioRegex.IsMatch(m);
+                var isTecnico = tecnicoRegex.IsMatch(m);
+
+                var limpo = usuarioRegex.Replace(m, "");
+                limpo = tecnicoRegex.Replace(limpo, "");
+
+                if (!string.IsNullOrWhiteSpace(limpo))
+                {
+                    if (isTecnico)
+                        AdicionarMensagem("tech", limpo, "Você (Técnico)");
+                    else if (isUsuario)
+                        AdicionarMensagem("user", limpo, _ticketSelecionado.NomeSolicitante);
+
+                    _mensagensProcessadas.Add(m);
+                }
+            }
+        }
+
+        private async System.Threading.Tasks.Task ResponderTicketAsync(bool resolver)
+        {
+            if (_ticketSelecionado == null) return;
+
+            var solucao = txtSolucao.Text.Trim();
+            if (string.IsNullOrEmpty(solucao) && !resolver)
+            {
+                MessageBox.Show("Digite uma mensagem para o cliente.", "Atenção", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            string solucao = txtSolucao.Text.Trim();
-
-            if (marcarComoResolvido)
-            {
-                if (MessageBox.Show("Tem certeza que deseja fechar este ticket?",
-                    "Confirmar", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
-                    return;
-            }
-            else if (string.IsNullOrEmpty(solucao))
-            {
-                MessageBox.Show("Por favor, escreva uma mensagem.", "Atenção",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            if (resolver && MessageBox.Show("Tem certeza que deseja fechar este ticket?", "Confirmação", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
                 return;
-            }
 
             btnResponder.Enabled = false;
             btnResolver.Enabled = false;
-            this.Cursor = Cursors.WaitCursor;
 
             try
             {
-                var sucesso = await _apiClient.ResolverTicketAsync(
-                    ticketSelecionado.Id,
-                    solucao,
-                    marcarComoResolvido
-                );
+                var ok = await _apiClient.ResolverTicketAsync(_ticketSelecionado.Id, solucao, resolver);
 
-                if (sucesso)
+                if (ok)
                 {
-                    if (marcarComoResolvido)
-                    {
-                        MessageBox.Show("Ticket resolvido com sucesso!", "Sucesso",
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        panelDetalhes.Visible = false;
-                        ticketSelecionado = null;
-                    }
-                    else
-                    {
-                        MessageBox.Show("Mensagem enviada com sucesso!", "Sucesso",
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    if (!string.IsNullOrEmpty(solucao))
+                        AdicionarMensagem("tech", solucao, "Você (Técnico)");
 
-                        // Adicionar mensagem na conversa
-                        rtbConversa.SelectionFont = new Font("Segoe UI", 11, FontStyle.Bold);
-                        rtbConversa.SelectionColor = Color.FromArgb(16, 185, 129);
-                        rtbConversa.AppendText("??? Você (Técnico):\n");
-                        rtbConversa.SelectionFont = new Font("Segoe UI", 10, FontStyle.Regular);
-                        rtbConversa.SelectionColor = Color.White;
-                        rtbConversa.AppendText($"{solucao}\n\n");
-                    }
-
+                    lblSuccess.Text = resolver ? "? Ticket resolvido com sucesso!" : "? Mensagem enviada!";
+                    lblSuccess.Visible = true;
                     txtSolucao.Clear();
-                    await CarregarTickets();
+
+                    if (resolver)
+                    {
+                        await CarregarTicketsAsync();
+                        _timerPolling.Stop();
+                        workHeader.Visible = false;
+                        solutionArea.Visible = false;
+                        messagesList.Controls.Clear();
+                    }
                 }
                 else
                 {
-                    MessageBox.Show("Erro ao processar ticket.", "Erro",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Erro ao processar resposta.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Erro: {ex.Message}", "Erro",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Erro: " + ex.Message, "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally
             {
                 btnResponder.Enabled = true;
                 btnResolver.Enabled = true;
-                this.Cursor = Cursors.Default;
             }
         }
 
-        protected override void OnFormClosed(FormClosedEventArgs e)
+        private async System.Threading.Tasks.Task PollingTicketAtualAsync()
         {
-            refreshTimer?.Stop();
-            refreshTimer?.Dispose();
-            base.OnFormClosed(e);
+            if (_ticketSelecionado == null) return;
+
+            try
+            {
+                var ticketAtual = await _apiClient.ObterTicketAsync(_ticketSelecionado.Id);
+                if (ticketAtual != null && ticketAtual.Ticket != null && !string.IsNullOrEmpty(ticketAtual.Ticket.Solucao))
+                {
+                    ProcessarMensagensTecnico(ticketAtual.Ticket.Solucao);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Erro no polling: " + ex.Message);
+            }
         }
     }
 }

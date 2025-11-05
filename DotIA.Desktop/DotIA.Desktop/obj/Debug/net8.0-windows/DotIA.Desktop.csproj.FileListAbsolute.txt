@@ -19,3 +19,4 @@ C:\Users\kauan\Desktop\DotIA\DotIA.Desktop\DotIA.Desktop\obj\Debug\net8.0-window
 C:\Users\kauan\Desktop\DotIA\DotIA.Desktop\DotIA.Desktop\obj\Debug\net8.0-windows\DotIA.Desktop.pdb
 C:\Users\kauan\Desktop\DotIA\DotIA.Desktop\DotIA.Desktop\obj\Debug\net8.0-windows\DotIA.Desktop.genruntimeconfig.cache
 C:\Users\kauan\Desktop\DotIA\DotIA.Desktop\DotIA.Desktop\obj\Debug\net8.0-windows\ref\DotIA.Desktop.dll
+C:\Users\kauan\Desktop\DotIA\DotIA.Desktop\DotIA.Desktop\obj\Debug\net8.0-windows\DotIA_Login.LoginForm.resources

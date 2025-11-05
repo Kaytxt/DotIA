@@ -91,8 +91,10 @@ namespace DotIA.Desktop.Forms
             Text = "DotIA - Chat";
             StartPosition = FormStartPosition.CenterScreen;
             BackColor = DarkBg;
-            Size = new Size(1100, 720);
+            Size = new Size(1600, 900);
             FormBorderStyle = FormBorderStyle.Sizable;
+            WindowState = FormWindowState.Maximized;
+            MaximizeBox = true;
         }
 
         private void MontarLayout()

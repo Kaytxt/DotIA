@@ -28,12 +28,40 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Text = "Form1";
+            textEmail = new TextBox();
+            textSenha = new TextBox();
+            SuspendLayout();
+            // 
+            // textEmail
+            // 
+            textEmail.Location = new Point(0, 0);
+            textEmail.Name = "textEmail";
+            textEmail.Size = new Size(100, 23);
+            textEmail.TabIndex = 0;
+            // 
+            // textSenha
+            // 
+            textSenha.Location = new Point(0, 0);
+            textSenha.Name = "textSenha";
+            textSenha.Size = new Size(100, 23);
+            textSenha.TabIndex = 1;
+            // 
+            // Form1
+            // 
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(800, 450);
+            Controls.Add(textSenha);
+            Controls.Add(textEmail);
+            Name = "Form1";
+            Text = "Form1";
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
+
+        private TextBox textEmail;
+        private TextBox textSenha;
     }
 }
