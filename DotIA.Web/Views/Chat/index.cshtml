@@ -2,816 +2,536 @@
     ViewData["Title"] = "DotIA - Chat";
     Layout = null;
 }
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"]</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Vendors -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet" />
+
     <style>
-        :root {
-            --primary-purple: #8d4bff;
-            --secondary-purple: #a855f7;
-            --dark-bg: #1a132f;
-            --darker-bg: #1e1433;
-            --card-bg: #2c204d;
-            --border-color: #3d2e6b;
-            --text-color: #e5e7eb;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            background: var(--dark-bg);
-            color: var(--text-color);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            overflow: hidden;
-            height: 100vh;
-        }
-
-        .chat-container {
-            display: grid;
-            grid-template-columns: 300px 1fr;
-            height: 100vh;
-        }
-
-        /* SIDEBAR */
-        .sidebar {
-            background: var(--dark-bg);
-            border-right: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        .sidebar-header {
-            padding: 20px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .logo-container {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .logo-icon {
-            width: 45px;
-            height: 45px;
-            background: linear-gradient(135deg, var(--primary-purple), var(--secondary-purple));
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-        }
-
-        .logo-text {
-            font-size: 24px;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--secondary-purple), #ec4899);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .refresh-button {
-            background: rgba(141, 75, 255, 0.1);
-            border: 2px solid var(--primary-purple);
-            border-radius: 12px;
-            padding: 10px;
-            color: var(--primary-purple);
-            font-weight: 600;
-            transition: all 0.3s;
-            margin: 15px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            cursor: pointer;
-        }
-
-            .refresh-button:hover {
-                background: var(--primary-purple);
-                color: white;
-                transform: translateY(-2px);
-                box-shadow: 0 8px 20px rgba(141, 75, 255, 0.4);
-            }
-
-            .refresh-button:active {
-                transform: scale(0.95);
-            }
-
-            .refresh-button.spinning i {
-                animation: spin 1s linear infinite;
-            }
-
-        @@keyframes spin {
-            from {
-                transform: rotate(0deg);
-            }
-
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        .live-indicator {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 15px;
-            margin: 0 20px 10px;
-            background: rgba(16, 185, 129, 0.1);
-            border: 1px solid rgba(16, 185, 129, 0.3);
-            border-radius: 10px;
-            font-size: 12px;
-            color: #10b981;
-            font-weight: 600;
-        }
-
-        .live-dot {
-            width: 8px;
-            height: 8px;
-            background: #10b981;
-            border-radius: 50%;
-            animation: pulse-live 2s ease-in-out infinite;
-        }
-
-        @@keyframes pulse-live {
-            0%, 100% {
-                opacity: 1;
-                transform: scale(1);
-            }
-
-            50% {
-                opacity: 0.5;
-                transform: scale(0.9);
-            }
-        }
-
-        .btn-new-chat {
-            background: linear-gradient(135deg, var(--primary-purple), var(--secondary-purple));
-            border: none;
-            border-radius: 12px;
-            padding: 14px;
-            color: white;
-            font-weight: 600;
-            transition: all 0.3s;
-            margin: 20px;
-        }
-
-            .btn-new-chat:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 8px 20px rgba(141, 75, 255, 0.4);
-            }
-
-        /* ✅ NOVO: Botão Abrir Ticket Direto */
-        .btn-open-ticket {
-            background: linear-gradient(135deg, #fbbf24, #f59e0b);
-            border: none;
-            border-radius: 12px;
-            padding: 14px;
-            color: white;
-            font-weight: 600;
-            transition: all 0.3s;
-            margin: 0 20px 20px 20px;
-        }
-
-            .btn-open-ticket:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 8px 20px rgba(251, 191, 36, 0.4);
-            }
-
-            .btn-open-ticket i {
-                margin-right: 8px;
-            }
-
-        .history-container {
-            flex: 1;
-            overflow-y: auto;
-            padding: 0 20px 20px;
-        }
-
-            .history-container::-webkit-scrollbar {
-                width: 6px;
-            }
-
-            .history-container::-webkit-scrollbar-track {
-                background: var(--card-bg);
-                border-radius: 10px;
-            }
-
-            .history-container::-webkit-scrollbar-thumb {
-                background: var(--primary-purple);
-                border-radius: 10px;
-            }
-
-        .history-title {
-            font-size: 12px;
-            color: #9ca3af;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 12px;
-            padding: 0 8px;
-        }
-
-        .history-item {
-            padding: 12px 16px;
-            margin-bottom: 8px;
-            background: var(--card-bg);
-            border: 1px solid transparent;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-            color: var(--text-color);
-            font-size: 14px;
-            position: relative;
-        }
-
-            .history-item:hover {
-                background: var(--border-color);
-                border-color: var(--primary-purple);
-                transform: translateX(5px);
-            }
-
-                .history-item:hover .history-actions {
-                    opacity: 1;
-                }
-
-            .history-item.active {
-                border-color: var(--secondary-purple);
-                background: var(--border-color);
-            }
-
-            .history-item.new-update::before {
-                content: '';
-                position: absolute;
-                left: 8px;
-                top: 50%;
-                transform: translateY(-50%);
-                width: 8px;
-                height: 8px;
-                background: #10b981;
-                border-radius: 50%;
-                animation: pulse-live 2s ease-in-out infinite;
-            }
-
-        .history-actions {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            display: flex;
-            gap: 4px;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .history-action-btn {
-            width: 24px;
-            height: 24px;
-            border-radius: 6px;
-            border: none;
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            transition: all 0.3s;
-        }
-
-            .history-action-btn:hover {
-                background: rgba(255, 255, 255, 0.2);
-            }
-
-            .history-action-btn.delete:hover {
-                background: #ef4444;
-            }
-
-        .status-badge {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 6px;
-            font-size: 10px;
-            font-weight: 600;
-            margin-top: 4px;
-            text-transform: uppercase;
-        }
-
-        .status-andamento {
-            background: rgba(59, 130, 246, 0.2);
-            color: #3b82f6;
-        }
-
-        .status-concluido {
-            background: rgba(16, 185, 129, 0.2);
-            color: #10b981;
-        }
-
-        .status-pendente {
-            background: rgba(251, 191, 36, 0.2);
-            color: #fbbf24;
-        }
-
-        .status-resolvido {
-            background: rgba(139, 92, 246, 0.2);
-            color: #8b5cf6;
-        }
-
-        .user-info {
-            padding: 20px;
-            border-top: 1px solid var(--border-color);
-            background: var(--card-bg);
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, var(--primary-purple), var(--secondary-purple));
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* CHAT AREA */
-        .chat-area {
-            display: flex;
-            flex-direction: column;
-            background: var(--darker-bg);
-            height: 100vh;
-        }
-
-        .chat-header {
-            background: var(--dark-bg);
-            border-bottom: 1px solid var(--border-color);
-            padding: 20px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .chat-title {
-            font-size: 20px;
-            font-weight: 600;
-            color: var(--text-color);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .messages-container {
-            flex: 1;
-            overflow-y: auto;
-            padding: 30px;
-        }
-
-            .messages-container::-webkit-scrollbar {
-                width: 8px;
-            }
-
-            .messages-container::-webkit-scrollbar-track {
-                background: var(--card-bg);
-                border-radius: 10px;
-            }
-
-            .messages-container::-webkit-scrollbar-thumb {
-                background: var(--primary-purple);
-                border-radius: 10px;
-            }
-
-        .welcome-screen {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            text-align: center;
-        }
-
-        .welcome-icon {
-            font-size: 80px;
-            margin-bottom: 20px;
-            animation: float 3s ease-in-out infinite;
-        }
-
-        @@keyframes float {
-            0%, 100% {
-                transform: translateY(0);
-            }
-
-            50% {
-                transform: translateY(-20px);
-            }
-        }
-
-        .welcome-title {
-            font-size: 36px;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--secondary-purple), #ec4899);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 15px;
-        }
-
-        .message {
-            display: flex;
-            margin-bottom: 25px;
-            animation: slideIn 0.3s ease-out;
-        }
-
-        @@keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .message.user {
-            justify-content: flex-end;
-        }
-
-        .message-content {
-            display: flex;
-            gap: 12px;
-            max-width: 70%;
-        }
-
-        .message.user .message-content {
-            flex-direction: row-reverse;
-        }
-
-        .message-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            flex-shrink: 0;
-        }
-
-        .message.user .message-avatar {
-            background: linear-gradient(135deg, var(--primary-purple), var(--secondary-purple));
-        }
-
-        .message.bot .message-avatar {
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-        }
-
-        .message.tech .message-avatar {
-            background: linear-gradient(135deg, #10b981, #059669);
-        }
-
-        .message-bubble {
-            background: var(--card-bg);
-            padding: 16px 20px;
-            border-radius: 18px;
-            color: var(--text-color);
-        }
-
-        .message.user .message-bubble {
-            background: linear-gradient(135deg, var(--primary-purple), #7c3aed);
-            border-bottom-right-radius: 4px;
-        }
-
-        .message.bot .message-bubble {
-            border-bottom-left-radius: 4px;
-        }
-
-        .message.tech .message-bubble {
-            background: linear-gradient(135deg, #059669, #047857);
-            border-bottom-left-radius: 4px;
-        }
-
-        .tech-badge {
-            display: inline-block;
-            background: rgba(255, 255, 255, 0.2);
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-
-        .message-time {
-            font-size: 11px;
-            color: #9ca3af;
-            margin-top: 8px;
-        }
-
-        .chat-feedback-area {
-            padding: 20px 0;
-            animation: slideIn 0.4s ease-out;
-        }
-
-        .feedback-card {
-            background: linear-gradient(135deg, var(--card-bg), var(--darker-bg));
-            border: 2px solid var(--border-color);
-            border-radius: 20px;
-            padding: 25px;
-            text-align: center;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        .feedback-header {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            margin-bottom: 20px;
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--text-color);
-        }
-
-            .feedback-header i {
-                font-size: 24px;
-                color: var(--primary-purple);
-            }
-
-        .feedback-buttons-chat {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-        }
-
-        .btn-feedback-chat {
-            flex: 1;
-            max-width: 200px;
-            padding: 16px 24px;
-            border: 2px solid var(--border-color);
-            background: var(--darker-bg);
-            border-radius: 15px;
-            color: var(--text-color);
-            font-size: 15px;
-            font-weight: 600;
-            transition: all 0.3s;
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-        }
-
-            .btn-feedback-chat i {
-                font-size: 28px;
-            }
-
-            .btn-feedback-chat.btn-useful:hover {
-                background: rgba(16, 185, 129, 0.2);
-                border-color: #10b981;
-                color: #10b981;
-                transform: translateY(-3px);
-                box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
-            }
-
-            .btn-feedback-chat.btn-not-useful:hover {
-                background: rgba(239, 68, 68, 0.2);
-                border-color: #ef4444;
-                color: #ef4444;
-                transform: translateY(-3px);
-                box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
-            }
-
-            .btn-feedback-chat:disabled {
-                opacity: 0.5;
-                cursor: not-allowed;
-                transform: none !important;
-            }
-
-            .btn-feedback-chat.selected {
-                transform: scale(0.95);
-            }
-
-                .btn-feedback-chat.selected.btn-useful {
-                    background: rgba(16, 185, 129, 0.3);
-                    border-color: #10b981;
-                    color: #10b981;
-                }
-
-                .btn-feedback-chat.selected.btn-not-useful {
-                    background: rgba(239, 68, 68, 0.3);
-                    border-color: #ef4444;
-                    color: #ef4444;
-                }
-
-        .feedback-evaluated {
-            padding: 16px;
-            background: rgba(16, 185, 129, 0.1);
-            border: 1px solid #10b981;
-            border-radius: 12px;
-            color: #10b981;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .typing-indicator {
-            display: none;
-        }
-
-            .typing-indicator.active {
-                display: flex;
-                align-items: center;
-                gap: 12px;
-                padding: 16px 20px;
-                background: var(--card-bg);
-                border-radius: 18px;
-                width: fit-content;
-            }
-
-        .typing-dot {
-            width: 8px;
-            height: 8px;
-            background: var(--primary-purple);
-            border-radius: 50%;
-            animation: typing 1.4s infinite;
-        }
-
-            .typing-dot:nth-child(2) {
-                animation-delay: 0.2s;
-            }
-
-            .typing-dot:nth-child(3) {
-                animation-delay: 0.4s;
-            }
-
-        @@keyframes typing {
-            0%, 60%, 100% {
-                transform: translateY(0);
-                opacity: 0.7;
-            }
-
-            30% {
-                transform: translateY(-10px);
-                opacity: 1;
-            }
-        }
-
-        .chat-blocked-notice {
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(37, 99, 235, 0.2));
-            border: 1px solid #3b82f6;
-            color: #60a5fa;
-            padding: 12px 20px;
-            border-radius: 12px;
-            text-align: center;
-            margin-bottom: 15px;
-        }
-
-        .input-area {
-            background: var(--dark-bg);
-            border-top: 1px solid var(--border-color);
-            padding: 25px 30px;
-        }
-
-        .input-wrapper {
-            background: var(--card-bg);
-            border: 2px solid var(--primary-purple);
-            border-radius: 20px;
-            padding: 15px 20px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-            .input-wrapper:focus-within {
-                border-color: var(--secondary-purple);
-                box-shadow: 0 0 0 3px rgba(141, 75, 255, 0.1);
-            }
-
-            .input-wrapper.disabled {
-                opacity: 0.5;
-                pointer-events: none;
-            }
-
-        .input-icon {
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, var(--primary-purple), var(--secondary-purple));
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            flex-shrink: 0;
-        }
-
-        #messageInput {
-            flex: 1;
-            background: transparent;
-            border: none;
-            color: white;
-            resize: none;
-            outline: none;
-            font-size: 15px;
-            line-height: 1.5;
-            max-height: 150px;
-            overflow-y: auto;
-        }
-
-            #messageInput::placeholder {
-                color: #9ca3af;
-            }
-
-        .btn-send {
-            background: linear-gradient(135deg, var(--primary-purple), var(--secondary-purple));
-            border: none;
-            border-radius: 12px;
-            padding: 12px 30px;
-            color: white;
-            font-weight: 600;
-            transition: all 0.3s;
-            white-space: nowrap;
-            flex-shrink: 0;
-        }
-
-            .btn-send:hover:not(:disabled) {
-                transform: translateY(-2px);
-                box-shadow: 0 8px 20px rgba(141, 75, 255, 0.4);
-            }
-
-            .btn-send:disabled {
-                opacity: 0.5;
-                cursor: not-allowed;
-            }
-
-        .modal-content {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            color: var(--text-color);
-        }
-
-        .modal-header {
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .modal-footer {
-            border-top: 1px solid var(--border-color);
-        }
-
-        .form-control, .form-control:focus {
-            background: var(--darker-bg);
-            border: 1px solid var(--border-color);
-            color: var(--text-color);
-        }
-
-            .form-control:focus {
-                border-color: var(--primary-purple);
-                box-shadow: 0 0 0 3px rgba(141, 75, 255, 0.1);
-            }
-
-            .form-control::placeholder {
-                color: #6b7280;
-            }
-
-        .form-label {
-            color: var(--text-color);
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-
-        .alert-info {
-            background: rgba(59, 130, 246, 0.1);
-            border: 1px solid #3b82f6;
-            color: #60a5fa;
-            border-radius: 12px;
-        }
-
-        @@media (max-width: 768px) {
-            .chat-container {
-                grid-template-columns: 1fr;
-            }
-
-            .sidebar {
-                display: none;
-            }
-        }
+    :root{
+      --primary-purple:#8d4bff; --secondary-purple:#a855f7;
+      --dark-bg:#1a132f; --darker-bg:#1e1433; --card-bg:#2c204d; --border-color:#3d2e6b; --text-color:#e5e7eb;
+      --neon-bot-1:#8d4bff; --neon-bot-2:#a855f7; --neon-tech-1:#10b981; --neon-tech-2:#34d399;
+    }
+
+    *{ margin:0; padding:0; box-sizing:border-box; }
+
+    body{
+      height:100vh;
+      overflow:hidden;
+      color:var(--text-color);
+      background:var(--dark-bg);
+      font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .chat-container{
+      height:100vh;
+      display:grid;
+      grid-template-columns:300px 1fr;
+    }
+
+    /* =========== SIDEBAR =========== */
+    .sidebar{
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      background:var(--dark-bg);
+      border-right:1px solid var(--border-color);
+    }
+
+    .sidebar-header{
+      padding:20px;
+      border-bottom:1px solid var(--border-color);
+    }
+
+    .logo-container{
+      gap:12px;
+      display:flex;
+      align-items:center;
+    }
+
+    .logo-icon{
+      width:56px; height:56px;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .logo-icon img{ width:100%; height:100%; object-fit:contain; }
+
+    .logo-text{
+      font-size:24px; font-weight:700;
+      background:linear-gradient(135deg,var(--secondary-purple),#ec4899);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+    }
+
+    .refresh-button{
+      margin:15px 20px;
+      gap:8px;
+      padding:10px;
+      color:var(--primary-purple);
+      font-weight:600;
+      cursor:pointer;
+      display:flex; align-items:center; justify-content:center;
+      border:2px solid var(--primary-purple);
+      border-radius:12px;
+      background:rgba(141,75,255,.1);
+      transition:.3s;
+    }
+    .refresh-button:hover{
+      color:#fff; transform:translateY(-2px);
+      background:var(--primary-purple);
+      box-shadow:0 8px 20px rgba(141,75,255,.4);
+    }
+    .refresh-button:active{ transform:scale(.95); }
+    .refresh-button.spinning i{ animation:spin 1s linear infinite; }
+    @@keyframes spin{ from{transform:rotate(0)} to{transform:rotate(360deg)} }
+
+    .live-indicator{
+      margin:0 20px 10px;
+      gap:8px; padding:8px 15px;
+      color:#10b981; font-size:12px; font-weight:600;
+      display:flex; align-items:center;
+      border:1px solid rgba(16,185,129,.3);
+      border-radius:10px;
+      background:rgba(16,185,129,.1);
+    }
+    .live-dot{
+      width:8px; height:8px; border-radius:50%;
+      background:#10b981; animation:pulse-live 2s ease-in-out infinite;
+    }
+    @@keyframes pulse-live{
+      0%,100%{ opacity:1; transform:scale(1) }
+      50%{ opacity:.5; transform:scale(.9) }
+    }
+
+    .btn-new-chat,
+    .btn-open-ticket{
+      margin:20px;
+      border:none; color:#fff; font-weight:600;
+      border-radius:12px; padding:14px;
+      transition:.3s;
+    }
+    .btn-new-chat{
+      background:linear-gradient(135deg,var(--primary-purple),var(--secondary-purple));
+    }
+    .btn-new-chat:hover{
+      transform:translateY(-2px);
+      box-shadow:0 8px 20px rgba(141,75,255,.4);
+    }
+    .btn-open-ticket{
+      margin-top:0;
+      background:linear-gradient(135deg,#fbbf24,#f59e0b);
+    }
+    .btn-open-ticket:hover{
+      transform:translateY(-2px);
+      box-shadow:0 8px 20px rgba(251,191,36,.4);
+    }
+    .btn-open-ticket i{ margin-right:8px; }
+
+    .history-container{ flex:1; padding:0 20px 20px; overflow-y:auto; }
+    .history-container::-webkit-scrollbar{ width:6px; }
+    .history-container::-webkit-scrollbar-track{ border-radius:10px; background:var(--card-bg); }
+    .history-container::-webkit-scrollbar-thumb{ border-radius:10px; background:var(--primary-purple); }
+
+    .history-title{
+      padding:0 8px; margin-bottom:12px;
+      color:#9ca3af; font-size:12px; letter-spacing:1px; text-transform:uppercase;
+    }
+
+    .history-item{
+      position:relative;
+      color:var(--text-color);
+      font-size:14px;
+      cursor:pointer;
+      padding:12px 16px;
+      margin-bottom:8px;
+      border:1px solid transparent;
+      border-radius:10px;
+      background:var(--card-bg);
+      transition:.3s;
+    }
+    .history-item:hover{
+      transform:translateX(5px);
+      background:var(--border-color);
+      border-color:var(--primary-purple);
+    }
+    .history-item:hover .history-actions{ opacity:1; }
+    .history-item.active{
+      background:var(--border-color);
+      border-color:var(--secondary-purple);
+    }
+    .history-item.new-update::before{
+      content:'';
+      position:absolute; left:8px; top:50%;
+      width:8px; height:8px; border-radius:50%; transform:translateY(-50%);
+      background:#10b981; animation:pulse-live 2s ease-in-out infinite;
+    }
+
+    .history-actions{
+      right:8px; top:8px; gap:4px; opacity:0; transition:.3s;
+      position:absolute; display:flex;
+    }
+    .history-action-btn{
+      width:24px; height:24px; font-size:12px;
+      display:flex; align-items:center; justify-content:center;
+      color:#fff; border:none; cursor:pointer;
+      border-radius:6px; background:rgba(255,255,255,.1); transition:.3s;
+    }
+    .history-action-btn:hover{ background:rgba(255,255,255,.2); }
+    .history-action-btn.delete:hover{ background:#ef4444; }
+
+    .status-badge{
+      margin-top:4px; padding:2px 8px;
+      font-size:10px; font-weight:600; text-transform:uppercase;
+      border-radius:6px; display:inline-block;
+    }
+    .status-andamento{ background:rgba(59,130,246,.2); color:#3b82f6; }
+    .status-concluido{ background:rgba(16,185,129,.2); color:#10b981; }
+    .status-pendente{  background:rgba(251,191,36,.2); color:#fbbf24; }
+    .status-resolvido{ background:rgba(139,92,246,.2); color:#8b5cf6; }
+
+    .user-info{
+      padding:20px;
+      background:var(--card-bg);
+      border-top:1px solid var(--border-color);
+    }
+    .user-avatar{
+      width:40px; height:40px;
+      display:flex; align-items:center; justify-content:center;
+      border-radius:50%;
+      background:linear-gradient(135deg,var(--primary-purple),var(--secondary-purple));
+    }
+
+    /* =========== CHAT AREA =========== */
+    .chat-area{
+      height:100vh;
+      display:flex; flex-direction:column;
+      background:var(--darker-bg);
+    }
+
+    .chat-header{
+      padding:20px 30px;
+      display:flex; align-items:center; justify-content:space-between;
+      background:var(--dark-bg);
+      border-bottom:1px solid var(--border-color);
+    }
+
+    .chat-title{
+      gap:12px; display:flex; align-items:center;
+      color:var(--text-color); font-size:20px; font-weight:600;
+    }
+
+    .chat-title-icon{ width:32px; height:32px; }
+
+    .messages-container{
+      flex:1; padding:30px; overflow-y:auto;
+    }
+    .messages-container::-webkit-scrollbar{ width:8px; }
+    .messages-container::-webkit-scrollbar-track{ background:var(--card-bg); border-radius:10px; }
+    .messages-container::-webkit-scrollbar-thumb{ background:var(--primary-purple); border-radius:10px; }
+
+    /* Tela de boas-vindas */
+    .welcome-screen{
+      height:100%;
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      text-align:center;
+    }
+    .welcome-icon{
+      width:160px; height:160px; margin-bottom:20px;
+      display:flex; align-items:center; justify-content:center;
+      animation:float 3s ease-in-out infinite;
+    }
+    .welcome-icon img{ width:100%; height:100%; object-fit:contain; display:block; }
+    @@keyframes float{ 0%,100%{transform:translateY(0)} 50%{transform:translateY(-20px)} }
+
+    .welcome-title{
+      margin-bottom:15px;
+      font-size:36px; font-weight:700;
+      background:linear-gradient(135deg,var(--secondary-purple),#ec4899);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+    }
+
+    /* ===== MENSAGENS ===== */
+    .message{ display:flex; margin-bottom:25px; animation:slideIn .3s ease-out; }
+    @@keyframes slideIn{ from{opacity:0; transform:translateY(20px)} to{opacity:1; transform:translateY(0)} }
+    .message.user{ justify-content:flex-end; }
+
+    .message-content{ display:flex; gap:12px; max-width:70%; }
+    .message.user .message-content{ flex-direction:row-reverse; }
+
+    /* Avatar base */
+    .message-avatar{
+      position:relative;
+      z-index:0; /* círculo atrás */
+      flex-shrink:0;
+      overflow:visible;
+      background:transparent;
+      width:44px; height:44px;           /* ⇠ tamanho base do avatar */
+      border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+    }
+    /* IA e técnico um pouco maiores (como você já tinha) */
+    .message.bot .message-avatar,
+    .message.tech .message-avatar{
+      width:54px; height:54px;           /* ⇠ ajuste aqui se quiser maior/menor */
+    }
+
+    /* ===== CÍRCULO no avatar (apenas mensagens) ===== */
+    .message-avatar::before{
+      content:"";
+      position:absolute;
+      inset:-6px;                         /* espessura do círculo ao redor */
+      border-radius:50%;
+      z-index:-1;
+      background:var(--circle-bg, rgba(255,255,255,.04));
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,.06) inset,
+        0 4px 18px rgba(0,0,0,.35);
+    }
+    /* Cores específicas por tipo */
+    .message.user   .message-avatar{ --circle-bg: radial-gradient(circle at 30% 30%, rgba(255,255,255,.12), rgba(255,255,255,.04) 60%, transparent 70%); }
+    .message.bot    .message-avatar{ --circle-bg: radial-gradient(circle at 30% 30%, rgba(141,75,255,.28), rgba(168,85,247,.10) 58%, transparent 72%); }
+    .message.tech   .message-avatar{ --circle-bg: radial-gradient(circle at 30% 30%, rgba(16,185,129,.28), rgba(52,211,153,.10) 58%, transparent 72%); }
+
+    .message-avatar img{
+      width:100%; height:100%;
+      object-fit:contain; display:block;
+      background:transparent; z-index:1;
+    }
+
+    /* Glows/auras apenas no PNG do bot/técnico */
+    .neon-bot {
+      filter:
+        drop-shadow(0 0 6px var(--neon-bot-1))
+        drop-shadow(0 0 18px var(--neon-bot-2));
+      animation:glowPulse 2.4s ease-in-out infinite;
+    }
+    .neon-tech{
+      filter:
+        drop-shadow(0 0 6px var(--neon-tech-1))
+        drop-shadow(0 0 18px var(--neon-tech-2));
+      animation:glowPulse 2.4s ease-in-out infinite;
+    }
+    @@keyframes glowPulse{ 0%,100%{transform:scale(1)} 50%{transform:scale(1.03)} }
+
+    .message-bubble{
+      color:var(--text-color);
+      padding:16px 20px; border-radius:18px;
+      background:var(--card-bg);
+    }
+    .message.user .message-bubble{ background:linear-gradient(135deg,var(--primary-purple),#7c3aed); border-bottom-right-radius:4px; }
+    .message.bot  .message-bubble{ border-bottom-left-radius:4px; }
+    .message.tech .message-bubble{ background:linear-gradient(135deg,#059669,#047857); border-bottom-left-radius:4px; }
+
+    .tech-badge{
+      display:inline-block;
+      margin-bottom:8px;
+      padding:4px 12px;
+      font-size:12px; font-weight:600;
+      border-radius:12px;
+      background:rgba(255,255,255,.2);
+    }
+
+    .message-time{ margin-top:8px; font-size:11px; color:#9ca3af; }
+
+    /* ===== Ícones de balão (SVG) fora das mensagens — mantidos ===== */
+    .neon-bubble{ color:#b779ff; filter:url(#neonGlow); }
+    .input-icon .neon-bubble{ width:40px; height:40px; }
+
+    /* ===== Feedback ===== */
+    .chat-feedback-area{ padding:20px 0; animation:slideIn .4s ease-out; }
+    .feedback-card{
+      text-align:center;
+      padding:25px; border-radius:20px;
+      background:linear-gradient(135deg,var(--card-bg),var(--darker-bg));
+      border:2px solid var(--border-color);
+      box-shadow:0 8px 20px rgba(0,0,0,.3);
+    }
+    .feedback-header{
+      gap:12px; margin-bottom:20px;
+      display:flex; align-items:center; justify-content:center;
+      color:var(--text-color); font-size:18px; font-weight:600;
+    }
+    .feedback-header i{ font-size:24px; color:var(--primary-purple); }
+
+    .feedback-buttons-chat{
+      gap:15px; display:flex; justify-content:center;
+    }
+    .btn-feedback-chat{
+      flex:1; max-width:200px;
+      gap:8px; padding:16px 24px;
+      display:flex; flex-direction:column; align-items:center;
+      color:var(--text-color); font-size:15px; font-weight:600;
+      cursor:pointer; transition:.3s;
+      border:2px solid var(--border-color); border-radius:15px;
+      background:var(--darker-bg);
+    }
+    .btn-feedback-chat i{ font-size:28px; }
+    .btn-feedback-chat:disabled{ opacity:.5; cursor:not-allowed; }
+    .btn-feedback-chat.selected{ transform:scale(.95); }
+    .btn-feedback-chat.btn-useful:hover{
+      color:#10b981; transform:translateY(-3px);
+      background:rgba(16,185,129,.2); border-color:#10b981;
+      box-shadow:0 8px 20px rgba(16,185,129,.3);
+    }
+    .btn-feedback-chat.btn-not-useful:hover{
+      color:#ef4444; transform:translateY(-3px);
+      background:rgba(239,68,68,.2); border-color:#ef4444;
+      box-shadow:0 8px 20px rgba(239,68,68,.3);
+    }
+    .btn-feedback-chat.selected.btn-useful{ color:#10b981; background:rgba(16,185,129,.3); border-color:#10b981; }
+    .btn-feedback-chat.selected.btn-not-useful{ color:#ef4444; background:rgba(239,68,68,.3); border-color:#ef4444; }
+
+    .feedback-evaluated{
+      gap:8px; padding:16px;
+      color:#10b981; font-weight:600;
+      display:flex; align-items:center; justify-content:center;
+      border:1px solid #10b981; border-radius:12px;
+      background:rgba(16,185,129,.1);
+    }
+
+    /* ===== Typing ===== */
+    .typing-indicator{ display:none; }
+    .typing-indicator.active{
+      width:fit-content;
+      gap:12px; padding:16px 20px;
+      display:flex; align-items:center;
+      background:var(--card-bg);
+      border-radius:18px;
+    }
+    .typing-dot{
+      width:8px; height:8px; border-radius:50%;
+      background:var(--primary-purple);
+      animation:typing 1.4s infinite;
+    }
+    .typing-dot:nth-child(2){ animation-delay:.2s; }
+    .typing-dot:nth-child(3){ animation-delay:.4s; }
+    @@keyframes typing{
+      0%,60%,100%{ transform:translateY(0); opacity:.7 }
+      30%      { transform:translateY(-10px); opacity:1 }
+    }
+
+    .chat-blocked-notice{
+      margin-bottom:15px; padding:12px 20px; text-align:center;
+      color:#60a5fa;
+      border:1px solid #3b82f6; border-radius:12px;
+      background:linear-gradient(135deg,rgba(59,130,246,.2),rgba(37,99,235,.2));
+    }
+
+    /* ===== Input ===== */
+    .input-area{
+      padding:25px 30px;
+      background:var(--dark-bg);
+      border-top:1px solid var(--border-color);
+    }
+    .input-wrapper{
+      gap:15px; padding:15px 20px;
+      display:flex; align-items:center;
+      border:2px solid var(--primary-purple); border-radius:20px;
+      background:var(--card-bg);
+      transition:.2s;
+    }
+    .input-wrapper:focus-within{
+      border-color:var(--secondary-purple);
+      box-shadow:0 0 0 3px rgba(141,75,255,.1);
+    }
+    .input-wrapper.disabled{ opacity:.5; pointer-events:none; }
+
+    .input-icon{
+      width:50px; height:50px;
+      border-radius:12px;
+      display:flex; align-items:center; justify-content:center;
+    }
+
+    #messageInput{
+      flex:1; border:none; outline:none; resize:none;
+      max-height:150px; overflow-y:auto;
+      background:transparent; color:#fff; font-size:15px; line-height:1.5;
+    }
+    #messageInput::placeholder{ color:#9ca3af; }
+
+    .btn-send{
+      white-space:nowrap; flex-shrink:0;
+      color:#fff; font-weight:600;
+      padding:12px 30px; border:none; border-radius:12px;
+      background:linear-gradient(135deg,var(--primary-purple),var(--secondary-purple));
+      transition:.3s;
+    }
+    .btn-send:hover:not(:disabled){
+      transform:translateY(-2px);
+      box-shadow:0 8px 20px rgba(141,75,255,.4);
+    }
+    .btn-send:disabled{ opacity:.5; cursor:not-allowed; }
+
+    /* ===== Form controls ===== */
+    .modal-content{ color:var(--text-color); background:var(--card-bg); border:1px solid var(--border-color); }
+    .modal-header{ border-bottom:1px solid var(--border-color); }
+    .modal-footer{ border-top:1px solid var(--border-color); }
+
+    .form-control, .form-control:focus{
+      color:var(--text-color);
+      background:var(--darker-bg);
+      border:1px solid var(--border-color);
+    }
+    .form-control:focus{
+      border-color:var(--primary-purple);
+      box-shadow:0 0 0 3px rgba(141,75,255,.1);
+    }
+    .form-control::placeholder{ color:#6b7280; }
+    .form-label{ margin-bottom:8px; font-weight:600; color:var(--text-color); }
+
+    .alert-info{
+      color:#60a5fa;
+      border-radius:12px;
+      border:1px solid #3b82f6;
+      background:rgba(59,130,246,.1);
+    }
+
+    /* ===== Responsivo ===== */
+    @@media (max-width:768px){
+      .chat-container{ grid-template-columns:1fr; }
+      .sidebar{ display:none; }
+    }
     </style>
+
+    <!-- SVG defs reutilizáveis (balão + filtro neon) -->
+    <svg width="0" height="0" style="position:absolute">
+        <defs>
+            <filter id="neonGlow" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="3.5" result="blur1" />
+                <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur2" />
+                <feMerge>
+                    <feMergeNode in="blur2" />
+                    <feMergeNode in="blur1" />
+                    <feMergeNode in="SourceGraphic" />
+                </feMerge>
+            </filter>
+
+            <!-- Ícone de balão sem fundo -->
+            <symbol id="icon-bubble" viewBox="0 0 64 64">
+                <path d="M14 14h32a8 8 0 0 1 8 8v12a8 8 0 0 1-8 8H32l-9 9v-9H14a8 8 0 0 1-8-8V22a8 8 0 0 1 8-8z"
+                      fill="none" stroke="currentColor" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round" />
+            </symbol>
+        </defs>
+    </svg>
 </head>
+
 <body>
     <div class="chat-container">
-        <!-- SIDEBAR -->
+        <!-- =========== SIDEBAR =========== -->
         <div class="sidebar">
             <div class="sidebar-header">
                 <div class="logo-container">
-                    <div class="logo-icon">🤖</div>
+                    <div class="logo-icon">
+                        <!-- cache-buster -->
+                        <img class="neon-bot" src='@Url.Content("~/img/dotia-logo.png")?v=2' alt="DotIA" />
+                    </div>
                     <div class="logo-text">DotIA</div>
                 </div>
             </div>
@@ -830,7 +550,6 @@
                 <i class="bi bi-plus-circle"></i> Novo Chat
             </button>
 
-            <!-- ✅ NOVO: Botão Abrir Ticket Direto -->
             <button class="btn-open-ticket" onclick="abrirModalTicketDireto()">
                 <i class="bi bi-ticket-detailed"></i> Abrir Ticket
             </button>
@@ -852,11 +571,11 @@
             </div>
         </div>
 
-        <!-- CHAT AREA -->
+        <!-- =========== CHAT AREA =========== -->
         <div class="chat-area">
             <div class="chat-header">
                 <div class="chat-title">
-                    <span>💬</span>
+                    <svg class="chat-title-icon neon-bubble" aria-hidden="true"><use href="#icon-bubble" /></svg>
                     <span id="chatTitle">DotIA - Assistente Inteligente</span>
                 </div>
                 <button class="btn btn-sm btn-outline-light" onclick="atualizarHistorico()" title="Atualizar">
@@ -866,9 +585,11 @@
 
             <div class="messages-container" id="messagesContainer">
                 <div class="welcome-screen" id="welcomeScreen">
-                    <div class="welcome-icon">🤖</div>
+                    <div class="welcome-icon">
+                        <img class="neon-bot" src='@Url.Content("~/img/icon-bot.png")?v=2' alt="DotIA" />
+                    </div>
                     <div class="welcome-title">Bem-vindo ao DotIA!</div>
-                    <p class="text-white" style="max-width: 600px;">
+                    <p class="text-white" style="max-width:600px">
                         Sou sua assistente virtual especializada em suporte técnico de TI.
                         Faça qualquer pergunta sobre tecnologia, problemas técnicos ou funcionamento do sistema.
                         Estou aqui para ajudar! 🚀
@@ -877,7 +598,7 @@
 
                 <div id="messagesList"></div>
 
-                <div class="chat-feedback-area" id="chatFeedbackArea" style="display: none;">
+                <div class="chat-feedback-area" id="chatFeedbackArea" style="display:none;">
                     <div class="feedback-card">
                         <div class="feedback-header">
                             <i class="bi bi-chat-heart"></i>
@@ -909,12 +630,11 @@
             <div class="input-area">
                 <div id="chatBlockedNotice"></div>
                 <div class="input-wrapper" id="inputWrapper">
-                    <div class="input-icon">💬</div>
-                    <textarea id="messageInput"
-                              placeholder="Digite sua pergunta aqui..."
-                              rows="1"
-                              onkeydown="handleKeyPress(event)"
-                              oninput="autoResize(this)"></textarea>
+                    <div class="input-icon">
+                        <svg class="neon-bubble" aria-hidden="true"><use href="#icon-bubble" /></svg>
+                    </div>
+                    <textarea id="messageInput" placeholder="Digite sua pergunta aqui..." rows="1"
+                              onkeydown="handleKeyPress(event)" oninput="autoResize(this)"></textarea>
                     <button class="btn-send" id="sendBtn" onclick="enviarMensagem()">
                         Enviar <i class="bi bi-send"></i>
                     </button>
@@ -923,7 +643,7 @@
         </div>
     </div>
 
-    <!-- Modal para editar nome do chat -->
+    <!-- ===== Modals ===== -->
     <div class="modal fade" id="editChatModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -932,7 +652,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <input type="text" class="form-control" id="editChatName" placeholder="Novo nome do chat">
+                    <input type="text" class="form-control" id="editChatName" placeholder="Novo nome do chat" />
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -942,57 +662,40 @@
         </div>
     </div>
 
-    <!-- ✅ NOVO: Modal para abrir ticket direto -->
     <div class="modal fade" id="abrirTicketModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">
-                        <i class="bi bi-ticket-detailed"></i> Abrir Ticket Direto
-                    </h5>
+                    <h5 class="modal-title"><i class="bi bi-ticket-detailed"></i> Abrir Ticket Direto</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <div class="alert alert-info">
                         <i class="bi bi-info-circle"></i>
-                        <strong>Precisa de ajuda urgente?</strong><br>
+                        <strong>Precisa de ajuda urgente?</strong><br />
                         Abra um ticket diretamente com um técnico sem passar pela IA.
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">
-                            <i class="bi bi-bookmark"></i> Título do Problema
-                        </label>
-                        <input type="text"
-                               class="form-control"
-                               id="ticketDiretoTitulo"
-                               placeholder="Ex: Problema com impressora"
-                               maxlength="100">
+                        <label class="form-label"><i class="bi bi-bookmark"></i> Título do Problema</label>
+                        <input type="text" class="form-control" id="ticketDiretoTitulo" placeholder="Ex: Problema com impressora" maxlength="100" />
                         <small class="text-muted">Dê um título breve e descritivo</small>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">
-                            <i class="bi bi-chat-left-text"></i> Descrição Detalhada
-                        </label>
-                        <textarea class="form-control"
-                                  id="ticketDiretoDescricao"
-                                  rows="6"
-                                  placeholder="Descreva seu problema em detalhes...
+                        <label class="form-label"><i class="bi bi-chat-left-text"></i> Descrição Detalhada</label>
+                        <textarea class="form-control" id="ticketDiretoDescricao" rows="6" placeholder="Descreva seu problema em detalhes...
 
 Exemplo:
 - O que aconteceu?
 - Quando começou?
 - Já tentou alguma solução?"></textarea>
-                        <small class="text-muted">
-                            Quanto mais detalhes, mais rápido o técnico poderá ajudar!
-                        </small>
+                        <small class="text-muted">Quanto mais detalhes, mais rápido o técnico poderá ajudar!</small>
                     </div>
                 </div>
+
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        Cancelar
-                    </button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <button type="button" class="btn btn-primary" onclick="enviarTicketDireto()">
                         <i class="bi bi-send"></i> Abrir Ticket
                     </button>
@@ -1001,796 +704,492 @@ Exemplo:
         </div>
     </div>
 
+    <!-- ===== Scripts ===== -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        let chatAtualId = null;
-        let chatAtualStatus = null;
-        let pollingInterval = null;
-        let chatEditandoId = null;
-        let mensagensProcessadas = [];
-        let historicoAnterior = [];
-        let autoRefreshInterval = null;
+    /* ==== JS original mantido ==== */
+    let chatAtualId=null, chatAtualStatus=null, pollingInterval=null,
+        chatEditandoId=null, mensagensProcessadas=[], historicoAnterior=[],
+        autoRefreshInterval=null;
 
-        window.addEventListener('load', () => {
-            carregarHistorico();
-            iniciarAutoRefresh();
-        });
+    window.addEventListener('load',()=>{ carregarHistorico(); iniciarAutoRefresh(); });
+    function iniciarAutoRefresh(){ autoRefreshInterval=setInterval(()=>{ atualizarHistoricoSilencioso(); }, 5000); }
 
-        function iniciarAutoRefresh() {
-            autoRefreshInterval = setInterval(() => {
-                atualizarHistoricoSilencioso();
-            }, 5000);
-        }
+    async function atualizarHistorico(){
+      const refreshBtn=document.getElementById('refreshBtn');
+      refreshBtn.classList.add('spinning');
+      await carregarHistorico();
+      setTimeout(()=>{ refreshBtn.classList.remove('spinning'); mostrarNotificacao('✅ Atualizado!','success'); }, 500);
+    }
 
-        async function atualizarHistorico() {
-            const refreshBtn = document.getElementById('refreshBtn');
-            refreshBtn.classList.add('spinning');
-
+    async function atualizarHistoricoSilencioso(){
+      try{
+        const r=await fetch('/Chat/ObterHistorico'); const novo=await r.json();
+        if(JSON.stringify(novo)!==JSON.stringify(historicoAnterior)){
+          const dif=novo.filter(n=>{ const ant=historicoAnterior.find(h=>h.id===n.id); return !ant || JSON.stringify(ant)!==JSON.stringify(n); });
+          if(dif.length>0){
             await carregarHistorico();
-
-            setTimeout(() => {
-                refreshBtn.classList.remove('spinning');
-                mostrarNotificacao('✅ Atualizado!', 'success');
-            }, 500);
-        }
-
-        async function atualizarHistoricoSilencioso() {
-            try {
-                const response = await fetch('/Chat/ObterHistorico');
-                const historicoNovo = await response.json();
-
-                if (JSON.stringify(historicoNovo) !== JSON.stringify(historicoAnterior)) {
-                    console.log('📥 Novos dados detectados, atualizando...');
-
-                    const novosOuAtualizados = historicoNovo.filter(novoItem => {
-                        const itemAntigo = historicoAnterior.find(h => h.id === novoItem.id);
-                        return !itemAntigo || JSON.stringify(itemAntigo) !== JSON.stringify(novoItem);
-                    });
-
-                    if (novosOuAtualizados.length > 0) {
-                        await carregarHistorico();
-
-                        novosOuAtualizados.forEach(item => {
-                            const elemento = document.querySelector(`[data-chat-id="${item.id}"]`);
-                            if (elemento) {
-                                elemento.classList.add('new-update');
-                                setTimeout(() => {
-                                    elemento.classList.remove('new-update');
-                                }, 3000);
-                            }
-                        });
-
-                        if (chatAtualId && novosOuAtualizados.some(item => item.id === chatAtualId)) {
-                            console.log('🔄 Chat atual foi atualizado, recarregando...');
-                            const chatAtual = historicoNovo.find(h => h.id === chatAtualId);
-                            if (chatAtual) {
-                                await carregarChat(chatAtual);
-                            }
-                        }
-                    }
-
-                    historicoAnterior = historicoNovo;
-                }
-            } catch (error) {
-                console.error('Erro na atualização silenciosa:', error);
-            }
-        }
-
-        // ✅ NOVO: Abrir modal para criar ticket direto
-        function abrirModalTicketDireto() {
-            document.getElementById('ticketDiretoTitulo').value = '';
-            document.getElementById('ticketDiretoDescricao').value = '';
-
-            const modal = new bootstrap.Modal(document.getElementById('abrirTicketModal'));
-            modal.show();
-        }
-
-        // ✅ NOVO: Enviar ticket direto
-        async function enviarTicketDireto() {
-            const titulo = document.getElementById('ticketDiretoTitulo').value.trim();
-            const descricao = document.getElementById('ticketDiretoDescricao').value.trim();
-
-            // Validações
-            if (!titulo) {
-                alert('Por favor, digite um título para o ticket');
-                document.getElementById('ticketDiretoTitulo').focus();
-                return;
-            }
-
-            if (titulo.length < 5) {
-                alert('O título deve ter pelo menos 5 caracteres');
-                document.getElementById('ticketDiretoTitulo').focus();
-                return;
-            }
-
-            if (!descricao) {
-                alert('Por favor, descreva seu problema');
-                document.getElementById('ticketDiretoDescricao').focus();
-                return;
-            }
-
-            if (descricao.length < 20) {
-                alert('Por favor, forneça uma descrição mais detalhada (mínimo 20 caracteres)');
-                document.getElementById('ticketDiretoDescricao').focus();
-                return;
-            }
-
-            // Desabilita o botão para evitar múltiplos cliques
-            const btnEnviar = event.target;
-            btnEnviar.disabled = true;
-            btnEnviar.innerHTML = '<i class="bi bi-hourglass-split"></i> Criando...';
-
-            try {
-                const response = await fetch('/Chat/AbrirTicketDireto', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        titulo: titulo,
-                        descricao: descricao
-                    })
-                });
-
-                const data = await response.json();
-
-                if (data.sucesso) {
-                    // Fecha o modal
-                    const modal = bootstrap.Modal.getInstance(document.getElementById('abrirTicketModal'));
-                    modal.hide();
-
-                    // Mostra mensagem de sucesso
-                    mostrarNotificacao(
-                        '✅ Ticket criado com sucesso! Um técnico irá atendê-lo em breve. Você pode acompanhar pelo histórico.',
-                        'success'
-                    );
-
-                    // Recarrega o histórico para mostrar o novo ticket
-                    await carregarHistorico();
-
-                    // Opcional: Abre automaticamente o chat do ticket criado
-                    setTimeout(async () => {
-                        const historico = await fetch('/Chat/ObterHistorico');
-                        const chats = await historico.json();
-                        const chatCriado = chats.find(c => c.id === data.chatId);
-
-                        if (chatCriado) {
-                            await carregarChat(chatCriado);
-                        }
-                    }, 1000);
-
-                } else {
-                    alert('Erro ao criar ticket: ' + (data.mensagem || 'Erro desconhecido'));
-                    btnEnviar.disabled = false;
-                    btnEnviar.innerHTML = '<i class="bi bi-send"></i> Abrir Ticket';
-                }
-            } catch (error) {
-                console.error('Erro ao criar ticket:', error);
-                alert('Erro ao conectar com o servidor. Tente novamente.');
-                btnEnviar.disabled = false;
-                btnEnviar.innerHTML = '<i class="bi bi-send"></i> Abrir Ticket';
-            }
-        }
-
-        function autoResize(textarea) {
-            textarea.style.height = 'auto';
-            textarea.style.height = Math.min(textarea.scrollHeight, 150) + 'px';
-        }
-
-        function handleKeyPress(event) {
-            if (event.key === 'Enter' && !event.shiftKey) {
-                event.preventDefault();
-                enviarMensagem();
-            }
-        }
-
-        async function enviarMensagem() {
-            const input = document.getElementById('messageInput');
-            const mensagem = input.value.trim();
-
-            if (!mensagem) return;
-
-            document.getElementById('welcomeScreen').style.display = 'none';
-
-            if (chatAtualId) {
-                try {
-                    const response = await fetch(`/Chat/verificar-resposta/${chatAtualId}`);
-                    const data = await response.json();
-                    chatAtualStatus = data.status;
-                } catch (error) {
-                    console.error('Erro ao verificar status:', error);
-                }
-            }
-
-            if (chatAtualStatus === 3 && chatAtualId) {
-                console.log('📤 Enviando mensagem para técnico (chat pendente)');
-
-                adicionarMensagem(mensagem, 'user');
-                input.value = '';
-                input.style.height = 'auto';
-
-                const sendBtn = document.getElementById('sendBtn');
-                sendBtn.disabled = true;
-
-                try {
-                    const response = await fetch('/Chat/EnviarParaTecnico', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            chatId: chatAtualId,
-                            mensagem: mensagem
-                        })
-                    });
-
-                    const data = await response.json();
-
-                    if (data.sucesso) {
-                        mostrarNotificacao('Mensagem enviada ao técnico!', 'success');
-                    } else {
-                        mostrarNotificacao('Erro ao enviar mensagem', 'warning');
-                    }
-                } catch (error) {
-                    console.error('Erro:', error);
-                    mostrarNotificacao('Erro ao conectar com o servidor', 'warning');
-                } finally {
-                    sendBtn.disabled = false;
-                }
-
-                return;
-            }
-
-            console.log('🤖 Enviando mensagem para IA');
-
-            adicionarMensagem(mensagem, 'user');
-            input.value = '';
-            input.style.height = 'auto';
-
-            const sendBtn = document.getElementById('sendBtn');
-            sendBtn.disabled = true;
-
-            const typingIndicator = document.getElementById('typingIndicator');
-            typingIndicator.classList.add('active');
-
-            try {
-                const response = await fetch('/Chat/EnviarPergunta', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ pergunta: mensagem, chatId: chatAtualId })
-                });
-
-                const data = await response.json();
-                typingIndicator.classList.remove('active');
-
-                if (data.sucesso) {
-                    chatAtualId = data.chatId;
-                    chatAtualStatus = 1;
-                    adicionarMensagem(data.resposta, 'bot', mensagem, data.chatId);
-
-                    mostrarBotoesAvaliacao(mensagem, data.resposta, data.chatId);
-
-                    await carregarHistorico();
-                } else {
-                    adicionarMensagem('Desculpe, ocorreu um erro ao processar sua pergunta.', 'bot');
-                }
-            } catch (error) {
-                typingIndicator.classList.remove('active');
-                adicionarMensagem('Erro ao conectar com o servidor.', 'bot');
-                console.error('Erro:', error);
-            } finally {
-                sendBtn.disabled = false;
-            }
-        }
-
-        function adicionarMensagem(texto, tipo, perguntaOriginal = '', chatId = null) {
-            const messagesList = document.getElementById('messagesList');
-            const now = new Date();
-            const time = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-
-            let avatar = '';
-            let badge = '';
-
-            if (tipo === 'user') avatar = '👤';
-            else if (tipo === 'bot') avatar = '🤖';
-            else if (tipo === 'tech') {
-                avatar = '🛠️';
-                badge = '<div class="tech-badge">✓ Resposta do Técnico</div>';
-            }
-
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${tipo}`;
-            if (chatId) messageDiv.dataset.chatId = chatId;
-            messageDiv.innerHTML = `
-                            <div class="message-content">
-                                <div class="message-avatar">${avatar}</div>
-                                <div class="message-bubble">
-                                    ${badge}
-                                    <div class="message-text">${texto}</div>
-                                    <div class="message-time">${time}</div>
-                                </div>
-                            </div>
-                        `;
-
-            messagesList.appendChild(messageDiv);
-
-            const container = document.getElementById('messagesContainer');
-            container.scrollTop = container.scrollHeight;
-        }
-
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML.replace(/'/g, "\\'");
-        }
-
-        function mostrarBotoesAvaliacao(pergunta, resposta, chatId) {
-            const feedbackArea = document.getElementById('chatFeedbackArea');
-            feedbackArea.style.display = 'block';
-
-            feedbackArea.dataset.pergunta = pergunta;
-            feedbackArea.dataset.resposta = resposta;
-            feedbackArea.dataset.chatId = chatId;
-
-            setTimeout(() => {
-                feedbackArea.scrollIntoView({ behavior: 'smooth', block: 'end' });
-            }, 300);
-        }
-
-        async function avaliarChatCompleto(foiUtil) {
-            const feedbackArea = document.getElementById('chatFeedbackArea');
-            const pergunta = feedbackArea.dataset.pergunta;
-            const resposta = feedbackArea.dataset.resposta;
-            const chatId = parseInt(feedbackArea.dataset.chatId);
-
-            const buttons = feedbackArea.querySelectorAll('.btn-feedback-chat');
-            buttons.forEach(btn => btn.disabled = true);
-
-            const btnClicado = event.currentTarget;
-            btnClicado.classList.add('selected');
-
-            try {
-                const response = await fetch('/Chat/AvaliarResposta', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        pergunta,
-                        resposta,
-                        foiUtil,
-                        chatId
-                    })
-                });
-
-                const data = await response.json();
-
-                if (data.sucesso) {
-                    if (!foiUtil) {
-                        if (chatAtualId === chatId) {
-                            chatAtualStatus = 3;
-                            bloquearChatParaIA();
-                            iniciarPolling(chatId);
-                        }
-
-                        feedbackArea.innerHTML = `
-                                        <div class="feedback-card">
-                                            <div class="feedback-evaluated">
-                                                <i class="bi bi-check-circle-fill"></i>
-                                                <span>Ticket criado! Um técnico irá ajudá-lo em breve.</span>
-                                            </div>
-                                            <div style="margin-top: 15px; color: #9ca3af; font-size: 14px;">
-                                                💡 Você pode criar novos chats clicando em "Novo Chat"
-                                            </div>
-                                        </div>
-                                    `;
-
-                        mostrarNotificacao('✅ Ticket criado! Este chat agora está com um técnico. Você pode criar novos chats para conversar com a IA!', 'success');
-                    } else {
-                        if (chatAtualId === chatId) {
-                            chatAtualStatus = 2;
-                        }
-
-                        feedbackArea.innerHTML = `
-                                        <div class="feedback-card">
-                                            <div class="feedback-evaluated">
-                                                <i class="bi bi-check-circle-fill"></i>
-                                                <span>Obrigado pelo feedback! Ficamos felizes em ajudar! 😊</span>
-                                            </div>
-                                        </div>
-                                    `;
-
-                        mostrarNotificacao('Avaliação registrada! Obrigado pelo feedback. 😊', 'success');
-                    }
-
-                    await carregarHistorico();
-                }
-            } catch (error) {
-                console.error('Erro ao avaliar:', error);
-                buttons.forEach(btn => btn.disabled = false);
-                btnClicado.classList.remove('selected');
-            }
-        }
-
-        function bloquearChatParaIA() {
-            const noticeDiv = document.getElementById('chatBlockedNotice');
-            noticeDiv.innerHTML = `
-                            <div class="chat-blocked-notice">
-                                <i class="bi bi-chat-dots"></i> <strong>Chat com Técnico Ativo</strong><br>
-                                Este chat está em atendimento com técnico. Suas mensagens aqui vão para ele.
-                                <strong>Você pode criar novos chats</strong> clicando em "Novo Chat"!
-                            </div>
-                        `;
-        }
-
-        function desbloquearChatParaIA() {
-            const noticeDiv = document.getElementById('chatBlockedNotice');
-            noticeDiv.innerHTML = '';
-        }
-
-        function iniciarPolling(chatId) {
-            if (pollingInterval) {
-                clearInterval(pollingInterval);
-            }
-
-            pollingInterval = setInterval(async () => {
-                try {
-                    const response = await fetch(`/Chat/VerificarResposta/${chatId}`);
-                    const data = await response.json();
-
-                    if (data.temResposta && data.solucao) {
-                        processarNovasMensagens(data.solucao);
-
-                        if (data.statusTicket === 2) {
-                            clearInterval(pollingInterval);
-                            pollingInterval = null;
-
-                            if (chatAtualId === chatId) {
-                                desbloquearChatParaIA();
-                                chatAtualStatus = 4;
-                            }
-
-                            await carregarHistorico();
-                            mostrarNotificacao('✅ Técnico finalizou o atendimento deste chat!', 'success');
-                        }
-                    }
-                } catch (error) {
-                    console.error('Erro no polling:', error);
-                }
-            }, 5000);
-        }
-
-        function processarNovasMensagens(solucaoCompleta) {
-            const mensagens = solucaoCompleta.split('\n\n');
-
-            mensagens.forEach(mensagem => {
-                if (mensagem.trim() && !mensagensProcessadas.includes(mensagem.trim())) {
-                    mensagensProcessadas.push(mensagem.trim());
-
-                    let mensagemLimpa = mensagem.trim();
-
-                    const usuarioRegex = /^\[USUÁRIO\s*-\s*\d{2}\/\d{2}\/\d{4}\s+\d{2}:\d{2}\]\s*/;
-                    const tecnicoRegex = /^\[TÉCNICO\s*-\s*\d{2}\/\d{2}\/\d{4}\s+\d{2}:\d{2}\]\s*/;
-
-                    const isUsuario = usuarioRegex.test(mensagemLimpa);
-                    const isTecnico = tecnicoRegex.test(mensagemLimpa);
-
-                    mensagemLimpa = mensagemLimpa.replace(usuarioRegex, '');
-                    mensagemLimpa = mensagemLimpa.replace(tecnicoRegex, '');
-
-                    if (mensagemLimpa) {
-                        if (isTecnico) {
-                            adicionarMensagem(mensagemLimpa, 'tech');
-                            mostrarNotificacao('💬 Nova mensagem do técnico!', 'success');
-                        }
-                    }
-                }
+            dif.forEach(item=>{
+              const el=document.querySelector(`[data-chat-id="${item.id}"]`);
+              if(el){ el.classList.add('new-update'); setTimeout(()=>el.classList.remove('new-update'), 3000); }
             });
+            if(chatAtualId && dif.some(i=>i.id===chatAtualId)){
+              const atual=novo.find(h=>h.id===chatAtualId);
+              if(atual) await carregarChat(atual);
+            }
+          }
+          historicoAnterior=novo;
         }
+      }catch(e){ console.error('Erro atualização silenciosa:', e); }
+    }
 
-        function mostrarNotificacao(mensagem, tipo = 'info') {
-            const cores = {
-                success: 'linear-gradient(135deg, #10b981, #059669)',
-                warning: 'linear-gradient(135deg, #fbbf24, #f59e0b)',
-                info: 'linear-gradient(135deg, #3b82f6, #2563eb)'
-            };
+    function abrirModalTicketDireto(){
+      ticketDiretoTitulo.value=''; ticketDiretoDescricao.value='';
+      new bootstrap.Modal(document.getElementById('abrirTicketModal')).show();
+    }
 
-            const notif = document.createElement('div');
-            notif.style.cssText = `
-                            position: fixed;
-                            top: 20px;
-                            right: 20px;
-                            background: ${cores[tipo]};
-                            padding: 15px 25px;
-                            border-radius: 12px;
-                            color: white;
-                            font-weight: 600;
-                            z-index: 10000;
-                            animation: slideInRight 0.3s ease-out;
-                            max-width: 400px;
-                            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-                        `;
-            notif.innerHTML = mensagem;
-            document.body.appendChild(notif);
-            setTimeout(() => notif.remove(), 5000);
-        }
+    async function enviarTicketDireto(){
+      const titulo=ticketDiretoTitulo.value.trim(),
+            descricao=ticketDiretoDescricao.value.trim();
+      if(!titulo){ alert('Por favor, digite um título para o ticket'); ticketDiretoTitulo.focus(); return; }
+      if(titulo.length<5){ alert('O título deve ter pelo menos 5 caracteres'); ticketDiretoTitulo.focus(); return; }
+      if(!descricao){ alert('Por favor, descreva seu problema'); ticketDiretoDescricao.focus(); return; }
+      if(descricao.length<20){ alert('Por favor, forneça uma descrição mais detalhada (mínimo 20 caracteres)'); ticketDiretoDescricao.focus(); return; }
 
-        async function carregarHistorico() {
-            try {
-                const response = await fetch('/Chat/ObterHistorico');
-                const historico = await response.json();
-                historicoAnterior = historico;
-
-                const historyList = document.getElementById('historyList');
-                historyList.innerHTML = '';
-
-                if (historico.length === 0) {
-                    historyList.innerHTML = `
-                                    <div style="text-align: center; padding: 20px; color: #9ca3af; font-size: 13px;">
-                                        Nenhum histórico ainda.<br>Comece uma conversa!
-                                    </div>
-                                `;
-                    return;
-                }
-
-                historico.forEach(chat => {
-                    const item = document.createElement('div');
-                    item.className = 'history-item';
-                    item.dataset.chatId = chat.id;
-
-                    if (chat.id === chatAtualId) {
-                        item.classList.add('active');
-                    }
-
-                    let badgeClass = 'status-andamento';
-                    if (chat.status === 2) badgeClass = 'status-concluido';
-                    else if (chat.status === 3) badgeClass = 'status-pendente';
-                    else if (chat.status === 4) badgeClass = 'status-resolvido';
-
-                    item.innerHTML = `
-                                    <div class="history-actions">
-                                        <button class="history-action-btn" onclick="editarNomeChat(event, ${chat.id}, '${escapeHtml(chat.titulo)}')">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button class="history-action-btn delete" onclick="excluirChat(event, ${chat.id})">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </div>
-                                    <div>${chat.titulo || chat.pergunta.substring(0, 30) + '...'}</div>
-                                    <div class="status-badge ${badgeClass}">${chat.statusTexto}</div>
-                                `;
-                    item.onclick = () => carregarChat(chat);
-                    historyList.appendChild(item);
-                });
-            } catch (error) {
-                console.error('Erro ao carregar histórico:', error);
-            }
-        }
-
-        function editarNomeChat(event, chatId, nomeAtual) {
-            event.stopPropagation();
-            chatEditandoId = chatId;
-            document.getElementById('editChatName').value = nomeAtual;
-            const modal = new bootstrap.Modal(document.getElementById('editChatModal'));
-            modal.show();
-        }
-
-        async function salvarNomeChat() {
-            const novoNome = document.getElementById('editChatName').value.trim();
-            if (!novoNome) {
-                mostrarNotificacao('Digite um nome válido', 'warning');
-                return;
-            }
-
-            try {
-                const response = await fetch(`/Chat/EditarTitulo/${chatEditandoId}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ novoTitulo: novoNome })
-                });
-
-                const data = await response.json();
-
-                if (data.sucesso) {
-                    const modal = bootstrap.Modal.getInstance(document.getElementById('editChatModal'));
-                    modal.hide();
-                    mostrarNotificacao('Nome do chat atualizado!', 'success');
-                    await carregarHistorico();
-
-                    if (chatAtualId === chatEditandoId) {
-                        document.getElementById('chatTitle').textContent = novoNome;
-                    }
-                } else {
-                    mostrarNotificacao('Erro ao atualizar nome do chat', 'warning');
-                }
-            } catch (error) {
-                console.error('Erro ao editar chat:', error);
-                mostrarNotificacao('Erro ao conectar com o servidor', 'warning');
-            }
-        }
-
-        async function excluirChat(event, chatId) {
-            event.stopPropagation();
-
-            if (!confirm('Tem certeza que deseja excluir esta conversa? Esta ação não pode ser desfeita.')) {
-                return;
-            }
-
-            try {
-                const response = await fetch(`/Chat/Excluir/${chatId}`, {
-                    method: 'DELETE'
-                });
-
-                const data = await response.json();
-
-                if (data.sucesso) {
-                    mostrarNotificacao('Chat excluído com sucesso!', 'success');
-
-                    if (chatAtualId === chatId) {
-                        novoChat();
-                    }
-
-                    await carregarHistorico();
-                } else {
-                    mostrarNotificacao('Erro ao excluir chat', 'warning');
-                }
-            } catch (error) {
-                console.error('Erro ao excluir chat:', error);
-                mostrarNotificacao('Erro ao conectar com o servidor', 'warning');
-            }
-        }
-
-        async function carregarChat(chat) {
-            document.getElementById('welcomeScreen').style.display = 'none';
-            const messagesList = document.getElementById('messagesList');
-            messagesList.innerHTML = '';
-
-            mensagensProcessadas = [];
-
-            chatAtualId = chat.id;
-            chatAtualStatus = chat.status;
-
-            console.log(`📂 Carregando chat #${chat.id} com status: ${chat.status}`);
-
-            adicionarMensagem(chat.pergunta, 'user');
-            adicionarMensagem(chat.resposta, 'bot', chat.pergunta, chat.id);
-
-            if (chat.status === 3) {
-                bloquearChatParaIA();
-                console.log('🔒 Chat bloqueado para IA - modo técnico ativo');
-            } else {
-                desbloquearChatParaIA();
-            }
-
-            const feedbackArea = document.getElementById('chatFeedbackArea');
-            if (chat.status === 1) {
-                feedbackArea.style.display = 'block';
-                feedbackArea.dataset.pergunta = chat.pergunta;
-                feedbackArea.dataset.resposta = chat.resposta;
-                feedbackArea.dataset.chatId = chat.id;
-
-                feedbackArea.innerHTML = `
-                                <div class="feedback-card">
-                                    <div class="feedback-header">
-                                        <i class="bi bi-chat-heart"></i>
-                                        <span>Esta conversa foi útil?</span>
-                                    </div>
-                                    <div class="feedback-buttons-chat">
-                                        <button class="btn-feedback-chat btn-useful" onclick="avaliarChatCompleto(true)">
-                                            <i class="bi bi-hand-thumbs-up"></i>
-                                            <span>Sim, foi útil!</span>
-                                        </button>
-                                        <button class="btn-feedback-chat btn-not-useful" onclick="avaliarChatCompleto(false)">
-                                            <i class="bi bi-hand-thumbs-down"></i>
-                                            <span>Não ajudou</span>
-                                        </button>
-                                    </div>
-                                </div>
-                            `;
-            } else if (chat.status === 2) {
-                feedbackArea.style.display = 'block';
-                feedbackArea.innerHTML = `
-                                <div class="feedback-card">
-                                    <div class="feedback-evaluated">
-                                        <i class="bi bi-check-circle-fill"></i>
-                                        <span>Você avaliou esta conversa como útil! 😊</span>
-                                    </div>
-                                </div>
-                            `;
-            } else if (chat.status === 3 || chat.status === 4) {
-                feedbackArea.style.display = 'block';
-                feedbackArea.innerHTML = `
-                                <div class="feedback-card">
-                                    <div class="feedback-evaluated">
-                                        <i class="bi bi-headset"></i>
-                                        <span>${chat.status === 3 ? 'Aguardando resposta do técnico...' : 'Ticket resolvido pelo técnico!'}</span>
-                                    </div>
-                                </div>
-                            `;
-            } else {
-                feedbackArea.style.display = 'none';
-            }
-
-            if (chat.idTicket) {
-                try {
-                    const response = await fetch(`/Chat/VerificarResposta/${chat.id}`);
-                    const data = await response.json();
-
-                    if (data.temResposta && data.solucao) {
-                        const mensagens = data.solucao.split('\n\n');
-
-                        mensagens.forEach(mensagem => {
-                            if (mensagem.trim()) {
-                                mensagensProcessadas.push(mensagem.trim());
-
-                                let mensagemLimpa = mensagem.trim();
-
-                                const usuarioRegex = /^\[USUÁRIO\s*-\s*\d{2}\/\d{2}\/\d{4}\s+\d{2}:\d{2}\]\s*/;
-                                const tecnicoRegex = /^\[TÉCNICO\s*-\s*\d{2}\/\d{2}\/\d{4}\s+\d{2}:\d{2}\]\s*/;
-
-                                const isUsuario = usuarioRegex.test(mensagemLimpa);
-                                const isTecnico = tecnicoRegex.test(mensagemLimpa);
-
-                                mensagemLimpa = mensagemLimpa.replace(usuarioRegex, '');
-                                mensagemLimpa = mensagemLimpa.replace(tecnicoRegex, '');
-
-                                if (mensagemLimpa) {
-                                    if (isUsuario) {
-                                        adicionarMensagem(mensagemLimpa, 'user');
-                                    } else if (isTecnico) {
-                                        adicionarMensagem(mensagemLimpa, 'tech');
-                                    }
-                                }
-                            }
-                        });
-
-                        if (data.statusTicket === 1 && chat.status === 3) {
-                            iniciarPolling(chat.id);
-                        }
-                    } else if (chat.status === 3) {
-                        iniciarPolling(chat.id);
-                    }
-                } catch (error) {
-                    console.error('Erro ao verificar resposta:', error);
-                }
-            }
-
-            document.getElementById('chatTitle').textContent = chat.titulo || 'Chat';
-
-            document.querySelectorAll('.history-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            event.currentTarget?.classList.add('active');
-        }
-
-        function novoChat() {
-            if (pollingInterval) {
-                clearInterval(pollingInterval);
-                pollingInterval = null;
-            }
-
-            chatAtualId = null;
-            chatAtualStatus = null;
-            mensagensProcessadas = [];
-
-            document.getElementById('messagesList').innerHTML = '';
-            document.getElementById('welcomeScreen').style.display = 'flex';
-            document.getElementById('chatTitle').textContent = 'DotIA - Assistente Inteligente';
-            document.getElementById('messageInput').value = '';
-            document.getElementById('messageInput').focus();
-            desbloquearChatParaIA();
-
-            document.getElementById('chatFeedbackArea').style.display = 'none';
-
-            document.querySelectorAll('.history-item').forEach(item => {
-                item.classList.remove('active');
-            });
-
-            console.log('✨ Novo chat criado - pronto para conversar com IA');
-        }
-
-        window.addEventListener('beforeunload', () => {
-            if (pollingInterval) {
-                clearInterval(pollingInterval);
-            }
-            if (autoRefreshInterval) {
-                clearInterval(autoRefreshInterval);
-            }
+      const btn=event.target; btn.disabled=true; btn.innerHTML='<i class="bi bi-hourglass-split"></i> Criando...';
+      try{
+        const r=await fetch('/Chat/AbrirTicketDireto',{
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({ titulo, descricao })
         });
+        const data=await r.json();
+        if(data.sucesso){
+          bootstrap.Modal.getInstance(document.getElementById('abrirTicketModal')).hide();
+          mostrarNotificacao('✅ Ticket criado com sucesso! Um técnico irá atendê-lo em breve.','success');
+          await carregarHistorico();
+          setTimeout(async()=>{
+            const rh=await fetch('/Chat/ObterHistorico'); const chats=await rh.json();
+            const criado=chats.find(c=>c.id===data.chatId);
+            if(criado) await carregarChat(criado);
+          },1000);
+        }else{
+          alert('Erro ao criar ticket: '+(data.mensagem||'Erro desconhecido'));
+          btn.disabled=false; btn.innerHTML='<i class="bi bi-send"></i> Abrir Ticket';
+        }
+      }catch(e){
+        console.error('Erro ao criar ticket:', e);
+        alert('Erro ao conectar com o servidor. Tente novamente.');
+        btn.disabled=false; btn.innerHTML='<i class="bi bi-send"></i> Abrir Ticket';
+      }
+    }
+
+    function autoResize(t){ t.style.height='auto'; t.style.height=Math.min(t.scrollHeight,150)+'px'; }
+    function handleKeyPress(e){ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); enviarMensagem(); } }
+
+    async function enviarMensagem(){
+      const input=document.getElementById('messageInput');
+      const msg=input.value.trim(); if(!msg) return;
+
+      document.getElementById('welcomeScreen').style.display='none';
+
+      if(chatAtualId){
+        try{
+          const r=await fetch(`/Chat/verificar-resposta/${chatAtualId}`);
+          const d=await r.json(); chatAtualStatus=d.status;
+        }catch{}
+      }
+
+      if(chatAtualStatus===3 && chatAtualId){
+        adicionarMensagem(msg,'user'); input.value=''; input.style.height='auto';
+        const sendBtn=document.getElementById('sendBtn'); sendBtn.disabled=true;
+        try{
+          const r=await fetch('/Chat/EnviarParaTecnico',{
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({ chatId:chatAtualId, mensagem:msg })
+          });
+          const d=await r.json();
+          mostrarNotificacao(d.sucesso?'Mensagem enviada ao técnico!':'Erro ao enviar mensagem', d.sucesso?'success':'warning');
+        }catch{ mostrarNotificacao('Erro ao conectar com o servidor','warning'); }
+        finally{ sendBtn.disabled=false; }
+        return;
+      }
+
+      adicionarMensagem(msg,'user'); input.value=''; input.style.height='auto';
+
+      const sendBtn=document.getElementById('sendBtn'); sendBtn.disabled=true;
+      const typing=document.getElementById('typingIndicator'); typing.classList.add('active');
+
+      try{
+        const r=await fetch('/Chat/EnviarPergunta',{
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({ pergunta:msg, chatId:chatAtualId })
+        });
+        const d=await r.json(); typing.classList.remove('active');
+
+        if(d.sucesso){
+          chatAtualId=d.chatId; chatAtualStatus=1;
+          adicionarMensagem(d.resposta,'bot',msg,d.chatId);
+          mostrarBotoesAvaliacao(msg,d.resposta,d.chatId);
+          await carregarHistorico();
+        }else{
+          adicionarMensagem('Desculpe, ocorreu um erro ao processar sua pergunta.','bot');
+        }
+      }catch(e){
+        typing.classList.remove('active');
+        adicionarMensagem('Erro ao conectar com o servidor.','bot');
+      }finally{
+        sendBtn.disabled=false;
+      }
+    }
+
+    function adicionarMensagem(texto, tipo, perguntaOriginal='', chatId=null){
+      const list=document.getElementById('messagesList');
+      const time=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+
+      let avatar='', badge='';
+      if(tipo==='user'){
+        avatar='👤';
+      }else if(tipo==='bot'){
+        avatar=`<img class="neon-bot"  src='@Url.Content("~/img/icon-bot.png")?v=2'    alt="Bot">`;
+      }else if(tipo==='tech'){
+        avatar=`<img class="neon-tech" src='@Url.Content("~/img/icon-tecnico.png")?v=2' alt="Técnico">`;
+        badge = `<div class="tech-badge">✓ Resposta do Técnico</div>`;
+      }
+
+      const wrapper=document.createElement('div');
+      wrapper.className=`message ${tipo}`;
+      if(chatId) wrapper.dataset.chatId=chatId;
+
+      wrapper.innerHTML = `
+        <div class="message-content">
+          <div class="message-avatar">${avatar}</div>
+          <div class="message-bubble">
+            ${badge}
+            <div class="message-text">${texto}</div>
+            <div class="message-time">${time}</div>
+          </div>
+        </div>
+      `;
+
+      list.appendChild(wrapper);
+      const container=document.getElementById('messagesContainer');
+      container.scrollTop=container.scrollHeight;
+    }
+
+    function escapeHtml(t){ const d=document.createElement('div'); d.textContent=t; return d.innerHTML.replace(/'/g,"\\'"); }
+
+    function mostrarBotoesAvaliacao(pergunta,resposta,chatId){
+      const area=document.getElementById('chatFeedbackArea');
+      area.style.display='block';
+      area.dataset.pergunta=pergunta;
+      area.dataset.resposta=resposta;
+      area.dataset.chatId=chatId;
+      setTimeout(()=>area.scrollIntoView({behavior:'smooth',block:'end'}),300);
+    }
+
+    async function avaliarChatCompleto(foiUtil){
+      const area=document.getElementById('chatFeedbackArea');
+      const pergunta=area.dataset.pergunta, resposta=area.dataset.resposta, chatId=parseInt(area.dataset.chatId);
+      const buttons=area.querySelectorAll('.btn-feedback-chat');
+      buttons.forEach(b=>b.disabled=true);
+      const btn=event.currentTarget; btn.classList.add('selected');
+
+      try{
+        const r=await fetch('/Chat/AvaliarResposta',{
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({ pergunta, resposta, foiUtil, chatId })
+        });
+        const d=await r.json();
+
+        if(d.sucesso){
+          if(!foiUtil){
+            if(chatAtualId===chatId){ chatAtualStatus=3; bloquearChatParaIA(); iniciarPolling(chatId); }
+            area.innerHTML = `
+              <div class="feedback-card">
+                <div class="feedback-evaluated"><i class="bi bi-check-circle-fill"></i>
+                  <span>Ticket criado! Um técnico irá ajudá-lo em breve.</span>
+                </div>
+                <div style="margin-top:15px;color:#9ca3af;font-size:14px;">
+                  💡 Você pode criar novos chats clicando em "Novo Chat"
+                </div>
+              </div>`;
+            mostrarNotificacao('✅ Ticket criado! Este chat agora está com um técnico.','success');
+          }else{
+            if(chatAtualId===chatId) chatAtualStatus=2;
+            area.innerHTML = `
+              <div class="feedback-card">
+                <div class="feedback-evaluated"><i class="bi bi-check-circle-fill"></i>
+                  <span>Obrigado pelo feedback! 😊</span>
+                </div>
+              </div>`;
+            mostrarNotificacao('Avaliação registrada! Obrigado.','success');
+          }
+          await carregarHistorico();
+        }
+      }catch(e){
+        console.error('Erro ao avaliar:', e);
+        buttons.forEach(b=>b.disabled=false);
+        btn.classList.remove('selected');
+      }
+    }
+
+    function bloquearChatParaIA(){
+      document.getElementById('chatBlockedNotice').innerHTML = `
+        <div class="chat-blocked-notice">
+          <i class="bi bi-chat-dots"></i> <strong>Chat com Técnico Ativo</strong><br/>
+          Este chat está em atendimento com técnico. Suas mensagens aqui vão para ele.
+          <strong>Você pode criar novos chats</strong> clicando em "Novo Chat"!
+        </div>`;
+    }
+    function desbloquearChatParaIA(){ document.getElementById('chatBlockedNotice').innerHTML=''; }
+
+    function iniciarPolling(chatId){
+      if(pollingInterval) clearInterval(pollingInterval);
+      pollingInterval=setInterval(async()=>{
+        try{
+          const r=await fetch(`/Chat/VerificarResposta/${chatId}`);
+          const d=await r.json();
+          if(d.temResposta && d.solucao){
+            processarNovasMensagens(d.solucao);
+            if(d.statusTicket===2){
+              clearInterval(pollingInterval); pollingInterval=null;
+              if(chatAtualId===chatId){ desbloquearChatParaIA(); chatAtualStatus=4; }
+              await carregarHistorico();
+              mostrarNotificacao('✅ Técnico finalizou o atendimento!','success');
+            }
+          }
+        }catch(e){ console.error('Erro no polling:', e); }
+      }, 5000);
+    }
+
+    function processarNovasMensagens(solucao){
+      const msgs=solucao.split('\n\n');
+      msgs.forEach(m=>{
+        if(m.trim() && !mensagensProcessadas.includes(m.trim())){
+          mensagensProcessadas.push(m.trim());
+          let s=m.trim();
+          const u=/^\[USUÁRIO\s*-\s*\d{2}\/\d{2}\/\d{4}\s+\d{2}:\d{2}\]\s*/;
+          const t=/^\[TÉCNICO\s*-\s*\d{2}\/\d{2}\/\d{4}\s+\d{2}:\d{2}\]\s*/;
+          const isU=u.test(s), isT=t.test(s);
+          s=s.replace(u,'').replace(t,'');
+          if(s){
+            if(isU) adicionarMensagem(s,'user');
+            else if(isT){ adicionarMensagem(s,'tech'); mostrarNotificacao('💬 Nova mensagem do técnico!','success'); }
+          }
+        }
+      });
+    }
+
+    function mostrarNotificacao(msg,tipo='info'){
+      const cores={
+        success:'linear-gradient(135deg,#10b981,#059669)',
+        warning:'linear-gradient(135deg,#fbbf24,#f59e0b)',
+        info:'linear-gradient(135deg,#3b82f6,#2563eb)'
+      };
+      const n=document.createElement('div');
+      n.style.cssText = `
+        position:fixed; top:20px; right:20px; z-index:10000;
+        max-width:400px; padding:15px 25px;
+        color:#fff; font-weight:600; border-radius:12px;
+        background:${cores[tipo]}; box-shadow:0 8px 20px rgba(0,0,0,.3);
+        animation:slideInRight .3s ease-out;
+      `;
+      n.innerHTML=msg;
+      document.body.appendChild(n);
+      setTimeout(()=>n.remove(), 5000);
+    }
+
+    async function carregarHistorico(){
+      try{
+        const r=await fetch('/Chat/ObterHistorico'); const h=await r.json();
+        historicoAnterior=h;
+        const list=document.getElementById('historyList');
+        list.innerHTML='';
+        if(h.length===0){
+          list.innerHTML = `
+            <div style="text-align:center;padding:20px;color:#9ca3af;font-size:13px;">
+              Nenhum histórico ainda.<br/>Comece uma conversa!
+            </div>`;
+          return;
+        }
+        h.forEach(chat=>{
+          const item=document.createElement('div');
+          item.className='history-item'; item.dataset.chatId=chat.id;
+          if(chat.id===chatAtualId) item.classList.add('active');
+
+          let badge='status-andamento';
+          if(chat.status===2) badge='status-concluido';
+          else if(chat.status===3) badge='status-pendente';
+          else if(chat.status===4) badge='status-resolvido';
+
+          item.innerHTML = `
+            <div class="history-actions">
+              <button class="history-action-btn" onclick="editarNomeChat(event,${chat.id},'${escapeHtml(chat.titulo)}')">
+                <i class="bi bi-pencil"></i>
+              </button>
+              <button class="history-action-btn delete" onclick="excluirChat(event,${chat.id})">
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+            <div>${chat.titulo || (chat.pergunta.substring(0,30)+'...')}</div>
+            <div class="status-badge ${badge}">${chat.statusTexto}</div>
+          `;
+          item.onclick=()=>carregarChat(chat);
+          list.appendChild(item);
+        });
+      }catch(e){ console.error('Erro ao carregar histórico:', e); }
+    }
+
+    function editarNomeChat(e,id,nome){
+      e.stopPropagation();
+      chatEditandoId=id;
+      document.getElementById('editChatName').value=nome;
+      new bootstrap.Modal(document.getElementById('editChatModal')).show();
+    }
+
+    async function salvarNomeChat(){
+      const novo=document.getElementById('editChatName').value.trim();
+      if(!novo){ mostrarNotificacao('Digite um nome válido','warning'); return; }
+      try{
+        const r=await fetch(`/Chat/EditarTitulo/${chatEditandoId}`,{
+          method:'PUT', headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({ novoTitulo:novo })
+        });
+        const d=await r.json();
+        if(d.sucesso){
+          bootstrap.Modal.getInstance(document.getElementById('editChatModal')).hide();
+          mostrarNotificacao('Nome do chat atualizado!','success');
+          await carregarHistorico();
+          if(chatAtualId===chatEditandoId){ document.getElementById('chatTitle').textContent=novo; }
+        }else{
+          mostrarNotificacao('Erro ao atualizar nome do chat','warning');
+        }
+      }catch(e){
+        console.error('Erro ao editar chat:', e);
+        mostrarNotificacao('Erro ao conectar com o servidor','warning');
+      }
+    }
+
+    async function excluirChat(e,id){
+      e.stopPropagation();
+      if(!confirm('Tem certeza que deseja excluir esta conversa?')) return;
+      try{
+        const r=await fetch(`/Chat/Excluir/${id}`,{ method:'DELETE' });
+        const d=await r.json();
+        if(d.sucesso){
+          mostrarNotificacao('Chat excluído com sucesso!','success');
+          if(chatAtualId===id) novoChat();
+          await carregarHistorico();
+        }else{
+          mostrarNotificacao('Erro ao excluir chat','warning');
+        }
+      }catch(e){
+        console.error('Erro ao excluir chat:', e);
+        mostrarNotificacao('Erro ao conectar com o servidor','warning');
+      }
+    }
+
+    async function carregarChat(chat){
+      document.getElementById('welcomeScreen').style.display='none';
+
+      const list=document.getElementById('messagesList');
+      list.innerHTML='';
+      mensagensProcessadas=[];
+      chatAtualId=chat.id;
+      chatAtualStatus=chat.status;
+
+      adicionarMensagem(chat.pergunta,'user');
+      adicionarMensagem(chat.resposta,'bot',chat.pergunta,chat.id);
+
+      if(chat.status===3) bloquearChatParaIA(); else desbloquearChatParaIA();
+
+      const area=document.getElementById('chatFeedbackArea');
+      if(chat.status===1){
+        area.style.display='block';
+        area.dataset.pergunta=chat.pergunta;
+        area.dataset.resposta=chat.resposta;
+        area.dataset.chatId=chat.id;
+        area.innerHTML=`
+          <div class="feedback-card">
+            <div class="feedback-header">
+              <i class="bi bi-chat-heart"></i><span>Esta conversa foi útil?</span>
+            </div>
+            <div class="feedback-buttons-chat">
+              <button class="btn-feedback-chat btn-useful" onclick="avaliarChatCompleto(true)">
+                <i class="bi bi-hand-thumbs-up"></i><span>Sim, foi útil!</span>
+              </button>
+              <button class="btn-feedback-chat btn-not-useful" onclick="avaliarChatCompleto(false)">
+                <i class="bi bi-hand-thumbs-down"></i><span>Não ajudou</span>
+              </button>
+            </div>
+          </div>`;
+      }else if(chat.status===2){
+        area.style.display='block';
+        area.innerHTML=`
+          <div class="feedback-card">
+            <div class="feedback-evaluated">
+              <i class="bi bi-check-circle-fill"></i><span>Você avaliou esta conversa como útil! 😊</span>
+            </div>
+          </div>`;
+      }else if(chat.status===3 || chat.status===4){
+        area.style.display='block';
+        area.innerHTML=`
+          <div class="feedback-card">
+            <div class="feedback-evaluated">
+              <i class="bi bi-headset"></i>
+              <span>${chat.status===3?'Aguardando resposta do técnico...':'Ticket resolvido pelo técnico!'}</span>
+            </div>
+          </div>`;
+      }else{
+        area.style.display='none';
+      }
+
+      if(chat.idTicket){
+        try{
+          const r=await fetch(`/Chat/VerificarResposta/${chat.id}`);
+          const d=await r.json();
+          if(d.temResposta && d.solucao){
+            d.solucao.split('\n\n').forEach(m=>{
+              if(m.trim()){
+                mensagensProcessadas.push(m.trim());
+                let s=m.trim();
+                const ur=/^\[USUÁRIO\s*-\s*\d{2}\/\d{2}\/\d{4}\s+\d{2}:\d{2}\]\s*/,
+                      tr=/^\[TÉCNICO\s*-\s*\d{2}\/\d{2}\/\d{4}\s+\d{2}:\d{2}\]\s*/;
+                const isU=ur.test(s), isT=tr.test(s);
+                s=s.replace(ur,'').replace(tr,'');
+                if(s){ if(isU) adicionarMensagem(s,'user'); else if(isT) adicionarMensagem(s,'tech'); }
+              }
+            });
+            if(d.statusTicket===1 && chat.status===3) iniciarPolling(chat.id);
+          }else if(chat.status===3){
+            iniciarPolling(chat.id);
+          }
+        }catch(e){ console.error('Erro ao verificar resposta:', e); }
+      }
+
+      document.getElementById('chatTitle').textContent = chat.titulo || 'Chat';
+      document.querySelectorAll('.history-item').forEach(i=>i.classList.remove('active'));
+      event?.currentTarget?.classList.add('active');
+    }
+
+    function novoChat(){
+      if(pollingInterval){ clearInterval(pollingInterval); pollingInterval=null; }
+      chatAtualId=null; chatAtualStatus=null; mensagensProcessadas=[];
+
+      document.getElementById('messagesList').innerHTML='';
+      document.getElementById('welcomeScreen').style.display='flex';
+      document.getElementById('chatTitle').textContent='DotIA - Assistente Inteligente';
+      document.getElementById('messageInput').value='';
+      document.getElementById('messageInput').focus();
+      desbloquearChatParaIA();
+      document.getElementById('chatFeedbackArea').style.display='none';
+      document.querySelectorAll('.history-item').forEach(i=>i.classList.remove('active'));
+    }
+
+    window.addEventListener('beforeunload',()=>{
+      if(pollingInterval) clearInterval(pollingInterval);
+      if(autoRefreshInterval) clearInterval(autoRefreshInterval);
+    });
     </script>
 </body>
 </html>

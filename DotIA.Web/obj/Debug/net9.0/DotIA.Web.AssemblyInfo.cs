@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DotIA.Web")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b0fb4fb6b0c4a7f429855d7126d3ece6639666c7")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ff371080a85687c43c1ff63e7f9deecd8bc9b49b")]
 [assembly: System.Reflection.AssemblyProductAttribute("DotIA.Web")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DotIA.Web")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
