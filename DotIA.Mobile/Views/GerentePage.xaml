@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:DotIA.Mobile.ViewModels"
+             xmlns:models="clr-namespace:DotIA.Mobile.Models"
+             x:Class="DotIA.Mobile.Views.GerentePage"
+             x:DataType="viewmodels:GerenteViewModel"
+             Title="Painel de Gerenciamento"
+             BackgroundColor="#0f172a">
+
+    <ScrollView>
+        <VerticalStackLayout Spacing="15" Padding="15">
+
+            <!-- Header -->
+            <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,10">
+                <Label Grid.Column="0"
+                       Text="{Binding NomeUsuario, StringFormat='👨‍💼 Olá, {0}'}"
+                       TextColor="White"
+                       FontSize="20"
+                       FontAttributes="Bold"/>
+                <Button Grid.Column="1"
+                        Text="Sair"
+                        Command="{Binding SairCommand}"
+                        BackgroundColor="#dc2626"
+                        TextColor="White"/>
+            </Grid>
+
+            <!-- Cards de Estatísticas em Grid 2x3 -->
+            <Label Text="📊 Estatísticas" TextColor="White" FontSize="18" FontAttributes="Bold"/>
+
+            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="10" RowSpacing="10">
+                <Frame Grid.Row="0" Grid.Column="0" BackgroundColor="#3b82f6" Padding="10" CornerRadius="8">
+                    <VerticalStackLayout>
+                        <Label Text="{Binding TotalUsuarios}" TextColor="White" FontSize="24" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
+                        <Label Text="Total Usuários" TextColor="White" FontSize="11" HorizontalTextAlignment="Center"/>
+                    </VerticalStackLayout>
+                </Frame>
+                <Frame Grid.Row="0" Grid.Column="1" BackgroundColor="#fbbf24" Padding="10" CornerRadius="8">
+                    <VerticalStackLayout>
+                        <Label Text="{Binding TicketsAbertos}" TextColor="White" FontSize="24" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
+                        <Label Text="Tickets Abertos" TextColor="White" FontSize="11" HorizontalTextAlignment="Center"/>
+                    </VerticalStackLayout>
+                </Frame>
+                <Frame Grid.Row="1" Grid.Column="0" BackgroundColor="#10b981" Padding="10" CornerRadius="8">
+                    <VerticalStackLayout>
+                        <Label Text="{Binding TicketsResolvidos}" TextColor="White" FontSize="24" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
+                        <Label Text="Resolvidos" TextColor="White" FontSize="11" HorizontalTextAlignment="Center"/>
+                    </VerticalStackLayout>
+                </Frame>
+                <Frame Grid.Row="1" Grid.Column="1" BackgroundColor="#8b5cf6" Padding="10" CornerRadius="8">
+                    <VerticalStackLayout>
+                        <Label Text="{Binding TotalChats}" TextColor="White" FontSize="24" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
+                        <Label Text="Total Chats" TextColor="White" FontSize="11" HorizontalTextAlignment="Center"/>
+                    </VerticalStackLayout>
+                </Frame>
+                <Frame Grid.Row="2" Grid.Column="0" BackgroundColor="#ec4899" Padding="10" CornerRadius="8">
+                    <VerticalStackLayout>
+                        <Label Text="{Binding ResolvidosHoje}" TextColor="White" FontSize="24" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
+                        <Label Text="Hoje" TextColor="White" FontSize="11" HorizontalTextAlignment="Center"/>
+                    </VerticalStackLayout>
+                </Frame>
+                <Frame Grid.Row="2" Grid.Column="1" BackgroundColor="#06b6d4" Padding="10" CornerRadius="8">
+                    <VerticalStackLayout>
+                        <Label Text="{Binding ChatsConcluidos}" TextColor="White" FontSize="24" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
+                        <Label Text="Concluídos" TextColor="White" FontSize="11" HorizontalTextAlignment="Center"/>
+                    </VerticalStackLayout>
+                </Frame>
+            </Grid>
+
+            <!-- Tabs -->
+            <Grid ColumnDefinitions="*,*,*" ColumnSpacing="5" Margin="0,10,0,0">
+                <Button Grid.Column="0"
+                        Text="Tickets"
+                        Command="{Binding MudarAbaCommand}"
+                        CommandParameter="Tickets"
+                        BackgroundColor="{Binding AbaAtiva, Converter={StaticResource IntEqualsConverter}, ConverterParameter=0}"
+                        TextColor="White"/>
+                <Button Grid.Column="1"
+                        Text="Usuários"
+                        Command="{Binding MudarAbaCommand}"
+                        CommandParameter="Usuarios"
+                        BackgroundColor="{Binding AbaAtiva, Converter={StaticResource IntEqualsConverter}, ConverterParameter=1}"
+                        TextColor="White"/>
+                <Button Grid.Column="2"
+                        Text="Relatórios"
+                        Command="{Binding MudarAbaCommand}"
+                        CommandParameter="Relatorios"
+                        BackgroundColor="{Binding AbaAtiva, Converter={StaticResource IntEqualsConverter}, ConverterParameter=2}"
+                        TextColor="White"/>
+            </Grid>
+
+            <!-- ABA TICKETS -->
+            <VerticalStackLayout IsVisible="{Binding AbaAtiva, Converter={StaticResource IntEqualsConverter}, ConverterParameter=0}" Spacing="5">
+                <Label Text="🎫 Tickets" TextColor="White" FontSize="16" FontAttributes="Bold" Margin="0,10,0,5"/>
+
+                <Label Text="{Binding Tickets.Count, StringFormat='Total: {0} tickets'}" TextColor="#94a3b8" FontSize="12"/>
+
+                <CollectionView ItemsSource="{Binding Tickets}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:TicketGerenteDTO">
+                            <Frame BackgroundColor="#1e293b" Padding="10" Margin="0,0,0,5" CornerRadius="8">
+                                <VerticalStackLayout Spacing="4">
+                                    <Label Text="{Binding Id, StringFormat='ID: {0}'}" TextColor="#3b82f6" FontSize="12" FontAttributes="Bold"/>
+                                    <Label Text="{Binding NomeSolicitante, StringFormat='Solicitante: {0}'}" TextColor="White" FontSize="13"/>
+                                    <Label Text="{Binding Departamento, StringFormat='Depto: {0}'}" TextColor="#94a3b8" FontSize="11"/>
+                                    <Label Text="{Binding DescricaoProblema}" TextColor="#cbd5e1" FontSize="12" MaxLines="2"/>
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <Label Grid.Column="0" Text="{Binding DataAbertura, StringFormat='{0:dd/MM/yy HH:mm}'}" TextColor="#64748b" FontSize="10"/>
+                                        <Label Grid.Column="1" Text="{Binding Status}" TextColor="#10b981" FontSize="10"/>
+                                    </Grid>
+                                </VerticalStackLayout>
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </VerticalStackLayout>
+
+            <!-- ABA USUÁRIOS -->
+            <VerticalStackLayout IsVisible="{Binding AbaAtiva, Converter={StaticResource IntEqualsConverter}, ConverterParameter=1}" Spacing="5">
+                <Label Text="👥 Usuários" TextColor="White" FontSize="16" FontAttributes="Bold" Margin="0,10,0,5"/>
+
+                <Label Text="{Binding Usuarios.Count, StringFormat='Total: {0} usuários'}" TextColor="#94a3b8" FontSize="12"/>
+
+                <CollectionView ItemsSource="{Binding Usuarios}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:UsuarioGerenteDTO">
+                            <Frame BackgroundColor="#1e293b" Padding="10" Margin="0,0,0,5" CornerRadius="8">
+                                <VerticalStackLayout Spacing="5">
+                                    <Label Text="{Binding Nome}" TextColor="White" FontSize="14" FontAttributes="Bold"/>
+                                    <Label Text="{Binding Email}" TextColor="#94a3b8" FontSize="12"/>
+                                    <Label Text="{Binding Departamento, StringFormat='Depto: {0}'}" TextColor="#3b82f6" FontSize="11"/>
+                                    <Label TextColor="#94a3b8" FontSize="10">
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                                <Span Text="Tickets: "/>
+                                                <Span Text="{Binding TotalTickets}"/>
+                                                <Span Text=" | Abertos: "/>
+                                                <Span Text="{Binding TicketsAbertos}"/>
+                                                <Span Text=" | Chats: "/>
+                                                <Span Text="{Binding TotalChats}"/>
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
+
+                                    <!-- Botões de Ação -->
+                                    <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="5" RowSpacing="5" Margin="0,5,0,0">
+                                        <Button Grid.Row="0" Grid.Column="0" Text="Editar" FontSize="10" Padding="5"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:GerenteViewModel}}, Path=EditarUsuarioCommand}"
+                                                CommandParameter="{Binding .}" BackgroundColor="#3b82f6"/>
+                                        <Button Grid.Row="0" Grid.Column="1" Text="Cargo" FontSize="10" Padding="5"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:GerenteViewModel}}, Path=AlterarCargoCommand}"
+                                                CommandParameter="{Binding .}" BackgroundColor="#8b5cf6"/>
+                                        <Button Grid.Row="1" Grid.Column="0" Text="Senha" FontSize="10" Padding="5"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:GerenteViewModel}}, Path=AlterarSenhaCommand}"
+                                                CommandParameter="{Binding .}" BackgroundColor="#fbbf24"/>
+                                        <Button Grid.Row="1" Grid.Column="1" Text="Ver Tickets" FontSize="10" Padding="5"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:GerenteViewModel}}, Path=VerTicketsUsuarioCommand}"
+                                                CommandParameter="{Binding .}" BackgroundColor="#10b981"/>
+                                        <Button Grid.Row="2" Grid.ColumnSpan="2" Text="Excluir Usuário" FontSize="10" Padding="5"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:GerenteViewModel}}, Path=ExcluirUsuarioCommand}"
+                                                CommandParameter="{Binding .}" BackgroundColor="#ef4444"/>
+                                    </Grid>
+                                </VerticalStackLayout>
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </VerticalStackLayout>
+
+            <!-- ABA RELATÓRIOS -->
+            <VerticalStackLayout IsVisible="{Binding AbaAtiva, Converter={StaticResource IntEqualsConverter}, ConverterParameter=2}" Spacing="10">
+                <Label Text="📊 Relatórios" TextColor="White" FontSize="16" FontAttributes="Bold" Margin="0,10,0,5"/>
+
+                <!-- Por Departamento -->
+                <Label Text="Por Departamento" TextColor="White" FontSize="14" FontAttributes="Bold"/>
+                <Label Text="{Binding RelatoriosDepartamentos.Count, StringFormat='Total: {0} departamentos'}" TextColor="#94a3b8" FontSize="12"/>
+
+                <CollectionView ItemsSource="{Binding RelatoriosDepartamentos}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:RelatorioDepartamentoDTO">
+                            <Frame BackgroundColor="#1e293b" Padding="10" Margin="0,0,0,5" CornerRadius="8">
+                                <VerticalStackLayout Spacing="4">
+                                    <Label Text="{Binding Departamento}" TextColor="White" FontSize="13" FontAttributes="Bold"/>
+                                    <Label TextColor="#94a3b8" FontSize="11">
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                                <Span Text="Usuários: "/>
+                                                <Span Text="{Binding TotalUsuarios}"/>
+                                                <Span Text=" | Tickets: "/>
+                                                <Span Text="{Binding TotalTickets}"/>
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
+                                    <Label TextColor="#94a3b8" FontSize="11">
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                                <Span Text="Abertos: " TextColor="#fbbf24"/>
+                                                <Span Text="{Binding TicketsAbertos}" TextColor="#fbbf24"/>
+                                                <Span Text=" | Resolvidos: " TextColor="#10b981"/>
+                                                <Span Text="{Binding TicketsResolvidos}" TextColor="#10b981"/>
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
+                                </VerticalStackLayout>
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <!-- Ranking -->
+                <Label Text="🏆 Top Usuários" TextColor="White" FontSize="14" FontAttributes="Bold" Margin="0,10,0,0"/>
+                <Label Text="{Binding Ranking.Count, StringFormat='Total: {0} usuários'}" TextColor="#94a3b8" FontSize="12"/>
+
+                <CollectionView ItemsSource="{Binding Ranking}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:RankingUsuarioDTO">
+                            <Frame BackgroundColor="#1e293b" Padding="10" Margin="0,0,0,5" CornerRadius="8">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <Label Grid.Column="0" Text="{Binding Nome}" TextColor="White" FontSize="12"/>
+                                    <Label Grid.Column="1" Text="{Binding TotalTickets, StringFormat='{0} tickets'}" TextColor="#3b82f6" FontSize="12" FontAttributes="Bold"/>
+                                </Grid>
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </VerticalStackLayout>
+
+            <!-- Loading -->
+            <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}" Color="#7c3aed" Margin="0,20"/>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

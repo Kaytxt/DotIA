@@ -108,11 +108,11 @@ namespace DotIA.Web.Services
         // ═══════════════════════════════════════════════════════════
         // CHAT
         // ═══════════════════════════════════════════════════════════
-        public async Task<ChatResponse> EnviarPerguntaAsync(int usuarioId, string pergunta)
+        public async Task<ChatResponse> EnviarPerguntaAsync(int usuarioId, string pergunta, int? chatId = null)
         {
             try
             {
-                var request = new { UsuarioId = usuarioId, Pergunta = pergunta };
+                var request = new { UsuarioId = usuarioId, Pergunta = pergunta, ChatId = chatId };
                 var json = JsonSerializer.Serialize(request);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="456" height="456" viewBox="0 0 456 456" xmlns="http://www.w3.org/2000/svg">
+    <rect width="456" height="456" fill="#1a1a2e"/>
+    <circle cx="228" cy="228" r="150" fill="#7c3aed" opacity="0.2"/>
+    <circle cx="228" cy="228" r="100" fill="#7c3aed" opacity="0.4"/>
+    <circle cx="228" cy="228" r="50" fill="#7c3aed"/>
+    <text x="50%" y="50%" text-anchor="middle" dominant-baseline="central"
+          font-size="120" font-family="Arial, sans-serif" font-weight="bold" fill="white">
+        DotIA
+    </text>
+</svg>

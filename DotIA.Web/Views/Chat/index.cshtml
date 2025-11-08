@@ -56,21 +56,6 @@
             border-bottom: 1px solid var(--border-color);
         }
 
-        .bot-glow {
-            width: 160px;
-            height: auto;
-            object-fit: contain;
-            filter: drop-shadow(0 0 20px rgba(141, 75, 255, 0.8)) drop-shadow(0 0 40px rgba(168, 85, 247, 0.6));
-            animation: float 4s ease-in-out infinite;
-            transition: transform 0.3s ease, filter 0.3s ease;
-        }
-
-            .bot-glow:hover {
-                transform: scale(1.08);
-                filter: drop-shadow(0 0 30px rgba(141, 75, 255, 1)) drop-shadow(0 0 60px rgba(168, 85, 247, 0.9));
-            }
-
-
         .logo-container {
             display: flex;
             align-items: center;
@@ -78,28 +63,15 @@
         }
 
         .logo-icon {
-            width: 40px;
-            height: 40px;
-            background: none;
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, var(--primary-purple), var(--secondary-purple));
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-right: 10px;
-            overflow: visible;
+            font-size: 24px;
         }
-
-            .logo-icon img {
-                width: 100%;
-                height: 100%;
-                object-fit: contain;
-                filter: drop-shadow(0 0 10px rgba(141, 75, 255, 0.5));
-                transition: transform 0.3s ease, filter 0.3s ease;
-            }
-
-                .logo-icon img:hover {
-                    transform: scale(1.1);
-                    filter: drop-shadow(0 0 20px rgba(168, 85, 247, 0.8));
-                }
 
         .logo-text {
             font-size: 24px;
@@ -125,24 +97,29 @@
             cursor: pointer;
         }
 
-        .refresh-button:hover {
-            background: var(--primary-purple);
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(141, 75, 255, 0.4);
-        }
+            .refresh-button:hover {
+                background: var(--primary-purple);
+                color: white;
+                transform: translateY(-2px);
+                box-shadow: 0 8px 20px rgba(141, 75, 255, 0.4);
+            }
 
-        .refresh-button:active {
-            transform: scale(0.95);
-        }
+            .refresh-button:active {
+                transform: scale(0.95);
+            }
 
-        .refresh-button.spinning i {
-            animation: spin 1s linear infinite;
-        }
+            .refresh-button.spinning i {
+                animation: spin 1s linear infinite;
+            }
 
         @@keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         .live-indicator {
@@ -168,8 +145,15 @@
         }
 
         @@keyframes pulse-live {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.5; transform: scale(0.9); }
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.5;
+                transform: scale(0.9);
+            }
         }
 
         .btn-new-chat {
@@ -183,10 +167,10 @@
             margin: 20px;
         }
 
-        .btn-new-chat:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(141, 75, 255, 0.4);
-        }
+            .btn-new-chat:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 20px rgba(141, 75, 255, 0.4);
+            }
 
         /* ✅ NOVO: Botão Abrir Ticket Direto */
         .btn-open-ticket {
@@ -200,14 +184,14 @@
             margin: 0 20px 20px 20px;
         }
 
-        .btn-open-ticket:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(251, 191, 36, 0.4);
-        }
+            .btn-open-ticket:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 20px rgba(251, 191, 36, 0.4);
+            }
 
-        .btn-open-ticket i {
-            margin-right: 8px;
-        }
+            .btn-open-ticket i {
+                margin-right: 8px;
+            }
 
         .history-container {
             flex: 1;
@@ -215,19 +199,19 @@
             padding: 0 20px 20px;
         }
 
-        .history-container::-webkit-scrollbar {
-            width: 6px;
-        }
+            .history-container::-webkit-scrollbar {
+                width: 6px;
+            }
 
-        .history-container::-webkit-scrollbar-track {
-            background: var(--card-bg);
-            border-radius: 10px;
-        }
+            .history-container::-webkit-scrollbar-track {
+                background: var(--card-bg);
+                border-radius: 10px;
+            }
 
-        .history-container::-webkit-scrollbar-thumb {
-            background: var(--primary-purple);
-            border-radius: 10px;
-        }
+            .history-container::-webkit-scrollbar-thumb {
+                background: var(--primary-purple);
+                border-radius: 10px;
+            }
 
         .history-title {
             font-size: 12px;
@@ -251,33 +235,33 @@
             position: relative;
         }
 
-        .history-item:hover {
-            background: var(--border-color);
-            border-color: var(--primary-purple);
-            transform: translateX(5px);
-        }
+            .history-item:hover {
+                background: var(--border-color);
+                border-color: var(--primary-purple);
+                transform: translateX(5px);
+            }
 
-        .history-item:hover .history-actions {
-            opacity: 1;
-        }
+                .history-item:hover .history-actions {
+                    opacity: 1;
+                }
 
-        .history-item.active {
-            border-color: var(--secondary-purple);
-            background: var(--border-color);
-        }
+            .history-item.active {
+                border-color: var(--secondary-purple);
+                background: var(--border-color);
+            }
 
-        .history-item.new-update::before {
-            content: '';
-            position: absolute;
-            left: 8px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 8px;
-            height: 8px;
-            background: #10b981;
-            border-radius: 50%;
-            animation: pulse-live 2s ease-in-out infinite;
-        }
+            .history-item.new-update::before {
+                content: '';
+                position: absolute;
+                left: 8px;
+                top: 50%;
+                transform: translateY(-50%);
+                width: 8px;
+                height: 8px;
+                background: #10b981;
+                border-radius: 50%;
+                animation: pulse-live 2s ease-in-out infinite;
+            }
 
         .history-actions {
             position: absolute;
@@ -304,13 +288,13 @@
             transition: all 0.3s;
         }
 
-        .history-action-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
+            .history-action-btn:hover {
+                background: rgba(255, 255, 255, 0.2);
+            }
 
-        .history-action-btn.delete:hover {
-            background: #ef4444;
-        }
+            .history-action-btn.delete:hover {
+                background: #ef4444;
+            }
 
         .status-badge {
             display: inline-block;
@@ -390,19 +374,19 @@
             padding: 30px;
         }
 
-        .messages-container::-webkit-scrollbar {
-            width: 8px;
-        }
+            .messages-container::-webkit-scrollbar {
+                width: 8px;
+            }
 
-        .messages-container::-webkit-scrollbar-track {
-            background: var(--card-bg);
-            border-radius: 10px;
-        }
+            .messages-container::-webkit-scrollbar-track {
+                background: var(--card-bg);
+                border-radius: 10px;
+            }
 
-        .messages-container::-webkit-scrollbar-thumb {
-            background: var(--primary-purple);
-            border-radius: 10px;
-        }
+            .messages-container::-webkit-scrollbar-thumb {
+                background: var(--primary-purple);
+                border-radius: 10px;
+            }
 
         .welcome-screen {
             display: flex;
@@ -413,19 +397,11 @@
             text-align: center;
         }
 
-        .bot-icon {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            border-radius: 50%;
-            filter: drop-shadow(0 0 10px rgba(141, 75, 255, 0.7)) drop-shadow(0 0 25px rgba(168, 85, 247, 0.5));
-            transition: transform 0.3s ease, filter 0.3s ease;
+        .welcome-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: float 3s ease-in-out infinite;
         }
-
-            .bot-icon:hover {
-                transform: scale(1.08);
-                filter: drop-shadow(0 0 20px rgba(141, 75, 255, 1)) drop-shadow(0 0 40px rgba(168, 85, 247, 0.8));
-            }
 
         @@keyframes float {
             0%, 100% {
@@ -479,15 +455,14 @@
         }
 
         .message-avatar {
-            background: none !important; 
-            box-shadow: none !important;
-            width: 75px; 
-            height: 75px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 0;
-            overflow: visible;
+            font-size: 20px;
+            flex-shrink: 0;
         }
 
         .message.user .message-avatar {
@@ -564,10 +539,10 @@
             color: var(--text-color);
         }
 
-        .feedback-header i {
-            font-size: 24px;
-            color: var(--primary-purple);
-        }
+            .feedback-header i {
+                font-size: 24px;
+                color: var(--primary-purple);
+            }
 
         .feedback-buttons-chat {
             display: flex;
@@ -593,47 +568,47 @@
             gap: 8px;
         }
 
-        .btn-feedback-chat i {
-            font-size: 28px;
-        }
+            .btn-feedback-chat i {
+                font-size: 28px;
+            }
 
-        .btn-feedback-chat.btn-useful:hover {
-            background: rgba(16, 185, 129, 0.2);
-            border-color: #10b981;
-            color: #10b981;
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
-        }
+            .btn-feedback-chat.btn-useful:hover {
+                background: rgba(16, 185, 129, 0.2);
+                border-color: #10b981;
+                color: #10b981;
+                transform: translateY(-3px);
+                box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+            }
 
-        .btn-feedback-chat.btn-not-useful:hover {
-            background: rgba(239, 68, 68, 0.2);
-            border-color: #ef4444;
-            color: #ef4444;
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
-        }
+            .btn-feedback-chat.btn-not-useful:hover {
+                background: rgba(239, 68, 68, 0.2);
+                border-color: #ef4444;
+                color: #ef4444;
+                transform: translateY(-3px);
+                box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
+            }
 
-        .btn-feedback-chat:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none !important;
-        }
+            .btn-feedback-chat:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+                transform: none !important;
+            }
 
-        .btn-feedback-chat.selected {
-            transform: scale(0.95);
-        }
+            .btn-feedback-chat.selected {
+                transform: scale(0.95);
+            }
 
-        .btn-feedback-chat.selected.btn-useful {
-            background: rgba(16, 185, 129, 0.3);
-            border-color: #10b981;
-            color: #10b981;
-        }
+                .btn-feedback-chat.selected.btn-useful {
+                    background: rgba(16, 185, 129, 0.3);
+                    border-color: #10b981;
+                    color: #10b981;
+                }
 
-        .btn-feedback-chat.selected.btn-not-useful {
-            background: rgba(239, 68, 68, 0.3);
-            border-color: #ef4444;
-            color: #ef4444;
-        }
+                .btn-feedback-chat.selected.btn-not-useful {
+                    background: rgba(239, 68, 68, 0.3);
+                    border-color: #ef4444;
+                    color: #ef4444;
+                }
 
         .feedback-evaluated {
             padding: 16px;
@@ -652,15 +627,15 @@
             display: none;
         }
 
-        .typing-indicator.active {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 16px 20px;
-            background: var(--card-bg);
-            border-radius: 18px;
-            width: fit-content;
-        }
+            .typing-indicator.active {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 16px 20px;
+                background: var(--card-bg);
+                border-radius: 18px;
+                width: fit-content;
+            }
 
         .typing-dot {
             width: 8px;
@@ -670,13 +645,13 @@
             animation: typing 1.4s infinite;
         }
 
-        .typing-dot:nth-child(2) {
-            animation-delay: 0.2s;
-        }
+            .typing-dot:nth-child(2) {
+                animation-delay: 0.2s;
+            }
 
-        .typing-dot:nth-child(3) {
-            animation-delay: 0.4s;
-        }
+            .typing-dot:nth-child(3) {
+                animation-delay: 0.4s;
+            }
 
         @@keyframes typing {
             0%, 60%, 100% {
@@ -716,15 +691,15 @@
             gap: 15px;
         }
 
-        .input-wrapper:focus-within {
-            border-color: var(--secondary-purple);
-            box-shadow: 0 0 0 3px rgba(141, 75, 255, 0.1);
-        }
+            .input-wrapper:focus-within {
+                border-color: var(--secondary-purple);
+                box-shadow: 0 0 0 3px rgba(141, 75, 255, 0.1);
+            }
 
-        .input-wrapper.disabled {
-            opacity: 0.5;
-            pointer-events: none;
-        }
+            .input-wrapper.disabled {
+                opacity: 0.5;
+                pointer-events: none;
+            }
 
         .input-icon {
             width: 50px;
@@ -751,9 +726,9 @@
             overflow-y: auto;
         }
 
-        #messageInput::placeholder {
-            color: #9ca3af;
-        }
+            #messageInput::placeholder {
+                color: #9ca3af;
+            }
 
         .btn-send {
             background: linear-gradient(135deg, var(--primary-purple), var(--secondary-purple));
@@ -767,15 +742,15 @@
             flex-shrink: 0;
         }
 
-        .btn-send:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(141, 75, 255, 0.4);
-        }
+            .btn-send:hover:not(:disabled) {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 20px rgba(141, 75, 255, 0.4);
+            }
 
-        .btn-send:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
+            .btn-send:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
 
         .modal-content {
             background: var(--card-bg);
@@ -797,14 +772,14 @@
             color: var(--text-color);
         }
 
-        .form-control:focus {
-            border-color: var(--primary-purple);
-            box-shadow: 0 0 0 3px rgba(141, 75, 255, 0.1);
-        }
+            .form-control:focus {
+                border-color: var(--primary-purple);
+                box-shadow: 0 0 0 3px rgba(141, 75, 255, 0.1);
+            }
 
-        .form-control::placeholder {
-            color: #6b7280;
-        }
+            .form-control::placeholder {
+                color: #6b7280;
+            }
 
         .form-label {
             color: var(--text-color);
@@ -836,9 +811,7 @@
         <div class="sidebar">
             <div class="sidebar-header">
                 <div class="logo-container">
-                    <div class="logo-icon">
-                        <img src="/img/dotia-logo.png" alt="Logo DotIA"> 
-                    </div>
+                    <div class="logo-icon">🤖</div>
                     <div class="logo-text">DotIA</div>
                 </div>
             </div>
@@ -859,7 +832,7 @@
 
             <!-- ✅ NOVO: Botão Abrir Ticket Direto -->
             <button class="btn-open-ticket" onclick="abrirModalTicketDireto()">
-                <i class="bi bi-ticket-detailed"></i> Abrir Ticket 
+                <i class="bi bi-ticket-detailed"></i> Abrir Ticket
             </button>
 
             <div class="history-container">
@@ -893,14 +866,12 @@
 
             <div class="messages-container" id="messagesContainer">
                 <div class="welcome-screen" id="welcomeScreen">
-                    <div class="welcome-icon">
-                        <img src="/img/icon-bot.png" alt="DotIA Bot" class="bot-glow">
-                    </div>                    
+                    <div class="welcome-icon">🤖</div>
                     <div class="welcome-title">Bem-vindo ao DotIA!</div>
                     <p class="text-white" style="max-width: 600px;">
                         Sou sua assistente virtual especializada em suporte técnico de TI.
                         Faça qualquer pergunta sobre tecnologia, problemas técnicos ou funcionamento do sistema.
-                        Estou aqui para ajudar! 
+                        Estou aqui para ajudar! 🚀
                     </p>
                 </div>
 
@@ -938,9 +909,7 @@
             <div class="input-area">
                 <div id="chatBlockedNotice"></div>
                 <div class="input-wrapper" id="inputWrapper">
-                    <div class="input-icon">
-                        <img src="/img/icon-bot.png" alt="Bot" style="width: 40px; height: 40px; border-radius: 10px;">
-                    </div>
+                    <div class="input-icon">💬</div>
                     <textarea id="messageInput"
                               placeholder="Digite sua pergunta aqui..."
                               rows="1"
@@ -1284,7 +1253,7 @@ Exemplo:
                 const response = await fetch('/Chat/EnviarPergunta', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ pergunta: mensagem })
+                    body: JSON.stringify({ pergunta: mensagem, chatId: chatAtualId })
                 });
 
                 const data = await response.json();
@@ -1319,8 +1288,7 @@ Exemplo:
             let badge = '';
 
             if (tipo === 'user') avatar = '👤';
-            else if (tipo === 'bot') 
-                avatar = `<img src="/img/icon-bot.png" alt="Bot" class="bot-icon">`;
+            else if (tipo === 'bot') avatar = '🤖';
             else if (tipo === 'tech') {
                 avatar = '🛠️';
                 badge = '<div class="tech-badge">✓ Resposta do Técnico</div>';
@@ -1330,15 +1298,15 @@ Exemplo:
             messageDiv.className = `message ${tipo}`;
             if (chatId) messageDiv.dataset.chatId = chatId;
             messageDiv.innerHTML = `
-                        <div class="message-content">
-                            <div class="message-avatar">${avatar}</div>
-                            <div class="message-bubble">
-                                ${badge}
-                                <div class="message-text">${texto}</div>
-                                <div class="message-time">${time}</div>
+                            <div class="message-content">
+                                <div class="message-avatar">${avatar}</div>
+                                <div class="message-bubble">
+                                    ${badge}
+                                    <div class="message-text">${texto}</div>
+                                    <div class="message-time">${time}</div>
+                                </div>
                             </div>
-                        </div>
-                    `;
+                        `;
 
             messagesList.appendChild(messageDiv);
 
@@ -1400,16 +1368,16 @@ Exemplo:
                         }
 
                         feedbackArea.innerHTML = `
-                                    <div class="feedback-card">
-                                        <div class="feedback-evaluated">
-                                            <i class="bi bi-check-circle-fill"></i>
-                                            <span>Ticket criado! Um técnico irá ajudá-lo em breve.</span>
+                                        <div class="feedback-card">
+                                            <div class="feedback-evaluated">
+                                                <i class="bi bi-check-circle-fill"></i>
+                                                <span>Ticket criado! Um técnico irá ajudá-lo em breve.</span>
+                                            </div>
+                                            <div style="margin-top: 15px; color: #9ca3af; font-size: 14px;">
+                                                💡 Você pode criar novos chats clicando em "Novo Chat"
+                                            </div>
                                         </div>
-                                        <div style="margin-top: 15px; color: #9ca3af; font-size: 14px;">
-                                            💡 Você pode criar novos chats clicando em "Novo Chat"
-                                        </div>
-                                    </div>
-                                `;
+                                    `;
 
                         mostrarNotificacao('✅ Ticket criado! Este chat agora está com um técnico. Você pode criar novos chats para conversar com a IA!', 'success');
                     } else {
@@ -1418,13 +1386,13 @@ Exemplo:
                         }
 
                         feedbackArea.innerHTML = `
-                                    <div class="feedback-card">
-                                        <div class="feedback-evaluated">
-                                            <i class="bi bi-check-circle-fill"></i>
-                                            <span>Obrigado pelo feedback! Ficamos felizes em ajudar! 😊</span>
+                                        <div class="feedback-card">
+                                            <div class="feedback-evaluated">
+                                                <i class="bi bi-check-circle-fill"></i>
+                                                <span>Obrigado pelo feedback! Ficamos felizes em ajudar! 😊</span>
+                                            </div>
                                         </div>
-                                    </div>
-                                `;
+                                    `;
 
                         mostrarNotificacao('Avaliação registrada! Obrigado pelo feedback. 😊', 'success');
                     }
@@ -1441,12 +1409,12 @@ Exemplo:
         function bloquearChatParaIA() {
             const noticeDiv = document.getElementById('chatBlockedNotice');
             noticeDiv.innerHTML = `
-                        <div class="chat-blocked-notice">
-                            <i class="bi bi-chat-dots"></i> <strong>Chat com Técnico Ativo</strong><br>
-                            Este chat está em atendimento com técnico. Suas mensagens aqui vão para ele.
-                            <strong>Você pode criar novos chats</strong> clicando em "Novo Chat"!
-                        </div>
-                    `;
+                            <div class="chat-blocked-notice">
+                                <i class="bi bi-chat-dots"></i> <strong>Chat com Técnico Ativo</strong><br>
+                                Este chat está em atendimento com técnico. Suas mensagens aqui vão para ele.
+                                <strong>Você pode criar novos chats</strong> clicando em "Novo Chat"!
+                            </div>
+                        `;
         }
 
         function desbloquearChatParaIA() {
@@ -1523,19 +1491,19 @@ Exemplo:
 
             const notif = document.createElement('div');
             notif.style.cssText = `
-                        position: fixed;
-                        top: 20px;
-                        right: 20px;
-                        background: ${cores[tipo]};
-                        padding: 15px 25px;
-                        border-radius: 12px;
-                        color: white;
-                        font-weight: 600;
-                        z-index: 10000;
-                        animation: slideInRight 0.3s ease-out;
-                        max-width: 400px;
-                        box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-                    `;
+                            position: fixed;
+                            top: 20px;
+                            right: 20px;
+                            background: ${cores[tipo]};
+                            padding: 15px 25px;
+                            border-radius: 12px;
+                            color: white;
+                            font-weight: 600;
+                            z-index: 10000;
+                            animation: slideInRight 0.3s ease-out;
+                            max-width: 400px;
+                            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+                        `;
             notif.innerHTML = mensagem;
             document.body.appendChild(notif);
             setTimeout(() => notif.remove(), 5000);
@@ -1552,10 +1520,10 @@ Exemplo:
 
                 if (historico.length === 0) {
                     historyList.innerHTML = `
-                                <div style="text-align: center; padding: 20px; color: #9ca3af; font-size: 13px;">
-                                    Nenhum histórico ainda.<br>Comece uma conversa!
-                                </div>
-                            `;
+                                    <div style="text-align: center; padding: 20px; color: #9ca3af; font-size: 13px;">
+                                        Nenhum histórico ainda.<br>Comece uma conversa!
+                                    </div>
+                                `;
                     return;
                 }
 
@@ -1574,17 +1542,17 @@ Exemplo:
                     else if (chat.status === 4) badgeClass = 'status-resolvido';
 
                     item.innerHTML = `
-                                <div class="history-actions">
-                                    <button class="history-action-btn" onclick="editarNomeChat(event, ${chat.id}, '${escapeHtml(chat.titulo)}')">
-                                        <i class="bi bi-pencil"></i>
-                                    </button>
-                                    <button class="history-action-btn delete" onclick="excluirChat(event, ${chat.id})">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </div>
-                                <div>${chat.titulo || chat.pergunta.substring(0, 30) + '...'}</div>
-                                <div class="status-badge ${badgeClass}">${chat.statusTexto}</div>
-                            `;
+                                    <div class="history-actions">
+                                        <button class="history-action-btn" onclick="editarNomeChat(event, ${chat.id}, '${escapeHtml(chat.titulo)}')">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="history-action-btn delete" onclick="excluirChat(event, ${chat.id})">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                    <div>${chat.titulo || chat.pergunta.substring(0, 30) + '...'}</div>
+                                    <div class="status-badge ${badgeClass}">${chat.statusTexto}</div>
+                                `;
                     item.onclick = () => carregarChat(chat);
                     historyList.appendChild(item);
                 });
@@ -1696,43 +1664,43 @@ Exemplo:
                 feedbackArea.dataset.chatId = chat.id;
 
                 feedbackArea.innerHTML = `
-                            <div class="feedback-card">
-                                <div class="feedback-header">
-                                    <i class="bi bi-chat-heart"></i>
-                                    <span>Esta conversa foi útil?</span>
+                                <div class="feedback-card">
+                                    <div class="feedback-header">
+                                        <i class="bi bi-chat-heart"></i>
+                                        <span>Esta conversa foi útil?</span>
+                                    </div>
+                                    <div class="feedback-buttons-chat">
+                                        <button class="btn-feedback-chat btn-useful" onclick="avaliarChatCompleto(true)">
+                                            <i class="bi bi-hand-thumbs-up"></i>
+                                            <span>Sim, foi útil!</span>
+                                        </button>
+                                        <button class="btn-feedback-chat btn-not-useful" onclick="avaliarChatCompleto(false)">
+                                            <i class="bi bi-hand-thumbs-down"></i>
+                                            <span>Não ajudou</span>
+                                        </button>
+                                    </div>
                                 </div>
-                                <div class="feedback-buttons-chat">
-                                    <button class="btn-feedback-chat btn-useful" onclick="avaliarChatCompleto(true)">
-                                        <i class="bi bi-hand-thumbs-up"></i>
-                                        <span>Sim, foi útil!</span>
-                                    </button>
-                                    <button class="btn-feedback-chat btn-not-useful" onclick="avaliarChatCompleto(false)">
-                                        <i class="bi bi-hand-thumbs-down"></i>
-                                        <span>Não ajudou</span>
-                                    </button>
-                                </div>
-                            </div>
-                        `;
+                            `;
             } else if (chat.status === 2) {
                 feedbackArea.style.display = 'block';
                 feedbackArea.innerHTML = `
-                            <div class="feedback-card">
-                                <div class="feedback-evaluated">
-                                    <i class="bi bi-check-circle-fill"></i>
-                                    <span>Você avaliou esta conversa como útil! 😊</span>
+                                <div class="feedback-card">
+                                    <div class="feedback-evaluated">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                        <span>Você avaliou esta conversa como útil! 😊</span>
+                                    </div>
                                 </div>
-                            </div>
-                        `;
+                            `;
             } else if (chat.status === 3 || chat.status === 4) {
                 feedbackArea.style.display = 'block';
                 feedbackArea.innerHTML = `
-                            <div class="feedback-card">
-                                <div class="feedback-evaluated">
-                                    <i class="bi bi-headset"></i>
-                                    <span>${chat.status === 3 ? 'Aguardando resposta do técnico...' : 'Ticket resolvido pelo técnico!'}</span>
+                                <div class="feedback-card">
+                                    <div class="feedback-evaluated">
+                                        <i class="bi bi-headset"></i>
+                                        <span>${chat.status === 3 ? 'Aguardando resposta do técnico...' : 'Ticket resolvido pelo técnico!'}</span>
+                                    </div>
                                 </div>
-                            </div>
-                        `;
+                            `;
             } else {
                 feedbackArea.style.display = 'none';
             }

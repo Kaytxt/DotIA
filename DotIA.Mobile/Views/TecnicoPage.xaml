@@ -1,0 +1,563 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:DotIA.Mobile.ViewModels"
+             xmlns:models="clr-namespace:DotIA.Mobile.Models"
+             x:Class="DotIA.Mobile.Views.TecnicoPage"
+             x:DataType="viewmodels:TecnicoViewModel"
+             Title="DotIA Support">
+
+    <!-- Background -->
+    <ContentPage.Background>
+        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+            <GradientStop Color="#0f172a" Offset="0.0" />
+            <GradientStop Color="#1e1b4b" Offset="1.0" />
+        </LinearGradientBrush>
+    </ContentPage.Background>
+
+    <Grid RowDefinitions="Auto,*">
+
+        <!-- Header estilo WhatsApp -->
+        <Border Grid.Row="0"
+                BackgroundColor="#1e293b"
+                Padding="20,15"
+                StrokeThickness="0"
+                Shadow="{Shadow Brush=Black, Offset='0,2', Radius=8, Opacity=0.3}">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+
+                <!-- Logo/Nome -->
+                <HorizontalStackLayout Spacing="12">
+                    <Border BackgroundColor="#3b82f6"
+                            HeightRequest="45"
+                            WidthRequest="45"
+                            StrokeThickness="0">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="25"/>
+                        </Border.StrokeShape>
+                        <Label Text="🤖"
+                               FontSize="24"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center"/>
+                    </Border>
+                    <VerticalStackLayout VerticalOptions="Center">
+                        <Label Text="DotIA Support"
+                               TextColor="White"
+                               FontSize="18"
+                               FontAttributes="Bold"/>
+                        <Label Text="{Binding NomeUsuario}"
+                               TextColor="#94a3b8"
+                               FontSize="12"/>
+                    </VerticalStackLayout>
+                </HorizontalStackLayout>
+
+                <!-- Badge de Pendentes -->
+                <Border Grid.Column="1"
+                        BackgroundColor="#ef4444"
+                        Padding="10,6"
+                        HorizontalOptions="End"
+                        VerticalOptions="Center"
+                        Margin="0,0,15,0"
+                        StrokeThickness="0"
+                        IsVisible="{Binding TotalPendentes}">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="12"/>
+                    </Border.StrokeShape>
+                    <Label Text="{Binding TotalPendentes, StringFormat='{0} pendente(s)'}"
+                           TextColor="White"
+                           FontSize="12"
+                           FontAttributes="Bold"/>
+                </Border>
+
+                <!-- Botão Sair -->
+                <Button Grid.Column="2"
+                        Text="Sair"
+                        Command="{Binding LogoutCommand}"
+                        BackgroundColor="#dc2626"
+                        TextColor="White"
+                        FontSize="13"
+                        FontAttributes="Bold"
+                        CornerRadius="8"
+                        Padding="15,8"
+                        VerticalOptions="Center"/>
+            </Grid>
+        </Border>
+
+        <!-- Área Principal -->
+        <Grid Grid.Row="1">
+
+            <!-- ====== LISTA DE CONVERSAS (estilo WhatsApp) ====== -->
+            <ScrollView IsVisible="{Binding MostrarLista}"
+                       Padding="0">
+                <VerticalStackLayout Spacing="0">
+
+                    <!-- Header da Lista -->
+                    <Border BackgroundColor="#1e293b"
+                            Padding="20,15"
+                            StrokeThickness="0">
+                        <Label Text="💬 Conversas"
+                               TextColor="White"
+                               FontSize="20"
+                               FontAttributes="Bold"/>
+                    </Border>
+
+                    <!-- Lista de Tickets (Conversas) -->
+                    <CollectionView ItemsSource="{Binding Tickets}"
+                                   SelectionMode="None"
+                                   BackgroundColor="Transparent">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="models:TicketDTO">
+                                <!-- Card de Conversa estilo WhatsApp -->
+                                <Border BackgroundColor="#1e293b"
+                                        Padding="0"
+                                        Margin="8,6,8,6"
+                                        StrokeThickness="0"
+                                        Shadow="{Shadow Brush=Black, Offset='0,2', Radius=6, Opacity=0.2}">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="16"/>
+                                    </Border.StrokeShape>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:TecnicoViewModel}}, Path=SelecionarTicketCommand}"
+                                                             CommandParameter="{Binding .}"/>
+                                    </Border.GestureRecognizers>
+
+                                    <VisualStateManager.VisualStateGroups>
+                                        <VisualStateGroup x:Name="CommonStates">
+                                            <VisualState x:Name="Normal"/>
+                                            <VisualState x:Name="PointerOver">
+                                                <VisualState.Setters>
+                                                    <Setter Property="BackgroundColor" Value="#334155"/>
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                        </VisualStateGroup>
+                                    </VisualStateManager.VisualStateGroups>
+
+                                    <Grid ColumnDefinitions="Auto,*,Auto" Padding="15,12" ColumnSpacing="12">
+
+                                        <!-- Foto do Usuário -->
+                                        <Border Grid.Column="0"
+                                                BackgroundColor="#475569"
+                                                HeightRequest="50"
+                                                WidthRequest="50"
+                                                StrokeThickness="0">
+                                            <Border.StrokeShape>
+                                                <RoundRectangle CornerRadius="25"/>
+                                            </Border.StrokeShape>
+                                            <Label Text="👤"
+                                                   FontSize="26"
+                                                   HorizontalOptions="Center"
+                                                   VerticalOptions="Center"/>
+                                        </Border>
+
+                                        <!-- Conteúdo da Conversa -->
+                                        <VerticalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="Center">
+
+                                            <!-- Nome do Cliente -->
+                                            <Label Text="{Binding NomeSolicitante}"
+                                                   TextColor="White"
+                                                   FontSize="16"
+                                                   FontAttributes="Bold"
+                                                   LineBreakMode="TailTruncation"
+                                                   MaxLines="1"/>
+
+                                            <!-- Preview da Mensagem -->
+                                            <Label Text="{Binding DescricaoProblema}"
+                                                   TextColor="#94a3b8"
+                                                   FontSize="14"
+                                                   LineBreakMode="TailTruncation"
+                                                   MaxLines="2"
+                                                   LineHeight="1.3"/>
+                                        </VerticalStackLayout>
+
+                                        <!-- Info Lateral (Horário + Badge) -->
+                                        <VerticalStackLayout Grid.Column="2" Spacing="6" VerticalOptions="Center">
+
+                                            <!-- Horário -->
+                                            <Label Text="{Binding DataAbertura, StringFormat='{0:HH:mm}'}"
+                                                   TextColor="#64748b"
+                                                   FontSize="12"
+                                                   HorizontalOptions="End"/>
+
+                                            <!-- Badge de Status -->
+                                            <Border BackgroundColor="#fbbf24"
+                                                    Padding="8,4"
+                                                    HorizontalOptions="End"
+                                                    StrokeThickness="0">
+                                                <Border.StrokeShape>
+                                                    <RoundRectangle CornerRadius="10"/>
+                                                </Border.StrokeShape>
+                                                <Label Text="{Binding Status}"
+                                                       TextColor="#1a1a2e"
+                                                       FontSize="10"
+                                                       FontAttributes="Bold"/>
+                                            </Border>
+                                        </VerticalStackLayout>
+
+                                    </Grid>
+
+                                    <!-- Linha Separadora -->
+                                    <Border.Triggers>
+                                        <DataTrigger TargetType="Border" Binding="{Binding .}" Value="{x:Null}">
+                                            <Setter Property="IsVisible" Value="False"/>
+                                        </DataTrigger>
+                                    </Border.Triggers>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+
+                </VerticalStackLayout>
+            </ScrollView>
+
+            <!-- ====== CHAT (estilo WhatsApp) ====== -->
+            <Grid IsVisible="{Binding MostrarChat}"
+                  RowDefinitions="Auto,*,Auto">
+
+                <!-- Header do Chat -->
+                <Border Grid.Row="0"
+                        BackgroundColor="#1e293b"
+                        Padding="15,12"
+                        StrokeThickness="0"
+                        Shadow="{Shadow Brush=Black, Offset='0,2', Radius=6, Opacity=0.2}">
+                    <Grid ColumnDefinitions="Auto,Auto,*,Auto">
+
+                        <!-- Botão Voltar -->
+                        <Button Grid.Column="0"
+                                Text="←"
+                                Command="{Binding FecharChatCommand}"
+                                BackgroundColor="Transparent"
+                                TextColor="#3b82f6"
+                                FontSize="28"
+                                Padding="0"
+                                Margin="0,0,10,0"
+                                WidthRequest="40"/>
+
+                        <!-- Foto do Cliente -->
+                        <Border Grid.Column="1"
+                                BackgroundColor="#475569"
+                                HeightRequest="40"
+                                WidthRequest="40"
+                                Margin="0,0,12,0"
+                                StrokeThickness="0">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="20"/>
+                            </Border.StrokeShape>
+                            <Label Text="👤"
+                                   FontSize="22"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center"/>
+                        </Border>
+
+                        <!-- Info do Cliente -->
+                        <VerticalStackLayout Grid.Column="2" VerticalOptions="Center">
+                            <Label Text="{Binding TicketSelecionado.NomeSolicitante}"
+                                   TextColor="White"
+                                   FontSize="16"
+                                   FontAttributes="Bold"/>
+                            <Label Text="{Binding TicketSelecionado.Status}"
+                                   TextColor="#94a3b8"
+                                   FontSize="12"/>
+                        </VerticalStackLayout>
+
+                        <!-- Ticket ID -->
+                        <Border Grid.Column="3"
+                                BackgroundColor="#3b82f6"
+                                Padding="8,4"
+                                VerticalOptions="Center"
+                                StrokeThickness="0">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="10"/>
+                            </Border.StrokeShape>
+                            <Label Text="{Binding TicketSelecionado.Id, StringFormat='#{0}'}"
+                                   TextColor="White"
+                                   FontSize="12"
+                                   FontAttributes="Bold"/>
+                        </Border>
+                    </Grid>
+                </Border>
+
+                <!-- Área de Mensagens -->
+                <ScrollView Grid.Row="1"
+                           Padding="15"
+                           BackgroundColor="#0f172a">
+                    <VerticalStackLayout Spacing="12">
+
+                        <!-- CollectionView de Mensagens -->
+                        <CollectionView ItemsSource="{Binding Mensagens}"
+                                       SelectionMode="None">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="viewmodels:MensagemChat">
+                                    <Grid Margin="0,6">
+                                        <!-- Mensagem do Usuário (esquerda) -->
+                                        <Border BackgroundColor="#1e293b"
+                                                Padding="12"
+                                                HorizontalOptions="Start"
+                                                MaximumWidthRequest="300"
+                                                StrokeThickness="0"
+                                                Shadow="{Shadow Brush=Black, Offset='0,2', Radius=4, Opacity=0.2}">
+                                            <Border.StrokeShape>
+                                                <RoundRectangle CornerRadius="16"/>
+                                            </Border.StrokeShape>
+                                            <Border.Triggers>
+                                                <DataTrigger TargetType="Border" Binding="{Binding IsUsuario}" Value="False">
+                                                    <Setter Property="IsVisible" Value="False"/>
+                                                </DataTrigger>
+                                            </Border.Triggers>
+                                            <VerticalStackLayout Spacing="8">
+                                                <!-- Nome do Remetente -->
+                                                <HorizontalStackLayout Spacing="8">
+                                                    <Border BackgroundColor="#475569"
+                                                            HeightRequest="24"
+                                                            WidthRequest="24"
+                                                            StrokeThickness="0">
+                                                        <Border.StrokeShape>
+                                                            <RoundRectangle CornerRadius="12"/>
+                                                        </Border.StrokeShape>
+                                                        <Label Text="👤"
+                                                               FontSize="14"
+                                                               HorizontalOptions="Center"
+                                                               VerticalOptions="Center"/>
+                                                    </Border>
+                                                    <Label Text="{Binding NomeRemetente}"
+                                                           TextColor="#3b82f6"
+                                                           FontSize="13"
+                                                           FontAttributes="Bold"
+                                                           VerticalOptions="Center"/>
+                                                </HorizontalStackLayout>
+
+                                                <!-- Texto da Mensagem -->
+                                                <Label Text="{Binding Texto}"
+                                                       TextColor="White"
+                                                       FontSize="15"
+                                                       LineBreakMode="WordWrap"/>
+
+                                                <!-- Horário -->
+                                                <Label Text="{Binding DataHora, StringFormat='{0:dd/MM HH:mm}'}"
+                                                       TextColor="#64748b"
+                                                       FontSize="11"
+                                                       HorizontalOptions="End"/>
+                                            </VerticalStackLayout>
+                                        </Border>
+
+                                        <!-- Mensagem da IA (esquerda, verde escuro) -->
+                                        <Border x:Name="BorderIA"
+                                                BackgroundColor="#1e3a29"
+                                                Padding="12"
+                                                HorizontalOptions="Start"
+                                                MaximumWidthRequest="300"
+                                                StrokeThickness="0"
+                                                Shadow="{Shadow Brush=Black, Offset='0,2', Radius=4, Opacity=0.2}">
+                                            <Border.StrokeShape>
+                                                <RoundRectangle CornerRadius="16"/>
+                                            </Border.StrokeShape>
+                                            <Border.Triggers>
+                                                <DataTrigger TargetType="Border" Binding="{Binding IsUsuario}" Value="True">
+                                                    <Setter Property="IsVisible" Value="False"/>
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="Border" Binding="{Binding NomeRemetente}" Value="Técnico 🔧">
+                                                    <Setter Property="IsVisible" Value="False"/>
+                                                </DataTrigger>
+                                            </Border.Triggers>
+                                            <VerticalStackLayout Spacing="8">
+                                                <!-- Nome do Remetente IA -->
+                                                <HorizontalStackLayout Spacing="8">
+                                                    <Border BackgroundColor="#10b981"
+                                                            HeightRequest="24"
+                                                            WidthRequest="24"
+                                                            StrokeThickness="0">
+                                                        <Border.StrokeShape>
+                                                            <RoundRectangle CornerRadius="12"/>
+                                                        </Border.StrokeShape>
+                                                        <Label Text="🤖"
+                                                               FontSize="14"
+                                                               HorizontalOptions="Center"
+                                                               VerticalOptions="Center"/>
+                                                    </Border>
+                                                    <Label Text="{Binding NomeRemetente}"
+                                                           TextColor="#10b981"
+                                                           FontSize="13"
+                                                           FontAttributes="Bold"
+                                                           VerticalOptions="Center"/>
+                                                </HorizontalStackLayout>
+
+                                                <!-- Texto da Mensagem -->
+                                                <Label Text="{Binding Texto}"
+                                                       TextColor="#cbd5e1"
+                                                       FontSize="15"
+                                                       LineBreakMode="WordWrap"/>
+
+                                                <!-- Horário -->
+                                                <Label Text="{Binding DataHora, StringFormat='{0:dd/MM HH:mm}'}"
+                                                       TextColor="#64748b"
+                                                       FontSize="11"
+                                                       HorizontalOptions="End"/>
+                                            </VerticalStackLayout>
+                                        </Border>
+
+                                        <!-- Mensagem do Técnico (esquerda, verde claro) -->
+                                        <Border x:Name="BorderTecnico"
+                                                BackgroundColor="#059669"
+                                                Padding="12"
+                                                HorizontalOptions="Start"
+                                                MaximumWidthRequest="300"
+                                                StrokeThickness="0"
+                                                Shadow="{Shadow Brush=Black, Offset='0,2', Radius=4, Opacity=0.2}">
+                                            <Border.StrokeShape>
+                                                <RoundRectangle CornerRadius="16"/>
+                                            </Border.StrokeShape>
+                                            <Border.Triggers>
+                                                <DataTrigger TargetType="Border" Binding="{Binding IsUsuario}" Value="True">
+                                                    <Setter Property="IsVisible" Value="False"/>
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="Border" Binding="{Binding NomeRemetente}" Value="DotIA 🤖">
+                                                    <Setter Property="IsVisible" Value="False"/>
+                                                </DataTrigger>
+                                            </Border.Triggers>
+                                            <VerticalStackLayout Spacing="8">
+                                                <!-- Nome do Remetente Técnico -->
+                                                <HorizontalStackLayout Spacing="8">
+                                                    <Border BackgroundColor="#10b981"
+                                                            HeightRequest="24"
+                                                            WidthRequest="24"
+                                                            StrokeThickness="0">
+                                                        <Border.StrokeShape>
+                                                            <RoundRectangle CornerRadius="12"/>
+                                                        </Border.StrokeShape>
+                                                        <Label Text="🔧"
+                                                               FontSize="14"
+                                                               HorizontalOptions="Center"
+                                                               VerticalOptions="Center"/>
+                                                    </Border>
+                                                    <Label Text="{Binding NomeRemetente}"
+                                                           TextColor="#d1fae5"
+                                                           FontSize="13"
+                                                           FontAttributes="Bold"
+                                                           VerticalOptions="Center"/>
+                                                </HorizontalStackLayout>
+
+                                                <!-- Texto da Mensagem -->
+                                                <Label Text="{Binding Texto}"
+                                                       TextColor="White"
+                                                       FontSize="15"
+                                                       LineBreakMode="WordWrap"/>
+
+                                                <!-- Horário -->
+                                                <Label Text="{Binding DataHora, StringFormat='{0:dd/MM HH:mm}'}"
+                                                       TextColor="#a7f3d0"
+                                                       FontSize="11"
+                                                       HorizontalOptions="End"/>
+                                            </VerticalStackLayout>
+                                        </Border>
+                                    </Grid>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+
+                        <!-- Espaço para resposta do técnico -->
+                        <Label Text="Digite sua resposta abaixo 👇"
+                               TextColor="#64748b"
+                               FontSize="13"
+                               HorizontalOptions="Center"
+                               Margin="0,20,0,0"/>
+
+                    </VerticalStackLayout>
+                </ScrollView>
+
+                <!-- Input de Resposta (fixo embaixo) -->
+                <Border Grid.Row="2"
+                        BackgroundColor="#1e293b"
+                        Padding="12"
+                        StrokeThickness="0"
+                        Shadow="{Shadow Brush=Black, Offset='0,-2', Radius=8, Opacity=0.3}">
+                    <Grid RowDefinitions="Auto,Auto,Auto">
+
+                        <!-- Editor de Texto -->
+                        <Border Grid.Row="0"
+                                BackgroundColor="#0f172a"
+                                Padding="12"
+                                StrokeThickness="0">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="12"/>
+                            </Border.StrokeShape>
+                            <Editor Placeholder="Digite sua resposta..."
+                                    PlaceholderColor="#64748b"
+                                    TextColor="White"
+                                    Text="{Binding Solucao}"
+                                    HeightRequest="120"
+                                    BackgroundColor="Transparent"
+                                    FontSize="15"/>
+                        </Border>
+
+                        <!-- Botões de Ação -->
+                        <Grid Grid.Row="1" ColumnDefinitions="*,*" ColumnSpacing="10" Margin="0,10,0,0">
+                            <Button Grid.Column="0"
+                                    Text="📤 Enviar"
+                                    Command="{Binding EnviarRespostaCommand}"
+                                    TextColor="White"
+                                    FontSize="15"
+                                    FontAttributes="Bold"
+                                    CornerRadius="10"
+                                    HeightRequest="50"
+                                    Shadow="{Shadow Brush=#3b82f6, Offset='0,4', Radius=12, Opacity=0.4}">
+                                <Button.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                        <GradientStop Color="#3b82f6" Offset="0.0" />
+                                        <GradientStop Color="#2563eb" Offset="1.0" />
+                                    </LinearGradientBrush>
+                                </Button.Background>
+                            </Button>
+                            <Button Grid.Column="1"
+                                    Text="✅ Resolver"
+                                    Command="{Binding ResolverTicketCompletoCommand}"
+                                    TextColor="White"
+                                    FontSize="15"
+                                    FontAttributes="Bold"
+                                    CornerRadius="10"
+                                    HeightRequest="50"
+                                    Shadow="{Shadow Brush=#10b981, Offset='0,4', Radius=12, Opacity=0.4}">
+                                <Button.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                        <GradientStop Color="#10b981" Offset="0.0" />
+                                        <GradientStop Color="#059669" Offset="1.0" />
+                                    </LinearGradientBrush>
+                                </Button.Background>
+                            </Button>
+                        </Grid>
+
+                        <!-- Dica -->
+                        <Label Grid.Row="2"
+                               Text="💡 Enviar: mantém aberto | Resolver: fecha o ticket"
+                               TextColor="#64748b"
+                               FontSize="11"
+                               HorizontalOptions="Center"
+                               Margin="0,8,0,0"/>
+                    </Grid>
+                </Border>
+
+            </Grid>
+
+        </Grid>
+
+        <!-- Loading Indicator -->
+        <Border Grid.Row="1"
+                IsVisible="{Binding IsLoading}"
+                BackgroundColor="#1a1a2e"
+                Opacity="0.95"
+                HorizontalOptions="Fill"
+                VerticalOptions="Fill">
+            <VerticalStackLayout Spacing="20"
+                                HorizontalOptions="Center"
+                                VerticalOptions="Center">
+                <ActivityIndicator IsRunning="{Binding IsLoading}"
+                                  Color="#3b82f6"
+                                  HeightRequest="50"
+                                  WidthRequest="50"/>
+                <Label Text="Carregando..."
+                       TextColor="#3b82f6"
+                       FontSize="16"
+                       FontAttributes="Bold"/>
+            </VerticalStackLayout>
+        </Border>
+
+    </Grid>
+
+</ContentPage>

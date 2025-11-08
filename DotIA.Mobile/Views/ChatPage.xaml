@@ -1,0 +1,499 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:DotIA.Mobile.ViewModels"
+             xmlns:models="clr-namespace:DotIA.Mobile.Models"
+             x:Class="DotIA.Mobile.Views.ChatPage"
+             x:DataType="viewmodels:ChatViewModel"
+             Title="DotIA"
+             BackgroundColor="#1a1a2e"
+             Shell.NavBarIsVisible="False">
+
+    <Grid>
+        <!-- Conteúdo Principal -->
+        <Grid RowDefinitions="Auto,*,Auto">
+
+            <!-- Header com Menu Hambúrguer -->
+            <Border Grid.Row="0"
+                    BackgroundColor="#16213e"
+                    Padding="0"
+                    StrokeThickness="0">
+                <Grid ColumnDefinitions="Auto,*,Auto" Padding="10">
+
+                    <!-- Botão Menu (Hambúrguer) -->
+                    <Button Grid.Column="0"
+                            Text="☰"
+                            FontSize="28"
+                            TextColor="White"
+                            BackgroundColor="Transparent"
+                            Clicked="OnMenuClicked"
+                            WidthRequest="50"
+                            HeightRequest="50"/>
+
+                    <!-- Título -->
+                    <Label Grid.Column="1"
+                           Text="DotIA Chat"
+                           TextColor="White"
+                           FontSize="20"
+                           FontAttributes="Bold"
+                           VerticalOptions="Center"
+                           HorizontalOptions="Center"
+                           Margin="0"/>
+
+                    <!-- Badge de Status -->
+                    <Border Grid.Column="2"
+                            IsVisible="{Binding MostrarStatusBadge}"
+                            BackgroundColor="#fbbf24"
+                            Padding="10,6"
+                            VerticalOptions="Center"
+                            StrokeThickness="0">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="12"/>
+                        </Border.StrokeShape>
+                        <Border.Triggers>
+                            <DataTrigger TargetType="Border" Binding="{Binding StatusAtual}" Value="Concluído">
+                                <Setter Property="BackgroundColor" Value="#10b981"/>
+                            </DataTrigger>
+                            <DataTrigger TargetType="Border" Binding="{Binding StatusAtual}" Value="Resolvido">
+                                <Setter Property="BackgroundColor" Value="#10b981"/>
+                            </DataTrigger>
+                            <DataTrigger TargetType="Border" Binding="{Binding StatusAtual}" Value="Pendente">
+                                <Setter Property="BackgroundColor" Value="#f59e0b"/>
+                            </DataTrigger>
+                            <DataTrigger TargetType="Border" Binding="{Binding StatusAtual}" Value="Em andamento">
+                                <Setter Property="BackgroundColor" Value="#3b82f6"/>
+                            </DataTrigger>
+                        </Border.Triggers>
+                        <Label Text="{Binding StatusAtual}"
+                               TextColor="White"
+                               FontSize="11"
+                               FontAttributes="Bold"/>
+                    </Border>
+                </Grid>
+            </Border>
+
+            <!-- Área de Mensagens (Chat) -->
+            <ScrollView Grid.Row="1"
+                        Padding="15"
+                        x:Name="ChatScrollView">
+                <VerticalStackLayout Spacing="15">
+
+                    <!-- Mensagem de Boas-vindas (quando não há chat selecionado) -->
+                    <VerticalStackLayout Spacing="20"
+                                        HorizontalOptions="Center"
+                                        VerticalOptions="Center"
+                                        Padding="20"
+                                        Margin="0,80,0,0"
+                                        IsVisible="{Binding Mensagens.Count, Converter={StaticResource IsZeroConverter}}">
+                        <Label Text="🤖"
+                               FontSize="80"
+                               HorizontalOptions="Center"/>
+                        <Label Text="Olá! Sou a DotIA"
+                               TextColor="White"
+                               FontSize="28"
+                               FontAttributes="Bold"
+                               HorizontalOptions="Center"/>
+                        <Label Text="Como posso ajudar você hoje?"
+                               TextColor="#94a3b8"
+                               FontSize="18"
+                               HorizontalOptions="Center"/>
+                    </VerticalStackLayout>
+
+                    <!-- Mensagens do Chat -->
+                    <CollectionView ItemsSource="{Binding Mensagens}"
+                                   SelectionMode="None">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="models:ChatMensagem">
+                                <Grid Padding="0,5">
+                                    <!-- Mensagem do Usuário (direita) -->
+                                    <Border IsVisible="{Binding IsUsuario}"
+                                            BackgroundColor="#7c3aed"
+                                            Stroke="Transparent"
+                                            Padding="15,10"
+                                            MaximumWidthRequest="280"
+                                            HorizontalOptions="End"
+                                            Margin="50,0,0,0">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="15,15,5,15"/>
+                                        </Border.StrokeShape>
+                                        <VerticalStackLayout Spacing="4">
+                                            <Label Text="Você"
+                                                   TextColor="#e9d5ff"
+                                                   FontSize="11"
+                                                   FontAttributes="Bold"
+                                                   HorizontalOptions="End"/>
+                                            <Label Text="{Binding Texto}"
+                                                   TextColor="White"
+                                                   FontSize="15"
+                                                   LineBreakMode="WordWrap"/>
+                                        </VerticalStackLayout>
+                                    </Border>
+
+                                    <!-- Mensagem da IA (esquerda, azul escuro) -->
+                                    <Border IsVisible="{Binding IsUsuario, Converter={StaticResource InvertedBoolConverter}}"
+                                            BackgroundColor="#16213e"
+                                            Stroke="#334155"
+                                            StrokeThickness="1"
+                                            Padding="15,10"
+                                            MaximumWidthRequest="280"
+                                            HorizontalOptions="Start"
+                                            Margin="0,0,50,0">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="5,15,15,15"/>
+                                        </Border.StrokeShape>
+                                        <Border.Triggers>
+                                            <DataTrigger TargetType="Border" Binding="{Binding NomeRemetente}" Value="Técnico 🔧">
+                                                <Setter Property="IsVisible" Value="False"/>
+                                            </DataTrigger>
+                                        </Border.Triggers>
+                                        <VerticalStackLayout Spacing="4">
+                                            <HorizontalStackLayout Spacing="6">
+                                                <Label Text="🤖"
+                                                       FontSize="14"
+                                                       VerticalOptions="Center"/>
+                                                <Label Text="DotIA"
+                                                       TextColor="#94a3b8"
+                                                       FontSize="11"
+                                                       FontAttributes="Bold"
+                                                       VerticalOptions="Center"/>
+                                            </HorizontalStackLayout>
+                                            <Label Text="{Binding Texto}"
+                                                   TextColor="#e2e8f0"
+                                                   FontSize="15"
+                                                   LineBreakMode="WordWrap"/>
+                                        </VerticalStackLayout>
+                                    </Border>
+
+                                    <!-- Mensagem do Técnico (esquerda, verde) -->
+                                    <Border IsVisible="{Binding IsUsuario, Converter={StaticResource InvertedBoolConverter}}"
+                                            BackgroundColor="#059669"
+                                            Stroke="Transparent"
+                                            StrokeThickness="0"
+                                            Padding="15,10"
+                                            MaximumWidthRequest="280"
+                                            HorizontalOptions="Start"
+                                            Margin="0,0,50,0">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="5,15,15,15"/>
+                                        </Border.StrokeShape>
+                                        <Border.Triggers>
+                                            <DataTrigger TargetType="Border" Binding="{Binding NomeRemetente}" Value="DotIA 🤖">
+                                                <Setter Property="IsVisible" Value="False"/>
+                                            </DataTrigger>
+                                        </Border.Triggers>
+                                        <VerticalStackLayout Spacing="4">
+                                            <HorizontalStackLayout Spacing="6">
+                                                <Label Text="🔧"
+                                                       FontSize="14"
+                                                       VerticalOptions="Center"/>
+                                                <Label Text="Técnico"
+                                                       TextColor="#d1fae5"
+                                                       FontSize="11"
+                                                       FontAttributes="Bold"
+                                                       VerticalOptions="Center"/>
+                                            </HorizontalStackLayout>
+                                            <Label Text="{Binding Texto}"
+                                                   TextColor="White"
+                                                   FontSize="15"
+                                                   LineBreakMode="WordWrap"/>
+                                        </VerticalStackLayout>
+                                    </Border>
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+
+                    <!-- Loading Indicator (Digitando...) -->
+                    <HorizontalStackLayout Spacing="8"
+                                          HorizontalOptions="Start"
+                                          IsVisible="{Binding IsSendingMessage}"
+                                          Padding="0,5">
+                        <Border BackgroundColor="#16213e"
+                                Padding="15,10">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="15"/>
+                            </Border.StrokeShape>
+                            <Label Text="●  ●  ●"
+                                   TextColor="#64748b"
+                                   FontSize="20"
+                                   FontAttributes="Bold"/>
+                        </Border>
+                    </HorizontalStackLayout>
+
+                </VerticalStackLayout>
+            </ScrollView>
+
+            <!-- Área de Input e Botões (Fixa na parte inferior) -->
+            <Grid Grid.Row="2" RowDefinitions="Auto,Auto">
+
+                <!-- Botões de Avaliação (fixos, acima do input) -->
+                <Border Grid.Row="0"
+                        BackgroundColor="#16213e"
+                        Padding="15,10,15,5"
+                        IsVisible="{Binding MostrarBotoesAvaliacao}">
+                    <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                        <Border BackgroundColor="#1e293b"
+                                Stroke="#334155"
+                                Padding="15,8">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="20"/>
+                            </Border.StrokeShape>
+                            <Button Text="👍 Esta resposta foi útil"
+                                    TextColor="#10b981"
+                                    FontSize="14"
+                                    BackgroundColor="Transparent"
+                                    Command="{Binding AvaliarRespostaUtilCommand}"/>
+                        </Border>
+
+                        <Border BackgroundColor="#1e293b"
+                                Stroke="#334155"
+                                Padding="15,8">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="20"/>
+                            </Border.StrokeShape>
+                            <Button Text="👎 Não foi útil"
+                                    TextColor="#ef4444"
+                                    FontSize="14"
+                                    BackgroundColor="Transparent"
+                                    Command="{Binding AvaliarRespostaNaoUtilCommand}"/>
+                        </Border>
+                    </HorizontalStackLayout>
+                </Border>
+
+                <!-- Área de Input -->
+                <Border Grid.Row="1"
+                        BackgroundColor="#16213e"
+                        Padding="15,10"
+                        StrokeThickness="0">
+                    <VerticalStackLayout Spacing="10">
+                        <!-- Aviso de Chat Bloqueado -->
+                        <Border IsVisible="{Binding ChatBloqueado}"
+                                BackgroundColor="#3b82f6"
+                                Padding="12,8"
+                                Opacity="0.9">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="10"/>
+                            </Border.StrokeShape>
+                            <Label Text="✅ Chat finalizado! Este chat foi concluído e não pode mais receber mensagens."
+                                   TextColor="White"
+                                   FontSize="13"
+                                   HorizontalOptions="Center"
+                                   FontAttributes="Bold"/>
+                        </Border>
+
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                            <!-- Input de Texto -->
+                            <Border Grid.Column="0"
+                                    BackgroundColor="#1e293b"
+                                    Stroke="Transparent"
+                                    Padding="18,12"
+                                    Opacity="{Binding ChatBloqueado, Converter={StaticResource BoolToOpacityConverter}}">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="25"/>
+                                </Border.StrokeShape>
+                                <Entry Placeholder="Mensagem para DotIA..."
+                                       PlaceholderColor="#64748b"
+                                       TextColor="White"
+                                       Text="{Binding Pergunta}"
+                                       BackgroundColor="Transparent"
+                                       VerticalOptions="Center"
+                                       FontSize="15"
+                                       IsEnabled="{Binding ChatBloqueado, Converter={StaticResource InvertedBoolConverter}}"
+                                       ReturnCommand="{Binding EnviarPerguntaCommand}"
+                                       ReturnType="Send"/>
+                            </Border>
+
+                            <!-- Botão Enviar -->
+                            <Border Grid.Column="1"
+                                    BackgroundColor="#7c3aed"
+                                    Stroke="Transparent"
+                                    WidthRequest="50"
+                                    HeightRequest="50"
+                                    Opacity="{Binding ChatBloqueado, Converter={StaticResource BoolToOpacityConverter}}">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="25"/>
+                                </Border.StrokeShape>
+                                <Button Text="▲"
+                                        FontSize="18"
+                                        TextColor="White"
+                                        BackgroundColor="Transparent"
+                                        Command="{Binding EnviarPerguntaCommand}"
+                                        IsEnabled="{Binding ChatBloqueado, Converter={StaticResource InvertedBoolConverter}}"/>
+                            </Border>
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+            </Grid>
+
+        </Grid>
+
+        <!-- Overlay Escuro (quando menu está aberto) -->
+        <BoxView x:Name="Overlay"
+                 BackgroundColor="#000000"
+                 Opacity="0"
+                 IsVisible="False"
+                 InputTransparent="True">
+            <BoxView.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnOverlayTapped"/>
+            </BoxView.GestureRecognizers>
+        </BoxView>
+
+        <!-- Menu Lateral (Sidebar) -->
+        <Border x:Name="Sidebar"
+                BackgroundColor="#16213e"
+                WidthRequest="280"
+                HorizontalOptions="Start"
+                TranslationX="-280"
+                ZIndex="100">
+            
+            <Grid RowDefinitions="Auto,*,Auto">
+
+                <!-- Header do Menu -->
+                <Border Grid.Row="0"
+                        BackgroundColor="#0f172a"
+                        Padding="20,15">
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="DotIA"
+                               TextColor="White"
+                               FontSize="24"
+                               FontAttributes="Bold"/>
+                        <Label Text="{Binding NomeUsuario}"
+                               TextColor="#94a3b8"
+                               FontSize="14"/>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Histórico de Conversas -->
+                <ScrollView Grid.Row="1">
+                    <VerticalStackLayout Spacing="5" Padding="10">
+
+                        <!-- Botão Novo Chat -->
+                        <Border BackgroundColor="#7c3aed"
+                                Padding="0"
+                                Margin="0,0,0,10">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="10"/>
+                            </Border.StrokeShape>
+                            <Button Text="✏  Nova Conversa"
+                                    TextColor="White"
+                                    BackgroundColor="Transparent"
+                                    FontSize="16"
+                                    FontAttributes="Bold"
+                                    Command="{Binding NovoChatCommand}"
+                                    Clicked="OnMenuItemClicked"/>
+                        </Border>
+
+                        <!-- Histórico -->
+                        <Label Text="Histórico"
+                               TextColor="#94a3b8"
+                               FontSize="12"
+                               Padding="10,5"/>
+
+                        <CollectionView ItemsSource="{Binding Chats}"
+                                       SelectionMode="None">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="models:ChatHistoricoDTO">
+                                    <SwipeView>
+                                        <SwipeView.RightItems>
+                                            <SwipeItems>
+                                                <SwipeItem Text="Editar"
+                                                          IconImageSource="✏️"
+                                                          BackgroundColor="#3b82f6"
+                                                          Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:ChatViewModel}}, Path=EditarTituloChatCommand}"
+                                                          CommandParameter="{Binding .}"/>
+                                                <SwipeItem Text="Excluir"
+                                                          IconImageSource="🗑️"
+                                                          BackgroundColor="#dc2626"
+                                                          Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:ChatViewModel}}, Path=ExcluirChatCommand}"
+                                                          CommandParameter="{Binding Id}"/>
+                                            </SwipeItems>
+                                        </SwipeView.RightItems>
+                                        <Border BackgroundColor="#1e293b"
+                                                Margin="0,2"
+                                                Padding="12">
+                                            <Border.StrokeShape>
+                                                <RoundRectangle CornerRadius="8"/>
+                                            </Border.StrokeShape>
+                                            <Border.GestureRecognizers>
+                                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:ChatViewModel}}, Path=SelecionarChatCommand}"
+                                                                     CommandParameter="{Binding .}"
+                                                                     Tapped="OnMenuItemClicked"/>
+                                            </Border.GestureRecognizers>
+                                            <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,Auto">
+                                                <!-- Título -->
+                                                <Label Grid.Row="0" Grid.Column="0"
+                                                       Text="{Binding TituloExibicao}"
+                                                       TextColor="White"
+                                                       FontSize="14"
+                                                       LineBreakMode="TailTruncation"
+                                                       MaxLines="1"
+                                                       Margin="0,0,8,0"/>
+
+                                                <!-- Badge de Status -->
+                                                <Border Grid.Row="0" Grid.Column="1"
+                                                        BackgroundColor="#fbbf24"
+                                                        Padding="6,3"
+                                                        VerticalOptions="Center"
+                                                        StrokeThickness="0">
+                                                    <Border.StrokeShape>
+                                                        <RoundRectangle CornerRadius="8"/>
+                                                    </Border.StrokeShape>
+                                                    <Border.Triggers>
+                                                        <DataTrigger TargetType="Border" Binding="{Binding StatusTexto}" Value="Concluído">
+                                                            <Setter Property="BackgroundColor" Value="#10b981"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger TargetType="Border" Binding="{Binding StatusTexto}" Value="Resolvido">
+                                                            <Setter Property="BackgroundColor" Value="#10b981"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger TargetType="Border" Binding="{Binding StatusTexto}" Value="Pendente">
+                                                            <Setter Property="BackgroundColor" Value="#f59e0b"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger TargetType="Border" Binding="{Binding StatusTexto}" Value="Em andamento">
+                                                            <Setter Property="BackgroundColor" Value="#3b82f6"/>
+                                                        </DataTrigger>
+                                                    </Border.Triggers>
+                                                    <Label Text="{Binding StatusTexto}"
+                                                           TextColor="White"
+                                                           FontSize="9"
+                                                           FontAttributes="Bold"/>
+                                                </Border>
+
+                                                <!-- Data e Hora -->
+                                                <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                                                       Text="{Binding DataHora, StringFormat='{0:dd/MM HH:mm}'}"
+                                                       TextColor="#64748b"
+                                                       FontSize="11"
+                                                       Margin="0,3,0,0"/>
+                                            </Grid>
+                                        </Border>
+                                    </SwipeView>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+
+                    </VerticalStackLayout>
+                </ScrollView>
+
+                <!-- Botões do Menu Inferior -->
+                <VerticalStackLayout Grid.Row="2"
+                                    Spacing="5"
+                                    Padding="10">
+                    <Button Text="🎫 Abrir Ticket Direto"
+                            BackgroundColor="#f59e0b"
+                            TextColor="White"
+                            CornerRadius="8"
+                            Command="{Binding AbrirTicketDiretoCommand}"
+                            Clicked="OnMenuItemClicked"/>
+                    <Button Text="🚪 Sair"
+                            BackgroundColor="#dc2626"
+                            TextColor="White"
+                            CornerRadius="8"
+                            Command="{Binding LogoutCommand}"/>
+                </VerticalStackLayout>
+
+            </Grid>
+        </Border>
+
+    </Grid>
+
+</ContentPage>

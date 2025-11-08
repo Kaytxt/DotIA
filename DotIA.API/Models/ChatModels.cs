@@ -19,6 +19,7 @@
     {
         public int UsuarioId { get; set; }
         public string Pergunta { get; set; } = string.Empty;
+        public int? ChatId { get; set; } // ✅ Para continuar conversa no mesmo chat
     }
 
     public class ChatResponse

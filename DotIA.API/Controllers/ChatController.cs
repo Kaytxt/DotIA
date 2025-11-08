@@ -25,24 +25,50 @@ namespace DotIA.API.Controllers
         {
             try
             {
-                // ✅ CORREÇÃO: O usuário pode criar novos chats mesmo tendo tickets pendentes
-                // Não há mais bloqueio para criar novos chats
-
                 var resposta = await _openAIService.ObterRespostaAsync(request.Pergunta);
 
-                var historico = new ChatHistorico
-                {
-                    IdSolicitante = request.UsuarioId,
-                    Titulo = request.Pergunta.Length > 30
-                        ? request.Pergunta.Substring(0, 30) + "..."
-                        : request.Pergunta,
-                    Pergunta = request.Pergunta,
-                    Resposta = resposta,
-                    DataHora = DateTime.UtcNow,
-                    Status = 1 // Em andamento
-                };
+                ChatHistorico historico;
 
-                _context.ChatsHistorico.Add(historico);
+                // ✅ Se ChatId fornecido, continua conversa no mesmo chat
+                if (request.ChatId.HasValue && request.ChatId.Value > 0)
+                {
+                    historico = await _context.ChatsHistorico.FindAsync(request.ChatId.Value);
+
+                    if (historico == null)
+                    {
+                        return NotFound(new ChatResponse
+                        {
+                            Sucesso = false,
+                            Resposta = "Chat não encontrado"
+                        });
+                    }
+
+                    // Concatena nova pergunta e resposta no mesmo chat
+                    var timestamp = DateTime.UtcNow.ToString("dd/MM/yyyy HH:mm");
+                    historico.Pergunta += $"\n\n[{timestamp}] {request.Pergunta}";
+                    historico.Resposta += $"\n\n[{timestamp}] {resposta}";
+                    historico.DataHora = DateTime.UtcNow;
+
+                    _context.ChatsHistorico.Update(historico);
+                }
+                else
+                {
+                    // Cria novo chat
+                    historico = new ChatHistorico
+                    {
+                        IdSolicitante = request.UsuarioId,
+                        Titulo = request.Pergunta.Length > 30
+                            ? request.Pergunta.Substring(0, 30) + "..."
+                            : request.Pergunta,
+                        Pergunta = request.Pergunta,
+                        Resposta = resposta,
+                        DataHora = DateTime.UtcNow,
+                        Status = 1 // Em andamento
+                    };
+
+                    _context.ChatsHistorico.Add(historico);
+                }
+
                 await _context.SaveChangesAsync();
 
                 return Ok(new ChatResponse
@@ -120,10 +146,13 @@ namespace DotIA.API.Controllers
         {
             try
             {
-                var historico = await _context.ChatsHistorico
-                    .Where(h => h.IdSolicitante == usuarioId)
-                    .OrderByDescending(h => h.DataHora)
-                    .Select(h => new
+                var historico = await (
+                    from h in _context.ChatsHistorico
+                    join t in _context.Tickets on h.IdTicket equals t.Id into ticketGroup
+                    from ticket in ticketGroup.DefaultIfEmpty()
+                    where h.IdSolicitante == usuarioId
+                    orderby h.DataHora descending
+                    select new
                     {
                         h.Id,
                         h.Titulo,
@@ -135,9 +164,10 @@ namespace DotIA.API.Controllers
                         StatusTexto = h.Status == 1 ? "Em andamento" :
                                       h.Status == 2 ? "Concluído" :
                                       h.Status == 3 ? "Pendente" :
-                                      h.Status == 4 ? "Resolvido" : "Desconhecido"
-                    })
-                    .ToListAsync();
+                                      h.Status == 4 ? "Resolvido" : "Desconhecido",
+                        Solucao = ticket != null ? ticket.Solucao : null
+                    }
+                ).ToListAsync();
 
                 return Ok(historico);
             }

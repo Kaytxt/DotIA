@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="DotIA.Mobile.Views.AbrirTicketPage"
+             xmlns:viewmodels="clr-namespace:DotIA.Mobile.ViewModels"
+             x:DataType="viewmodels:AbrirTicketViewModel"
+             Title="Abrir Ticket Direto"
+             BackgroundColor="#0f172a">
+
+    <Grid RowDefinitions="Auto,*,Auto" Padding="20">
+
+        <!-- Header com informação -->
+        <Border Grid.Row="0"
+                BackgroundColor="#3b82f6"
+                Padding="15"
+                Margin="0,0,0,20">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="12"/>
+            </Border.StrokeShape>
+            <VerticalStackLayout Spacing="5">
+                <Label Text="💡 Precisa de ajuda urgente?"
+                       TextColor="White"
+                       FontSize="16"
+                       FontAttributes="Bold"/>
+                <Label Text="Abra um ticket diretamente com um técnico sem passar pela IA."
+                       TextColor="White"
+                       FontSize="13"
+                       Opacity="0.9"/>
+            </VerticalStackLayout>
+        </Border>
+
+        <!-- Formulário -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Spacing="20">
+
+                <!-- Título -->
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="📌 Título do Problema"
+                           TextColor="White"
+                           FontSize="15"
+                           FontAttributes="Bold"/>
+                    <Border BackgroundColor="#1e293b"
+                            Stroke="#334155"
+                            StrokeThickness="1"
+                            Padding="15,12">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="10"/>
+                        </Border.StrokeShape>
+                        <Entry Placeholder="Ex: Problema com impressora"
+                               PlaceholderColor="#64748b"
+                               TextColor="White"
+                               Text="{Binding Titulo}"
+                               BackgroundColor="Transparent"
+                               MaxLength="100"
+                               FontSize="15"/>
+                    </Border>
+                    <Label Text="Dê um título breve e descritivo (mínimo 5 caracteres)"
+                           TextColor="#94a3b8"
+                           FontSize="12"/>
+                </VerticalStackLayout>
+
+                <!-- Descrição -->
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="📝 Descrição Detalhada"
+                           TextColor="White"
+                           FontSize="15"
+                           FontAttributes="Bold"/>
+                    <Border BackgroundColor="#1e293b"
+                            Stroke="#334155"
+                            StrokeThickness="1"
+                            Padding="15,12">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="10"/>
+                        </Border.StrokeShape>
+                        <Editor Placeholder="Descreva seu problema em detalhes...&#x0a;&#x0a;Exemplo:&#x0a;- O que aconteceu?&#x0a;- Quando começou?&#x0a;- Já tentou alguma solução?"
+                                PlaceholderColor="#64748b"
+                                TextColor="White"
+                                Text="{Binding Descricao}"
+                                BackgroundColor="Transparent"
+                                HeightRequest="200"
+                                FontSize="15"
+                                AutoSize="TextChanges"/>
+                    </Border>
+                    <Label Text="Quanto mais detalhes, mais rápido o técnico poderá ajudar! (mínimo 20 caracteres)"
+                           TextColor="#94a3b8"
+                           FontSize="12"/>
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Botões -->
+        <Grid Grid.Row="2"
+              ColumnDefinitions="*,*"
+              ColumnSpacing="10"
+              Margin="0,20,0,0">
+
+            <!-- Cancelar -->
+            <Border Grid.Column="0"
+                    BackgroundColor="#475569"
+                    Stroke="Transparent">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12"/>
+                </Border.StrokeShape>
+                <Button Text="Cancelar"
+                        TextColor="White"
+                        BackgroundColor="Transparent"
+                        FontSize="16"
+                        FontAttributes="Bold"
+                        Command="{Binding CancelarCommand}"
+                        HeightRequest="50"/>
+            </Border>
+
+            <!-- Enviar -->
+            <Border Grid.Column="1"
+                    BackgroundColor="#7c3aed"
+                    Stroke="Transparent">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12"/>
+                </Border.StrokeShape>
+                <Button Text="🎫 Abrir Ticket"
+                        TextColor="White"
+                        BackgroundColor="Transparent"
+                        FontSize="16"
+                        FontAttributes="Bold"
+                        Command="{Binding EnviarCommand}"
+                        IsEnabled="{Binding IsEnviando, Converter={StaticResource InvertedBoolConverter}}"
+                        HeightRequest="50"/>
+            </Border>
+        </Grid>
+
+    </Grid>
+</ContentPage>

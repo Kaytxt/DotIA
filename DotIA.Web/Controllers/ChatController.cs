@@ -29,7 +29,7 @@ namespace DotIA.Web.Controllers
             if (usuarioId == null)
                 return Unauthorized();
 
-            var resposta = await _apiClient.EnviarPerguntaAsync(usuarioId.Value, request.Pergunta);
+            var resposta = await _apiClient.EnviarPerguntaAsync(usuarioId.Value, request.Pergunta, request.ChatId);
             return Json(resposta);
         }
 
@@ -128,6 +128,7 @@ namespace DotIA.Web.Controllers
     public class PerguntaRequest
     {
         public string Pergunta { get; set; } = string.Empty;
+        public int? ChatId { get; set; }
     }
 
     public class AvaliacaoRequest

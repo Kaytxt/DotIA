@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:DotIA.Mobile.ViewModels"
+             x:Class="DotIA.Mobile.Views.LoginPage"
+             x:DataType="viewmodels:LoginViewModel"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="#1a1a2e">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="30" Spacing="20" VerticalOptions="Center">
+
+            <!-- Logo/Título -->
+            <Label Text="DotIA"
+                   FontSize="48"
+                   FontAttributes="Bold"
+                   TextColor="White"
+                   HorizontalOptions="Center"
+                   Margin="0,0,0,30"/>
+
+            <Label Text="Sistema Inteligente de Suporte"
+                   FontSize="16"
+                   TextColor="#b0b0b0"
+                   HorizontalOptions="Center"
+                   Margin="0,-20,0,40"/>
+
+            <!-- Email -->
+            <Border BackgroundColor="#16213e"
+                    StrokeShape="RoundRectangle 10"
+                    Stroke="Transparent"
+                    Padding="15">
+                <Entry Placeholder="Email"
+                       PlaceholderColor="#808080"
+                       TextColor="White"
+                       Text="{Binding Email}"
+                       Keyboard="Email"/>
+            </Border>
+
+            <!-- Senha -->
+            <Border BackgroundColor="#16213e"
+                    StrokeShape="RoundRectangle 10"
+                    Stroke="Transparent"
+                    Padding="15">
+                <Entry Placeholder="Senha"
+                       PlaceholderColor="#808080"
+                       TextColor="White"
+                       Text="{Binding Senha}"
+                       IsPassword="True"/>
+            </Border>
+
+            <!-- Mensagem de Erro -->
+            <Label Text="{Binding ErrorMessage}"
+                   TextColor="#ff6b6b"
+                   FontSize="14"
+                   IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}"
+                   HorizontalOptions="Center"/>
+
+            <!-- Botão Login -->
+            <Button Text="ENTRAR"
+                    Command="{Binding LoginCommand}"
+                    BackgroundColor="#7c3aed"
+                    TextColor="White"
+                    FontAttributes="Bold"
+                    FontSize="16"
+                    CornerRadius="10"
+                    HeightRequest="55"
+                    IsEnabled="{Binding IsLoading, Converter={StaticResource InvertedBoolConverter}}"/>
+
+            <!-- Indicador de Loading -->
+            <ActivityIndicator IsRunning="{Binding IsLoading}"
+                              IsVisible="{Binding IsLoading}"
+                              Color="#7c3aed"
+                              HeightRequest="40"/>
+
+            <!-- Link para Registro -->
+            <HorizontalStackLayout HorizontalOptions="Center" Spacing="5" Margin="0,20,0,0">
+                <Label Text="Não tem conta?"
+                       TextColor="#b0b0b0"
+                       FontSize="14"/>
+                <Label Text="Cadastre-se"
+                       TextColor="#7c3aed"
+                       FontSize="14"
+                       FontAttributes="Bold">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding NavigateToRegistroCommand}"/>
+                    </Label.GestureRecognizers>
+                </Label>
+            </HorizontalStackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:DotIA.Mobile.ViewModels"
+             x:Class="DotIA.Mobile.Views.RegistroPage"
+             x:DataType="viewmodels:RegistroViewModel"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="#1a1a2e">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="30" Spacing="15">
+
+            <!-- Cabeçalho -->
+            <Label Text="Criar Conta"
+                   FontSize="36"
+                   FontAttributes="Bold"
+                   TextColor="White"
+                   HorizontalOptions="Center"
+                   Margin="0,20,0,10"/>
+
+            <Label Text="Preencha os dados abaixo"
+                   FontSize="14"
+                   TextColor="#b0b0b0"
+                   HorizontalOptions="Center"
+                   Margin="0,0,0,30"/>
+
+            <!-- Nome -->
+            <Border BackgroundColor="#16213e"
+                    StrokeShape="RoundRectangle 10"
+                    Stroke="Transparent"
+                    Padding="15">
+                <Entry Placeholder="Nome Completo"
+                       PlaceholderColor="#808080"
+                       TextColor="White"
+                       Text="{Binding Nome}"/>
+            </Border>
+
+            <!-- Email -->
+            <Border BackgroundColor="#16213e"
+                    StrokeShape="RoundRectangle 10"
+                    Stroke="Transparent"
+                    Padding="15">
+                <Entry Placeholder="Email"
+                       PlaceholderColor="#808080"
+                       TextColor="White"
+                       Text="{Binding Email}"
+                       Keyboard="Email"/>
+            </Border>
+
+            <!-- Departamento -->
+            <Border BackgroundColor="#16213e"
+                    StrokeShape="RoundRectangle 10"
+                    Stroke="Transparent"
+                    Padding="15">
+                <Picker Title="Selecione o Departamento"
+                        TitleColor="#808080"
+                        TextColor="White"
+                        ItemsSource="{Binding Departamentos}"
+                        ItemDisplayBinding="{Binding Nome}"
+                        SelectedItem="{Binding DepartamentoSelecionado}"/>
+            </Border>
+
+            <!-- Senha -->
+            <Border BackgroundColor="#16213e"
+                    StrokeShape="RoundRectangle 10"
+                    Stroke="Transparent"
+                    Padding="15">
+                <Entry Placeholder="Senha (mínimo 6 caracteres)"
+                       PlaceholderColor="#808080"
+                       TextColor="White"
+                       Text="{Binding Senha}"
+                       IsPassword="True"/>
+            </Border>
+
+            <!-- Confirmação de Senha -->
+            <Border BackgroundColor="#16213e"
+                    StrokeShape="RoundRectangle 10"
+                    Stroke="Transparent"
+                    Padding="15">
+                <Entry Placeholder="Confirmar Senha"
+                       PlaceholderColor="#808080"
+                       TextColor="White"
+                       Text="{Binding ConfirmacaoSenha}"
+                       IsPassword="True"/>
+            </Border>
+
+            <!-- Mensagens -->
+            <Label Text="{Binding ErrorMessage}"
+                   TextColor="#ff6b6b"
+                   FontSize="14"
+                   IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}"
+                   HorizontalOptions="Center"/>
+
+            <Label Text="{Binding SuccessMessage}"
+                   TextColor="#51cf66"
+                   FontSize="14"
+                   IsVisible="{Binding SuccessMessage, Converter={StaticResource StringNotEmptyConverter}}"
+                   HorizontalOptions="Center"/>
+
+            <!-- Botão Cadastrar -->
+            <Button Text="CADASTRAR"
+                    Command="{Binding RegistrarCommand}"
+                    BackgroundColor="#10b981"
+                    TextColor="White"
+                    FontAttributes="Bold"
+                    FontSize="16"
+                    CornerRadius="10"
+                    HeightRequest="55"
+                    Margin="0,10,0,0"
+                    IsEnabled="{Binding IsLoading, Converter={StaticResource InvertedBoolConverter}}"/>
+
+            <!-- Loading -->
+            <ActivityIndicator IsRunning="{Binding IsLoading}"
+                              IsVisible="{Binding IsLoading}"
+                              Color="#10b981"
+                              HeightRequest="40"/>
+
+            <!-- Link para Login -->
+            <HorizontalStackLayout HorizontalOptions="Center" Spacing="5" Margin="0,20,0,20">
+                <Label Text="Já tem conta?"
+                       TextColor="#b0b0b0"
+                       FontSize="14"/>
+                <Label Text="Fazer Login"
+                       TextColor="#7c3aed"
+                       FontSize="14"
+                       FontAttributes="Bold">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding NavigateToLoginCommand}"/>
+                    </Label.GestureRecognizers>
+                </Label>
+            </HorizontalStackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>
