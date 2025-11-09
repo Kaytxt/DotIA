@@ -14,27 +14,30 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet" />
 
     <style>
-        :root{
-            --primary-blue:#3b82f6;
-            --secondary-blue:#2563eb;
-            --primary-purple:#8b5cf6;
-            --primary-green:#10b981;
-
-            --dark-bg:#1a132f;
-            --darker-bg:#1e1433;
-
+        :root {
+            --primary-blue: #3b82f6;
+            --secondary-blue: #2563eb;
+            --primary-purple: #8b5cf6;
+            --primary-green: #10b981;
+            --dark-bg: #1a132f;
+            --darker-bg: #1e1433;
             /* novos para painel/tabelas */
-            --panel-bg:#221a3d;          /* roxo escuro para fundos */
-            --panel-bg-2:#20173a;        /* um pouco mais escuro (thead) */
-            --panel-hover:#231a3f;       /* hover */
-            --panel-border:#3d2e6b;      /* divisão roxo claro */
+            --panel-bg: #221a3d; /* roxo escuro para fundos */
+            --panel-bg-2: #20173a; /* um pouco mais escuro (thead) */
+            --panel-hover: #231a3f; /* hover */
+            --panel-border: #3d2e6b; /* divisão roxo claro */
 
-            --text-color:#e8e8ff;
-            --text-muted:#9ca3af;
+            --text-color: #e8e8ff;
+            --text-muted: #9ca3af;
         }
 
-        *{ box-sizing:border-box; margin:0; padding:0; }
-        body{
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
             background: var(--dark-bg);
             color: var(--text-color);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -42,73 +45,193 @@
         }
 
         /* Header */
-        .header{
+        .header {
             background: linear-gradient(135deg,var(--darker-bg),var(--dark-bg));
-            border-bottom:2px solid var(--panel-border);
-            padding:20px 40px;
-            display:flex;justify-content:space-between;align-items:center;
-            position:sticky;top:0;z-index:100;
-            box-shadow:0 4px 20px rgba(0,0,0,.3);
-        }
-        .logo-container{ display:flex;align-items:center;gap:15px; }
-        .logo-icon{
-            width:55px;height:55px;border-radius:15px;
-            background:linear-gradient(135deg,var(--primary-blue),var(--primary-purple));
-            display:flex;align-items:center;justify-content:center;font-size:32px;
-            box-shadow:0 8px 20px rgba(59,130,246,.4);
-            animation:pulse 2s ease-in-out infinite;
-        }
-        @@keyframe pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
-        .logo-text{
-            font-size:32px;font-weight:800;
-            background:linear-gradient(135deg,var(--primary-blue),var(--primary-purple));
-            -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+            border-bottom: 2px solid var(--panel-border);
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0,0,0,.3);
         }
 
-        .container-fluid{ padding:30px 40px; max-width:1800px; margin:0 auto; }
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 55px;
+            height: 55px;
+            border-radius: 15px;
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            box-shadow: 0 8px 20px rgba(59,130,246,.4);
+            animation: pulse 2s ease-in-out infinite;
+            overflow: hidden;
+        }
+
+            .logo-icon img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+        @@keyframes pulse {
+            0%, 100% {
+                transform: scale(1)
+            }
+
+            50% {
+                transform: scale(1.05)
+            }
+        }
+
+        .logo-text {
+            font-size: 32px;
+            font-weight: 800;
+            background: linear-gradient(135deg,var(--primary-blue),var(--primary-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .container-fluid {
+            padding: 30px 40px;
+            max-width: 1800px;
+            margin: 0 auto;
+        }
 
         /* Cards */
-        .stats-grid{ display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:25px;margin-bottom:35px; }
-        .stat-card{
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit,minmax(280px,1fr));
+            gap: 25px;
+            margin-bottom: 35px;
+        }
+
+        .stat-card {
             background: linear-gradient(135deg, var(--panel-bg), var(--darker-bg));
-            border:2px solid var(--panel-border);
-            border-radius:22px;
-            padding:28px; position:relative; overflow:hidden;
-            transition:.3s ease;
+            border: 2px solid var(--panel-border);
+            border-radius: 22px;
+            padding: 28px;
+            position: relative;
+            overflow: hidden;
+            transition: .3s ease;
         }
-        .stat-card:hover{ transform:translateY(-6px); border-color:var(--primary-blue); box-shadow:0 12px 34px rgba(59,130,246,.28); }
-        .stat-icon{
-            width:68px;height:68px;border-radius:18px;
-            display:flex;align-items:center;justify-content:center;font-size:34px;margin-bottom:18px;
-            box-shadow:0 8px 20px rgba(0,0,0,.28);
+
+            .stat-card:hover {
+                transform: translateY(-6px);
+                border-color: var(--primary-blue);
+                box-shadow: 0 12px 34px rgba(59,130,246,.28);
+            }
+
+        .stat-icon {
+            width: 68px;
+            height: 68px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 34px;
+            margin-bottom: 18px;
+            box-shadow: 0 8px 20px rgba(0,0,0,.28);
+            overflow: hidden;
+            background: transparent;
+            padding: 10px;
         }
-        .stat-value{
-            font-size:42px;font-weight:800;margin-bottom:6px;
-            background:linear-gradient(135deg,var(--primary-blue),var(--primary-purple));
-            -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+
+            .stat-icon img {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+                filter: drop-shadow(0 0 8px rgba(59,130,246,.6));
+            }
+
+                /* Filtro especial para ícones de mensagem/balão que podem ter fundo branco */
+                .stat-icon img[src*="balao"],
+                .stat-icon img[src*="message"],
+                .stat-icon img[src*="chat"] {
+                    /* Remove qualquer fundo branco e aplica cor roxa/azul */
+                    mix-blend-mode: screen;
+                    filter: invert(1) hue-rotate(180deg) saturate(3) brightness(1.2) drop-shadow(0 0 8px rgba(139,92,246,.8));
+                }
+
+        .stat-value {
+            font-size: 42px;
+            font-weight: 800;
+            margin-bottom: 6px;
+            background: linear-gradient(135deg,var(--primary-blue),var(--primary-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
-        .stat-label{ color:var(--text-muted); font-size:14px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+        }
 
         /* Abas */
-        .tabs-nav{
-            display:flex; gap:14px; margin-bottom:26px; border-bottom:3px solid var(--panel-border); padding-bottom:0; flex-wrap:wrap;
+        .tabs-nav {
+            display: flex;
+            gap: 14px;
+            margin-bottom: 26px;
+            border-bottom: 3px solid var(--panel-border);
+            padding-bottom: 0;
+            flex-wrap: wrap;
         }
-        .tab-btn{
-            background:transparent;border:none;padding:14px 26px;color:#bfbfe8;
-            font-weight:800;font-size:15px;border-bottom:4px solid transparent;cursor:pointer;transition:.2s;
-            display:flex;align-items:center;gap:10px;border-top-left-radius:12px;border-top-right-radius:12px;
-        }
-        .tab-btn:hover{ color:#fff; background:rgba(139,92,246,.12); }
-        .tab-btn.active{ color:#fff; border-bottom-color:var(--primary-blue); background:rgba(59,130,246,.12); }
 
-        .section-title{
-            font-size:26px;font-weight:800;margin:16px 0 18px;display:flex;align-items:center;gap:12px;
-            background:linear-gradient(135deg,var(--primary-blue),var(--primary-purple));
-            -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+        .tab-btn {
+            background: transparent;
+            border: none;
+            padding: 14px 26px;
+            color: #bfbfe8;
+            font-weight: 800;
+            font-size: 15px;
+            border-bottom: 4px solid transparent;
+            cursor: pointer;
+            transition: .2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+        }
+
+            .tab-btn:hover {
+                color: #fff;
+                background: rgba(139,92,246,.12);
+            }
+
+            .tab-btn.active {
+                color: #fff;
+                border-bottom-color: var(--primary-blue);
+                background: rgba(59,130,246,.12);
+            }
+
+        .section-title {
+            font-size: 26px;
+            font-weight: 800;
+            margin: 16px 0 18px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: linear-gradient(135deg,var(--primary-blue),var(--primary-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         /* Contêiner tabelas/painéis */
-        .data-table-container{
+        .data-table-container {
             background: var(--panel-bg);
             border: 2px solid var(--panel-border);
             border-radius: 22px;
@@ -117,85 +240,224 @@
         }
 
         /* Tabelas Dark */
-        .table{
+        .table {
             --bs-table-bg: transparent;
             --bs-table-striped-bg: rgba(255,255,255,.02);
             --bs-table-striped-color: var(--text-color);
             --bs-table-hover-bg: transparent;
             --bs-table-hover-color: var(--text-color);
             color: var(--text-color);
-            margin:0;
+            margin: 0;
         }
-        .table thead,
-        .table thead tr,
-        .table thead th{
-            background: var(--panel-bg-2) !important;
-            color: #fff !important;
-            border-bottom: 1px solid var(--panel-border) !important;
-        }
-        .table th,
-        .table td{
-            color: var(--text-color) !important;
-            border-top: none !important;
-            background: transparent !important;
-            vertical-align: middle;
-            padding: 18px 20px;
-        }
-        .table tbody tr{
-            border-bottom: 1px solid var(--panel-border) !important;
-            transition: background .2s ease, transform .2s ease;
-        }
-        .table-hover tbody tr:hover{
+
+            .table thead,
+            .table thead tr,
+            .table thead th {
+                background: var(--panel-bg-2) !important;
+                color: #fff !important;
+                border-bottom: 1px solid var(--panel-border) !important;
+            }
+
+            .table th,
+            .table td {
+                color: var(--text-color) !important;
+                border-top: none !important;
+                background: transparent !important;
+                vertical-align: middle;
+                padding: 18px 20px;
+            }
+
+            .table tbody tr {
+                border-bottom: 1px solid var(--panel-border) !important;
+                transition: background .2s ease, transform .2s ease;
+            }
+
+        .table-hover tbody tr:hover {
             background: var(--panel-hover) !important;
             transform: scale(1.002);
         }
 
         /* Badges */
-        .badge{ padding:8px 14px;border-radius:10px;font-weight:800;font-size:12px;text-transform:uppercase;letter-spacing:.4px; }
-        .badge-primary{ background: rgba(59,130,246,.16); color:#8fb8ff; border:1px solid rgba(59,130,246,.28); }
-        .badge-success{ background: rgba(16,185,129,.16); color:#7ae1bf; border:1px solid rgba(16,185,129,.28); }
-        .badge-warning{ background: rgba(251,191,36,.16); color:#ffd483; border:1px solid rgba(251,191,36,.28); }
-        .badge-purple{ background: rgba(139,92,246,.16); color:#ccb7ff; border:1px solid rgba(139,92,246,.28); }
+        .badge {
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-weight: 800;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+        }
+
+        .badge-primary {
+            background: rgba(59,130,246,.16);
+            color: #8fb8ff;
+            border: 1px solid rgba(59,130,246,.28);
+        }
+
+        .badge-success {
+            background: rgba(16,185,129,.16);
+            color: #7ae1bf;
+            border: 1px solid rgba(16,185,129,.28);
+        }
+
+        .badge-warning {
+            background: rgba(251,191,36,.16);
+            color: #ffd483;
+            border: 1px solid rgba(251,191,36,.28);
+        }
+
+        .badge-purple {
+            background: rgba(139,92,246,.16);
+            color: #ccb7ff;
+            border: 1px solid rgba(139,92,246,.28);
+        }
 
         /* Ícones & Botões utilitários */
-        .bi{ font-family: "bootstrap-icons" !important; font-style: normal; font-weight: normal; line-height: 1; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
-        .btn-icon{
-            width:36px;height:36px; display:inline-flex; align-items:center; justify-content:center;
-            background:#211a3c; border:1px solid var(--panel-border); color:#dcd7ff;
-            border-radius:10px; margin:0 4px; transition:.18s ease; outline:0;
+        .bi {
+            font-family: "bootstrap-icons" !important;
+            font-style: normal;
+            font-weight: normal;
+            line-height: 1;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
-        .btn-icon i{ font-size:18px; }
-        .btn-icon:hover{
-            background: rgba(139,92,246,.18); border-color: var(--primary-purple); color:#fff; transform: translateY(-2px);
+
+        .btn-icon {
+            width: 36px;
+            height: 36px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #211a3c;
+            border: 1px solid var(--panel-border);
+            color: #dcd7ff;
+            border-radius: 10px;
+            margin: 0 4px;
+            transition: .18s ease;
+            outline: 0;
         }
-        .btn-icon.danger{ border-color:#ef4444; color:#ff9f9f; }
-        .btn-icon.danger:hover{ background: rgba(239,68,68,.18); color:#fff; }
+
+            .btn-icon i {
+                font-size: 18px;
+            }
+
+            .btn-icon:hover {
+                background: rgba(139,92,246,.18);
+                border-color: var(--primary-purple);
+                color: #fff;
+                transform: translateY(-2px);
+            }
+
+            .btn-icon.danger {
+                border-color: #ef4444;
+                color: #ff9f9f;
+            }
+
+                .btn-icon.danger:hover {
+                    background: rgba(239,68,68,.18);
+                    color: #fff;
+                }
 
         /* Modals */
-        .modal-content{ background: var(--panel-bg); border:2px solid var(--panel-border); color:var(--text-color); border-radius:20px; }
-        .modal-header{ border-bottom:2px solid var(--panel-border); padding:22px; }
-        .modal-title{
-            font-weight:800;font-size:22px;
-            background:linear-gradient(135deg,var(--primary-blue),var(--primary-purple));
-            -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+        .modal-content {
+            background: var(--panel-bg);
+            border: 2px solid var(--panel-border);
+            color: var(--text-color);
+            border-radius: 20px;
         }
-        .modal-footer{ border-top:2px solid var(--panel-border); padding:22px; }
-        .form-label{ font-weight:800; color:var(--text-color); margin-bottom:10px; font-size:13px; text-transform:uppercase; letter-spacing:.4px; }
-        .form-control,.form-select{
-            background: var(--darker-bg); border:1px solid var(--panel-border); color: var(--text-color);
-            border-radius:12px; padding:12px 14px;
+
+        .modal-header {
+            border-bottom: 2px solid var(--panel-border);
+            padding: 22px;
         }
-        .form-control:focus,.form-select:focus{ background:var(--darker-bg); border-color:var(--primary-blue); color:var(--text-color); box-shadow:0 0 0 4px rgba(59,130,246,.12); }
+
+        .modal-title {
+            font-weight: 800;
+            font-size: 22px;
+            background: linear-gradient(135deg,var(--primary-blue),var(--primary-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .modal-footer {
+            border-top: 2px solid var(--panel-border);
+            padding: 22px;
+        }
+
+        .form-label {
+            font-weight: 800;
+            color: var(--text-color);
+            margin-bottom: 10px;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+        }
+
+        .form-control, .form-select {
+            background: var(--darker-bg);
+            border: 1px solid var(--panel-border);
+            color: var(--text-color);
+            border-radius: 12px;
+            padding: 12px 14px;
+        }
+
+            .form-control:focus, .form-select:focus {
+                background: var(--darker-bg);
+                border-color: var(--primary-blue);
+                color: var(--text-color);
+                box-shadow: 0 0 0 4px rgba(59,130,246,.12);
+            }
 
         /* Util */
-        .empty-state{ text-align:center; padding:70px 12px; color:#8b8fb0; }
-        .empty-state i{ font-size:86px; opacity:.4; display:block; margin-bottom:18px; }
-        .loading-spinner{ display:flex; justify-content:center; align-items:center; padding:60px; }
-        .spinner-border{ width:56px;height:56px;border-width:6px; }
+        .empty-state {
+            text-align: center;
+            padding: 70px 12px;
+            color: #8b8fb0;
+        }
+
+            .empty-state i {
+                font-size: 86px;
+                opacity: .4;
+                display: block;
+                margin-bottom: 18px;
+            }
+
+        .loading-spinner {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 60px;
+        }
+
+        .spinner-border {
+            width: 56px;
+            height: 56px;
+            border-width: 6px;
+        }
 
         /* Notificações (animações) */
-        @@keyframe slideInRight{ from{ transform:translateX(100%); opacity:0 } to{ transform:translateX(0); opacity:1 } }
-        @@keyframe slideOutRight{ from{ transform:translateX(0); opacity:1 } to{ transform:translateX(100%); opacity:0 } }
+        @@keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1
+            }
+        }
+
+        @@keyframes slideOutRight {
+            from {
+                transform: translateX(0);
+                opacity: 1
+            }
+
+            to {
+                transform: translateX(100%);
+                opacity: 0
+            }
+        }
 
         .tab-content {
             display: none;
@@ -204,14 +466,15 @@
             .tab-content.active {
                 display: block;
             }
-
     </style>
 </head>
 
 <body>
     <div class="header">
         <div class="logo-container">
-            <div class="logo-icon">👨‍💼</div>
+            <div class="logo-icon">
+                <img src="~/img/dotia-logo.png" alt="DotIA" />
+            </div>
             <div>
                 <div class="logo-text">DotIA Manager</div>
                 <small style="color:#b7bce6;font-weight:700">Painel de Gerenciamento</small>
@@ -229,32 +492,44 @@
         <!-- STATS -->
         <div class="stats-grid" id="statsGrid">
             <div class="stat-card">
-                <div class="stat-icon" style="background:linear-gradient(135deg,#3b82f6,#2563eb)">👥</div>
+                <div class="stat-icon">
+                    <img src="~/img/icon-pessoa.png" alt="Usuários" />
+                </div>
                 <div class="stat-value" id="statUsuarios">0</div>
                 <div class="stat-label">Total de Usuários</div>
             </div>
             <div class="stat-card">
-                <div class="stat-icon" style="background:linear-gradient(135deg,#fbbf24,#f59e0b)">🎫</div>
+                <div class="stat-icon">
+                    <img src="~/img/icon-ticket.png" alt="Tickets" />
+                </div>
                 <div class="stat-value" id="statTicketsAbertos">0</div>
                 <div class="stat-label">Tickets em Aberto</div>
             </div>
             <div class="stat-card">
-                <div class="stat-icon" style="background:linear-gradient(135deg,#10b981,#059669)">✅</div>
+                <div class="stat-icon">
+                    <img src="~/img/icon-check.png" alt="Resolvidos" />
+                </div>
                 <div class="stat-value" id="statTicketsResolvidos">0</div>
                 <div class="stat-label">Tickets Resolvidos</div>
             </div>
             <div class="stat-card">
-                <div class="stat-icon" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed)">💬</div>
+                <div class="stat-icon">
+                    <img src="~/img/icon-balao.png" alt="Chats" />
+                </div>
                 <div class="stat-value" id="statChats">0</div>
                 <div class="stat-label">Total de Chats</div>
             </div>
             <div class="stat-card">
-                <div class="stat-icon" style="background:linear-gradient(135deg,#ec4899,#db2777)">📊</div>
+                <div class="stat-icon">
+                    <img src="~/img/icon-grafico.png" alt="Hoje" />
+                </div>
                 <div class="stat-value" id="statResolvidosHoje">0</div>
                 <div class="stat-label">Resolvidos Hoje</div>
             </div>
             <div class="stat-card">
-                <div class="stat-icon" style="background:linear-gradient(135deg,#06b6d4,#0891b2)">🎯</div>
+                <div class="stat-icon">
+                    <img src="~/img/icon-balao.png" alt="Chats Concluídos" />
+                </div>
                 <div class="stat-value" id="statChatsResolvidos">0</div>
                 <div class="stat-label">Chats Concluídos</div>
             </div>
@@ -281,7 +556,6 @@
                             <th>Descrição</th>
                             <th>Status</th>
                             <th>Data Abertura</th>
-                            <!-- Removido: coluna de Ações/Responder -->
                         </tr>
                     </thead>
                     <tbody id="ticketsTableBody">
@@ -351,7 +625,7 @@
         </div>
     </div>
 
-    <!-- MODALS -->
+    <!-- MODALS (mantidos iguais) -->
     <!-- Editar Usuário -->
     <div class="modal fade" id="editUserModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
@@ -466,7 +740,7 @@
         </div>
     </div>
 
-    <!-- JS -->
+    <!-- JS (mantido igual ao anterior) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         let departamentos = [];
@@ -494,7 +768,6 @@
             else if (tabName === 'usuarios') { carregarUsuarios(); }
         }
 
-        /* DASHBOARD */
         async function carregarDashboard() {
             try {
                 const r = await fetch('/Gerente/ObterDashboard');
@@ -508,7 +781,6 @@
             } catch (e) { console.error('Dashboard:', e); }
         }
 
-        /* TICKETS (sem responder) */
         async function carregarTickets() {
             try {
                 const r = await fetch('/Gerente/ObterTodosTickets');
@@ -516,14 +788,7 @@
                 const tbody = document.getElementById('ticketsTableBody');
 
                 if (!tickets.length) {
-                    tbody.innerHTML = `
-                            <tr><td colspan="6">
-                                <div class="empty-state">
-                                    <i class="bi bi-ticket-detailed"></i>
-                                    <h4 style="color:#fff;font-weight:800">Nenhum ticket encontrado</h4>
-                                    <p>Quando houver tickets, eles aparecerão aqui</p>
-                                </div>
-                            </td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><i class="bi bi-ticket-detailed"></i><h4 style="color:#fff;font-weight:800">Nenhum ticket encontrado</h4><p>Quando houver tickets, eles aparecerão aqui</p></div></td></tr>`;
                     return;
                 }
 
@@ -531,25 +796,16 @@
                 tickets.forEach(t => {
                     const dataAbertura = new Date(t.dataAbertura).toLocaleDateString('pt-BR');
                     const statusClass = t.idStatus === 1 ? 'warning' : 'success';
-
                     const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                            <td><strong>#${t.id}</strong></td>
-                            <td>${t.nomeSolicitante}</td>
-                            <td><span class="badge badge-primary">${t.departamento}</span></td>
-                            <td style="max-width:420px"><div class="text-truncate">${t.descricaoProblema}</div></td>
-                            <td><span class="badge badge-${statusClass}">${t.status}</span></td>
-                            <td>${dataAbertura}</td>`;
+                    tr.innerHTML = `<td><strong>#${t.id}</strong></td><td>${t.nomeSolicitante}</td><td><span class="badge badge-primary">${t.departamento}</span></td><td style="max-width:420px"><div class="text-truncate">${t.descricaoProblema}</div></td><td><span class="badge badge-${statusClass}">${t.status}</span></td><td>${dataAbertura}</td>`;
                     tbody.appendChild(tr);
                 });
             } catch (e) {
                 console.error('Tickets:', e);
-                document.getElementById('ticketsTableBody').innerHTML =
-                    `<tr><td colspan="6" class="text-center text-danger">Erro ao carregar tickets</td></tr>`;
+                document.getElementById('ticketsTableBody').innerHTML = `<tr><td colspan="6" class="text-center text-danger">Erro ao carregar tickets</td></tr>`;
             }
         }
 
-        /* DEPARTAMENTOS/USUÁRIOS */
         async function carregarDepartamentos() {
             try { const r = await fetch('/Gerente/ObterDepartamentos'); departamentos = await r.json(); }
             catch (e) { console.error('Departamentos:', e); }
@@ -562,41 +818,19 @@
                 const tbody = document.getElementById('usersTableBody');
 
                 if (!usuarios.length) {
-                    tbody.innerHTML = `
-                            <tr><td colspan="7">
-                                <div class="empty-state">
-                                    <i class="bi bi-people"></i>
-                                    <h4 style="color:#fff;font-weight:800">Nenhum usuário cadastrado</h4>
-                                </div>
-                            </td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><i class="bi bi-people"></i><h4 style="color:#fff;font-weight:800">Nenhum usuário cadastrado</h4></div></td></tr>`;
                     return;
                 }
 
                 tbody.innerHTML = '';
                 usuarios.forEach(u => {
                     const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                            <td><strong>${u.nome}</strong></td>
-                            <td>${u.email}</td>
-                            <td><span class="badge badge-primary">${u.departamento}</span></td>
-                            <td><span class="badge badge-success">${u.totalTickets}</span></td>
-                            <td><span class="badge badge-warning">${u.ticketsAbertos}</span></td>
-                            <td><span class="badge badge-purple">${u.totalChats}</span></td>
-                            <td class="text-center">
-                                <div class="d-inline-flex">
-                                    <button class="btn-icon" onclick="editarUsuario(${u.id})" title="Editar"><i class="bi bi-pencil"></i></button>
-                                    <button class="btn-icon" onclick="abrirAlterarCargo(${u.id}, '${u.nome}')" title="Alterar Cargo"><i class="bi bi-shield-check"></i></button>
-                                    <button class="btn-icon" onclick="abrirAlterarSenha(${u.id}, '${u.nome}')" title="Alterar Senha"><i class="bi bi-key"></i></button>
-                                    <button class="btn-icon" onclick="verTicketsUsuario(${u.id}, '${u.nome}')" title="Ver Tickets"><i class="bi bi-ticket-detailed"></i></button>
-                                    <button class="btn-icon danger" onclick="excluirUsuario(${u.id}, '${u.nome}')" title="Excluir"><i class="bi bi-trash"></i></button>
-                                </div>
-                            </td>`;
+                    tr.innerHTML = `<td><strong>${u.nome}</strong></td><td>${u.email}</td><td><span class="badge badge-primary">${u.departamento}</span></td><td><span class="badge badge-success">${u.totalTickets}</span></td><td><span class="badge badge-warning">${u.ticketsAbertos}</span></td><td><span class="badge badge-purple">${u.totalChats}</span></td><td class="text-center"><div class="d-inline-flex"><button class="btn-icon" onclick="editarUsuario(${u.id})" title="Editar"><i class="bi bi-pencil"></i></button><button class="btn-icon" onclick="abrirAlterarCargo(${u.id}, '${u.nome}')" title="Alterar Cargo"><i class="bi bi-shield-check"></i></button><button class="btn-icon" onclick="abrirAlterarSenha(${u.id}, '${u.nome}')" title="Alterar Senha"><i class="bi bi-key"></i></button><button class="btn-icon" onclick="verTicketsUsuario(${u.id}, '${u.nome}')" title="Ver Tickets"><i class="bi bi-ticket-detailed"></i></button><button class="btn-icon danger" onclick="excluirUsuario(${u.id}, '${u.nome}')" title="Excluir"><i class="bi bi-trash"></i></button></div></td>`;
                     tbody.appendChild(tr);
                 });
             } catch (e) {
                 console.error('Usuários:', e);
-                document.getElementById('usersTableBody').innerHTML =
-                    `<tr><td colspan="7" class="text-center text-danger">Erro ao carregar usuários</td></tr>`;
+                document.getElementById('usersTableBody').innerHTML = `<tr><td colspan="7" class="text-center text-danger">Erro ao carregar usuários</td></tr>`;
             }
         }
 
@@ -607,15 +841,9 @@
                 document.getElementById('editUserId').value = u.id;
                 document.getElementById('editUserName').value = u.nome;
                 document.getElementById('editUserEmail').value = u.email;
-
                 const sel = document.getElementById('editUserDepartamento');
                 sel.innerHTML = '';
-                departamentos.forEach(d => {
-                    const o = document.createElement('option');
-                    o.value = d.id; o.textContent = d.nome; o.selected = d.id === u.idDepartamento;
-                    sel.appendChild(o);
-                });
-
+                departamentos.forEach(d => { const o = document.createElement('option'); o.value = d.id; o.textContent = d.nome; o.selected = d.id === u.idDepartamento; sel.appendChild(o); });
                 new bootstrap.Modal(document.getElementById('editUserModal')).show();
             } catch (e) { console.error('Obter usuário:', e); alert('Erro ao carregar dados do usuário'); }
         }
@@ -626,18 +854,10 @@
             const email = document.getElementById('editUserEmail').value.trim();
             const idDepartamento = parseInt(document.getElementById('editUserDepartamento').value);
             if (!nome || !email) { alert('Preencha todos os campos obrigatórios'); return; }
-
             try {
-                const r = await fetch('/Gerente/AtualizarUsuario', {
-                    method: 'PUT', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ usuarioId: parseInt(usuarioId), nome, email, idDepartamento })
-                });
+                const r = await fetch('/Gerente/AtualizarUsuario', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ usuarioId: parseInt(usuarioId), nome, email, idDepartamento }) });
                 const data = await r.json();
-                if (data.sucesso) {
-                    bootstrap.Modal.getInstance(document.getElementById('editUserModal')).hide();
-                    mostrarNotificacao('Usuário atualizado com sucesso!', 'success');
-                    await carregarUsuarios(); await carregarDashboard();
-                } else { alert('Erro ao atualizar usuário'); }
+                if (data.sucesso) { bootstrap.Modal.getInstance(document.getElementById('editUserModal')).hide(); mostrarNotificacao('Usuário atualizado com sucesso!', 'success'); await carregarUsuarios(); await carregarDashboard(); } else { alert('Erro ao atualizar usuário'); }
             } catch (e) { console.error('Salvar usuário:', e); alert('Erro ao conectar com o servidor'); }
         }
 
@@ -655,17 +875,10 @@
             const confirmarSenha = document.getElementById('confirmarSenha').value;
             if (!novaSenha || novaSenha.length < 6) { alert('A senha deve ter no mínimo 6 caracteres'); return; }
             if (novaSenha !== confirmarSenha) { alert('As senhas não coincidem'); return; }
-
             try {
-                const r = await fetch('/Gerente/AlterarSenha', {
-                    method: 'PUT', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ usuarioId: parseInt(usuarioId), novaSenha })
-                });
+                const r = await fetch('/Gerente/AlterarSenha', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ usuarioId: parseInt(usuarioId), novaSenha }) });
                 const data = await r.json();
-                if (data.sucesso) {
-                    bootstrap.Modal.getInstance(document.getElementById('alterarSenhaModal')).hide();
-                    mostrarNotificacao('Senha alterada com sucesso!', 'success');
-                } else { alert('Erro ao alterar senha'); }
+                if (data.sucesso) { bootstrap.Modal.getInstance(document.getElementById('alterarSenhaModal')).hide(); mostrarNotificacao('Senha alterada com sucesso!', 'success'); } else { alert('Erro ao alterar senha'); }
             } catch (e) { console.error('Alterar senha:', e); alert('Erro ao conectar com o servidor'); }
         }
 
@@ -674,10 +887,7 @@
             try {
                 const r = await fetch(`/Gerente/ExcluirUsuario/${usuarioId}`, { method: 'DELETE' });
                 const data = await r.json();
-                if (data.sucesso) {
-                    mostrarNotificacao('Usuário excluído com sucesso!', 'success');
-                    await carregarUsuarios(); await carregarDashboard();
-                } else { alert('Erro ao excluir usuário'); }
+                if (data.sucesso) { mostrarNotificacao('Usuário excluído com sucesso!', 'success'); await carregarUsuarios(); await carregarDashboard(); } else { alert('Erro ao excluir usuário'); }
             } catch (e) { console.error('Excluir usuário:', e); alert('Erro ao conectar com o servidor'); }
         }
 
@@ -687,129 +897,75 @@
                 const lista = await r.json();
                 const content = document.getElementById('userTicketsContent');
                 const modal = new bootstrap.Modal(document.getElementById('userTicketsModal'));
-
                 if (!lista.length) {
-                    content.innerHTML = `
-                            <div class="empty-state">
-                                <i class="bi bi-ticket-detailed"></i>
-                                <h4 style="color:#fff;font-weight:800">Nenhum ticket encontrado</h4>
-                                <p>O usuário ${nomeUsuario} não possui tickets</p>
-                            </div>`;
+                    content.innerHTML = `<div class="empty-state"><i class="bi bi-ticket-detailed"></i><h4 style="color:#fff;font-weight:800">Nenhum ticket encontrado</h4><p>O usuário ${nomeUsuario} não possui tickets</p></div>`;
                 } else {
                     let html = `<h6 class="mb-3">Tickets de <strong>${nomeUsuario}</strong></h6><div class="list-group">`;
                     lista.forEach(t => {
                         const dataAbertura = new Date(t.dataAbertura).toLocaleDateString('pt-BR');
                         const statusClass = t.idStatus === 1 ? 'warning' : 'success';
-                        html += `
-                              <div class="list-group-item" style="background:var(--darker-bg);border:1px solid var(--panel-border);margin-bottom:12px;border-radius:12px;padding:18px">
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <h6 class="mb-0" style="font-weight:800">Ticket #${t.id}</h6>
-                                    <span class="badge badge-${statusClass}">${t.status}</span>
-                                </div>
-                                <p class="mb-2" style="color:#b9bde3">${t.descricaoProblema}</p>
-                                <small class="text-muted"><i class="bi bi-calendar"></i> ${dataAbertura}</small>
-                              </div>`;
+                        html += `<div class="list-group-item" style="background:var(--darker-bg);border:1px solid var(--panel-border);margin-bottom:12px;border-radius:12px;padding:18px"><div class="d-flex justify-content-between align-items-center mb-2"><h6 class="mb-0" style="font-weight:800">Ticket #${t.id}</h6><span class="badge badge-${statusClass}">${t.status}</span></div><p class="mb-2" style="color:#b9bde3">${t.descricaoProblema}</p><small class="text-muted"><i class="bi bi-calendar"></i> ${dataAbertura}</small></div>`;
                     });
                     html += `</div>`;
                     content.innerHTML = html;
                 }
-
                 modal.show();
             } catch (e) { console.error('Tickets usuário:', e); alert('Erro ao carregar tickets do usuário'); }
         }
 
-        /* RELATÓRIOS */
         async function carregarRelatorios() {
             try {
                 const r = await fetch('/Gerente/ObterRelatorioDepartamentos');
                 const relatorio = await r.json();
                 const chartDiv = document.getElementById('departamentosChart');
-
-                if (!relatorio.length) {
-                    chartDiv.innerHTML = '<div class="empty-state"><p>Nenhum dado disponível</p></div>';
-                } else {
-                    let html = '<div class="table-responsive"><table class="table table-sm table-hover">';
-                    html += '<thead><tr><th>Departamento</th><th>Usuários</th><th>Tickets</th><th>Abertos</th><th>Resolvidos</th></tr></thead><tbody>';
-                    relatorio.forEach(d => {
-                        html += `
-                              <tr>
-                                <td><strong>${d.departamento}</strong></td>
-                                <td><span class="badge badge-primary">${d.totalUsuarios}</span></td>
-                                <td><span class="badge badge-success">${d.totalTickets}</span></td>
-                                <td><span class="badge badge-warning">${d.ticketsAbertos}</span></td>
-                                <td><span class="badge badge-success">${d.ticketsResolvidos}</span></td>
-                              </tr>`;
-                    });
+                if (!relatorio.length) { chartDiv.innerHTML = '<div class="empty-state"><p>Nenhum dado disponível</p></div>'; }
+                else {
+                    let html = '<div class="table-responsive"><table class="table table-sm table-hover"><thead><tr><th>Departamento</th><th>Usuários</th><th>Tickets</th><th>Abertos</th><th>Resolvidos</th></tr></thead><tbody>';
+                    relatorio.forEach(d => { html += `<tr><td><strong>${d.departamento}</strong></td><td><span class="badge badge-primary">${d.totalUsuarios}</span></td><td><span class="badge badge-success">${d.totalTickets}</span></td><td><span class="badge badge-warning">${d.ticketsAbertos}</span></td><td><span class="badge badge-success">${d.ticketsResolvidos}</span></td></tr>`; });
                     html += '</tbody></table></div>';
                     chartDiv.innerHTML = html;
                 }
-
                 const topUsersList = document.getElementById('topUsersList');
                 if (dashboard.topUsuarios && dashboard.topUsuarios.length) {
                     topUsersList.innerHTML = '';
                     dashboard.topUsuarios.forEach((u, idx) => {
                         const row = document.createElement('div');
                         row.style.cssText = 'display:flex;justify-content:space-between;padding:14px;background:var(--darker-bg);border-radius:12px;margin-bottom:12px;align-items:center;border:1px solid var(--panel-border)';
-                        row.innerHTML = `
-                              <div style="display:flex;align-items:center;gap:14px">
-                                <div style="width:40px;height:40px;background:linear-gradient(135deg,var(--primary-blue),var(--primary-purple));border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px">${idx + 1}</div>
-                                <strong>${u.nome}</strong>
-                              </div>
-                              <span class="badge badge-warning" style="font-size:13px">${u.totalTickets} tickets</span>`;
+                        row.innerHTML = `<div style="display:flex;align-items:center;gap:14px"><div style="width:40px;height:40px;background:linear-gradient(135deg,var(--primary-blue),var(--primary-purple));border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px">${idx + 1}</div><strong>${u.nome}</strong></div><span class="badge badge-warning" style="font-size:13px">${u.totalTickets} tickets</span>`;
                         topUsersList.appendChild(row);
                     });
-                } else {
-                    topUsersList.innerHTML = '<div class="empty-state"><p>Nenhum dado disponível</p></div>';
-                }
+                } else { topUsersList.innerHTML = '<div class="empty-state"><p>Nenhum dado disponível</p></div>'; }
             } catch (e) { console.error('Relatórios:', e); }
         }
 
-        /* Notificação */
         function mostrarNotificacao(msg, tipo = 'info') {
-            const cores = {
-                success: 'linear-gradient(135deg,#10b981,#059669)',
-                warning: 'linear-gradient(135deg,#fbbf24,#f59e0b)',
-                info: 'linear-gradient(135deg,#3b82f6,#2563eb)'
-            };
+            const cores = { success: 'linear-gradient(135deg,#10b981,#059669)', warning: 'linear-gradient(135deg,#fbbf24,#f59e0b)', info: 'linear-gradient(135deg,#3b82f6,#2563eb)' };
             const n = document.createElement('div');
-            n.style.cssText = `
-                      position:fixed;top:20px;right:20px;background:${cores[tipo]};
-                      padding:16px 24px;border-radius:14px;color:#fff;font-weight:800;z-index:10000;
-                      animation:slideInRight .3s ease-out;max-width:420px;box-shadow:0 10px 30px rgba(0,0,0,.4)`;
+            n.style.cssText = `position:fixed;top:20px;right:20px;background:${cores[tipo]};padding:16px 24px;border-radius:14px;color:#fff;font-weight:800;z-index:10000;animation:slideInRight .3s ease-out;max-width:420px;box-shadow:0 10px 30px rgba(0,0,0,.4)`;
             n.innerHTML = `<i class="bi bi-check-circle"></i> ${msg}`;
             document.body.appendChild(n);
             setTimeout(() => { n.style.animation = 'slideOutRight .3s ease-out'; setTimeout(() => n.remove(), 300); }, 3800);
         }
 
-        /* Atualiza dashboard a cada 30s */
         setInterval(carregarDashboard, 30000);
 
-        /* Alterar cargo */
         function abrirAlterarCargo(usuarioId, nomeUsuario) {
             document.getElementById('cargoUserId').value = usuarioId;
             document.getElementById('cargoUserName').textContent = nomeUsuario;
             document.getElementById('novoCargo').value = 'Solicitante';
             new bootstrap.Modal(document.getElementById('alterarCargoModal')).show();
         }
+
         async function salvarCargo() {
             const usuarioId = document.getElementById('cargoUserId').value;
             const novoCargo = document.getElementById('novoCargo').value;
             if (!novoCargo) { alert('Selecione um cargo válido'); return; }
-
             const cargoTexto = { 'Solicitante': 'Usuário Normal', 'Tecnico': 'Técnico', 'Gerente': 'Gerente (Administrador)' };
             if (!confirm(`Tem certeza que deseja alterar o cargo para ${cargoTexto[novoCargo]}?`)) return;
-
             try {
-                const r = await fetch('/Gerente/AlterarCargo', {
-                    method: 'PUT', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ usuarioId: parseInt(usuarioId), cargo: novoCargo })
-                });
+                const r = await fetch('/Gerente/AlterarCargo', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ usuarioId: parseInt(usuarioId), cargo: novoCargo }) });
                 const data = await r.json();
-                if (data.sucesso) {
-                    bootstrap.Modal.getInstance(document.getElementById('alterarCargoModal')).hide();
-                    mostrarNotificacao(`Cargo alterado para ${cargoTexto[novoCargo]} com sucesso!`, 'success');
-                    await carregarUsuarios(); await carregarDashboard();
-                } else { alert('Erro ao alterar cargo'); }
+                if (data.sucesso) { bootstrap.Modal.getInstance(document.getElementById('alterarCargoModal')).hide(); mostrarNotificacao(`Cargo alterado para ${cargoTexto[novoCargo]} com sucesso!`, 'success'); await carregarUsuarios(); await carregarDashboard(); } else { alert('Erro ao alterar cargo'); }
             } catch (e) { console.error('Alterar cargo:', e); alert('Erro ao conectar com o servidor'); }
         }
     </script>
