@@ -10,8 +10,8 @@
     <!-- Background -->
     <ContentPage.Background>
         <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-            <GradientStop Color="#0f172a" Offset="0.0" />
-            <GradientStop Color="#1e1b4b" Offset="1.0" />
+            <GradientStop Color="{StaticResource Background}" Offset="0.0" />
+            <GradientStop Color="{StaticResource BackgroundDark}" Offset="1.0" />
         </LinearGradientBrush>
     </ContentPage.Background>
 
@@ -19,7 +19,7 @@
 
         <!-- Header estilo WhatsApp -->
         <Border Grid.Row="0"
-                BackgroundColor="#1e293b"
+                BackgroundColor="{StaticResource BackgroundLight}"
                 Padding="20,15"
                 StrokeThickness="0"
                 Shadow="{Shadow Brush=Black, Offset='0,2', Radius=8, Opacity=0.3}">
@@ -27,15 +27,21 @@
 
                 <!-- Logo/Nome -->
                 <HorizontalStackLayout Spacing="12">
-                    <Border BackgroundColor="#3b82f6"
-                            HeightRequest="45"
+                    <Border HeightRequest="45"
                             WidthRequest="45"
                             StrokeThickness="0">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="{StaticResource Primary}" Offset="0.0" />
+                                <GradientStop Color="{StaticResource Secondary}" Offset="1.0" />
+                            </LinearGradientBrush>
+                        </Border.Background>
                         <Border.StrokeShape>
                             <RoundRectangle CornerRadius="25"/>
                         </Border.StrokeShape>
-                        <Label Text="🤖"
-                               FontSize="24"
+                        <Image Source="dotia_logo.png"
+                               WidthRequest="30"
+                               HeightRequest="30"
                                HorizontalOptions="Center"
                                VerticalOptions="Center"/>
                     </Border>
@@ -91,13 +97,20 @@
                 <VerticalStackLayout Spacing="0">
 
                     <!-- Header da Lista -->
-                    <Border BackgroundColor="#1e293b"
+                    <Border BackgroundColor="{StaticResource BackgroundLight}"
                             Padding="20,15"
                             StrokeThickness="0">
-                        <Label Text="💬 Conversas"
-                               TextColor="White"
-                               FontSize="20"
-                               FontAttributes="Bold"/>
+                        <HorizontalStackLayout Spacing="10">
+                            <Image Source="icon_balao.png"
+                                   WidthRequest="24"
+                                   HeightRequest="24"
+                                   VerticalOptions="Center"/>
+                            <Label Text="Conversas"
+                                   TextColor="White"
+                                   FontSize="20"
+                                   FontAttributes="Bold"
+                                   VerticalOptions="Center"/>
+                        </HorizontalStackLayout>
                     </Border>
 
                     <!-- Lista de Tickets (Conversas) -->
@@ -107,7 +120,7 @@
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="models:TicketDTO">
                                 <!-- Card de Conversa estilo WhatsApp -->
-                                <Border BackgroundColor="#1e293b"
+                                <Border BackgroundColor="{StaticResource BackgroundLight}"
                                         Padding="0"
                                         Margin="8,6,8,6"
                                         StrokeThickness="0"
@@ -135,15 +148,15 @@
 
                                         <!-- Foto do Usuário -->
                                         <Border Grid.Column="0"
-                                                BackgroundColor="#475569"
+                                                BackgroundColor="{StaticResource Primary}"
                                                 HeightRequest="50"
                                                 WidthRequest="50"
                                                 StrokeThickness="0">
                                             <Border.StrokeShape>
                                                 <RoundRectangle CornerRadius="25"/>
                                             </Border.StrokeShape>
-                                            <Label Text="👤"
-                                                   FontSize="26"
+                                            <Image Source="icon_user.png"
+                                                   Margin="10"
                                                    HorizontalOptions="Center"
                                                    VerticalOptions="Center"/>
                                         </Border>
@@ -214,7 +227,7 @@
 
                 <!-- Header do Chat -->
                 <Border Grid.Row="0"
-                        BackgroundColor="#1e293b"
+                        BackgroundColor="{StaticResource BackgroundLight}"
                         Padding="15,12"
                         StrokeThickness="0"
                         Shadow="{Shadow Brush=Black, Offset='0,2', Radius=6, Opacity=0.2}">
@@ -233,7 +246,7 @@
 
                         <!-- Foto do Cliente -->
                         <Border Grid.Column="1"
-                                BackgroundColor="#475569"
+                                BackgroundColor="{StaticResource Primary}"
                                 HeightRequest="40"
                                 WidthRequest="40"
                                 Margin="0,0,12,0"
@@ -241,8 +254,8 @@
                             <Border.StrokeShape>
                                 <RoundRectangle CornerRadius="20"/>
                             </Border.StrokeShape>
-                            <Label Text="👤"
-                                   FontSize="22"
+                            <Image Source="icon_user.png"
+                                   Margin="8"
                                    HorizontalOptions="Center"
                                    VerticalOptions="Center"/>
                         </Border>
@@ -278,7 +291,7 @@
                 <!-- Área de Mensagens -->
                 <ScrollView Grid.Row="1"
                            Padding="15"
-                           BackgroundColor="#0f172a">
+                           BackgroundColor="{StaticResource BackgroundDark}">
                     <VerticalStackLayout Spacing="12">
 
                         <!-- CollectionView de Mensagens -->
@@ -288,7 +301,7 @@
                                 <DataTemplate x:DataType="viewmodels:MensagemChat">
                                     <Grid Margin="0,6">
                                         <!-- Mensagem do Usuário (esquerda) -->
-                                        <Border BackgroundColor="#1e293b"
+                                        <Border BackgroundColor="{StaticResource BackgroundLight}"
                                                 Padding="12"
                                                 HorizontalOptions="Start"
                                                 MaximumWidthRequest="300"
@@ -305,15 +318,15 @@
                                             <VerticalStackLayout Spacing="8">
                                                 <!-- Nome do Remetente -->
                                                 <HorizontalStackLayout Spacing="8">
-                                                    <Border BackgroundColor="#475569"
+                                                    <Border BackgroundColor="{StaticResource Primary}"
                                                             HeightRequest="24"
                                                             WidthRequest="24"
                                                             StrokeThickness="0">
                                                         <Border.StrokeShape>
                                                             <RoundRectangle CornerRadius="12"/>
                                                         </Border.StrokeShape>
-                                                        <Label Text="👤"
-                                                               FontSize="14"
+                                                        <Image Source="icon_user.png"
+                                                               Margin="4"
                                                                HorizontalOptions="Center"
                                                                VerticalOptions="Center"/>
                                                     </Border>
@@ -367,8 +380,8 @@
                                                         <Border.StrokeShape>
                                                             <RoundRectangle CornerRadius="12"/>
                                                         </Border.StrokeShape>
-                                                        <Label Text="🤖"
-                                                               FontSize="14"
+                                                        <Image Source="dotia_logo.png"
+                                                               Margin="4"
                                                                HorizontalOptions="Center"
                                                                VerticalOptions="Center"/>
                                                     </Border>
@@ -422,8 +435,8 @@
                                                         <Border.StrokeShape>
                                                             <RoundRectangle CornerRadius="12"/>
                                                         </Border.StrokeShape>
-                                                        <Label Text="🔧"
-                                                               FontSize="14"
+                                                        <Image Source="icon_tecnico.png"
+                                                               Margin="4"
                                                                HorizontalOptions="Center"
                                                                VerticalOptions="Center"/>
                                                     </Border>
@@ -464,7 +477,7 @@
 
                 <!-- Input de Resposta (fixo embaixo) -->
                 <Border Grid.Row="2"
-                        BackgroundColor="#1e293b"
+                        BackgroundColor="{StaticResource BackgroundLight}"
                         Padding="12"
                         StrokeThickness="0"
                         Shadow="{Shadow Brush=Black, Offset='0,-2', Radius=8, Opacity=0.3}">
@@ -472,7 +485,7 @@
 
                         <!-- Editor de Texto -->
                         <Border Grid.Row="0"
-                                BackgroundColor="#0f172a"
+                                BackgroundColor="{StaticResource BackgroundDark}"
                                 Padding="12"
                                 StrokeThickness="0">
                             <Border.StrokeShape>

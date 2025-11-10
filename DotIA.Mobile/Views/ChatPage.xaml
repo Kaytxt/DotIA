@@ -6,7 +6,7 @@
              x:Class="DotIA.Mobile.Views.ChatPage"
              x:DataType="viewmodels:ChatViewModel"
              Title="DotIA"
-             BackgroundColor="#1a1a2e"
+             BackgroundColor="{StaticResource Background}"
              Shell.NavBarIsVisible="False">
 
     <Grid>
@@ -15,7 +15,7 @@
 
             <!-- Header com Menu Hambúrguer -->
             <Border Grid.Row="0"
-                    BackgroundColor="#16213e"
+                    BackgroundColor="{StaticResource BackgroundLight}"
                     Padding="0"
                     StrokeThickness="0">
                 <Grid ColumnDefinitions="Auto,*,Auto" Padding="10">
@@ -85,8 +85,9 @@
                                         Padding="20"
                                         Margin="0,80,0,0"
                                         IsVisible="{Binding Mensagens.Count, Converter={StaticResource IsZeroConverter}}">
-                        <Label Text="🤖"
-                               FontSize="80"
+                        <Image Source="icon_bot.png"
+                               WidthRequest="120"
+                               HeightRequest="120"
                                HorizontalOptions="Center"/>
                         <Label Text="Olá! Sou a DotIA"
                                TextColor="White"
@@ -107,14 +108,19 @@
                                 <Grid Padding="0,5">
                                     <!-- Mensagem do Usuário (direita) -->
                                     <Border IsVisible="{Binding IsUsuario}"
-                                            BackgroundColor="#7c3aed"
                                             Stroke="Transparent"
                                             Padding="15,10"
                                             MaximumWidthRequest="280"
                                             HorizontalOptions="End"
                                             Margin="50,0,0,0">
+                                        <Border.Background>
+                                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                <GradientStop Color="{StaticResource Primary}" Offset="0.0" />
+                                                <GradientStop Color="{StaticResource Secondary}" Offset="1.0" />
+                                            </LinearGradientBrush>
+                                        </Border.Background>
                                         <Border.StrokeShape>
-                                            <RoundRectangle CornerRadius="15,15,5,15"/>
+                                            <RoundRectangle CornerRadius="18,18,5,18"/>
                                         </Border.StrokeShape>
                                         <VerticalStackLayout Spacing="4">
                                             <Label Text="Você"
@@ -131,15 +137,15 @@
 
                                     <!-- Mensagem da IA (esquerda, azul escuro) -->
                                     <Border IsVisible="{Binding IsUsuario, Converter={StaticResource InvertedBoolConverter}}"
-                                            BackgroundColor="#16213e"
-                                            Stroke="#334155"
+                                            BackgroundColor="{StaticResource BackgroundLight}"
+                                            Stroke="{StaticResource BorderColor}"
                                             StrokeThickness="1"
                                             Padding="15,10"
                                             MaximumWidthRequest="280"
                                             HorizontalOptions="Start"
                                             Margin="0,0,50,0">
                                         <Border.StrokeShape>
-                                            <RoundRectangle CornerRadius="5,15,15,15"/>
+                                            <RoundRectangle CornerRadius="5,18,18,18"/>
                                         </Border.StrokeShape>
                                         <Border.Triggers>
                                             <DataTrigger TargetType="Border" Binding="{Binding NomeRemetente}" Value="Técnico 🔧">
@@ -148,8 +154,9 @@
                                         </Border.Triggers>
                                         <VerticalStackLayout Spacing="4">
                                             <HorizontalStackLayout Spacing="6">
-                                                <Label Text="🤖"
-                                                       FontSize="14"
+                                                <Image Source="dotia_logo.png"
+                                                       WidthRequest="16"
+                                                       HeightRequest="16"
                                                        VerticalOptions="Center"/>
                                                 <Label Text="DotIA"
                                                        TextColor="#94a3b8"
@@ -183,8 +190,9 @@
                                         </Border.Triggers>
                                         <VerticalStackLayout Spacing="4">
                                             <HorizontalStackLayout Spacing="6">
-                                                <Label Text="🔧"
-                                                       FontSize="14"
+                                                <Image Source="icon_tecnico.png"
+                                                       WidthRequest="16"
+                                                       HeightRequest="16"
                                                        VerticalOptions="Center"/>
                                                 <Label Text="Técnico"
                                                        TextColor="#d1fae5"
@@ -208,13 +216,15 @@
                                           HorizontalOptions="Start"
                                           IsVisible="{Binding IsSendingMessage}"
                                           Padding="0,5">
-                        <Border BackgroundColor="#16213e"
+                        <Border BackgroundColor="{StaticResource BackgroundLight}"
+                                Stroke="{StaticResource BorderColor}"
+                                StrokeThickness="1"
                                 Padding="15,10">
                             <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="15"/>
+                                <RoundRectangle CornerRadius="18"/>
                             </Border.StrokeShape>
                             <Label Text="●  ●  ●"
-                                   TextColor="#64748b"
+                                   TextColor="{StaticResource Primary}"
                                    FontSize="20"
                                    FontAttributes="Bold"/>
                         </Border>
@@ -262,7 +272,7 @@
 
                 <!-- Área de Input -->
                 <Border Grid.Row="1"
-                        BackgroundColor="#16213e"
+                        BackgroundColor="{StaticResource BackgroundLight}"
                         Padding="15,10"
                         StrokeThickness="0">
                     <VerticalStackLayout Spacing="10">
@@ -284,8 +294,9 @@
                         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
                             <!-- Input de Texto -->
                             <Border Grid.Column="0"
-                                    BackgroundColor="#1e293b"
-                                    Stroke="Transparent"
+                                    BackgroundColor="{StaticResource BackgroundDark}"
+                                    Stroke="{StaticResource BorderColor}"
+                                    StrokeThickness="2"
                                     Padding="18,12"
                                     Opacity="{Binding ChatBloqueado, Converter={StaticResource BoolToOpacityConverter}}">
                                 <Border.StrokeShape>
@@ -305,11 +316,16 @@
 
                             <!-- Botão Enviar -->
                             <Border Grid.Column="1"
-                                    BackgroundColor="#7c3aed"
                                     Stroke="Transparent"
                                     WidthRequest="50"
                                     HeightRequest="50"
                                     Opacity="{Binding ChatBloqueado, Converter={StaticResource BoolToOpacityConverter}}">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                        <GradientStop Color="{StaticResource Primary}" Offset="0.0" />
+                                        <GradientStop Color="{StaticResource Secondary}" Offset="1.0" />
+                                    </LinearGradientBrush>
+                                </Border.Background>
                                 <Border.StrokeShape>
                                     <RoundRectangle CornerRadius="25"/>
                                 </Border.StrokeShape>
@@ -340,7 +356,7 @@
 
         <!-- Menu Lateral (Sidebar) -->
         <Border x:Name="Sidebar"
-                BackgroundColor="#16213e"
+                BackgroundColor="{StaticResource BackgroundLight}"
                 WidthRequest="280"
                 HorizontalOptions="Start"
                 TranslationX="-280"
@@ -350,7 +366,7 @@
 
                 <!-- Header do Menu -->
                 <Border Grid.Row="0"
-                        BackgroundColor="#0f172a"
+                        BackgroundColor="{StaticResource BackgroundDark}"
                         Padding="20,15">
                     <VerticalStackLayout Spacing="5">
                         <Label Text="DotIA"
@@ -368,11 +384,17 @@
                     <VerticalStackLayout Spacing="5" Padding="10">
 
                         <!-- Botão Novo Chat -->
-                        <Border BackgroundColor="#7c3aed"
-                                Padding="0"
-                                Margin="0,0,0,10">
+                        <Border Padding="0"
+                                Margin="0,0,0,10"
+                                StrokeThickness="0">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                    <GradientStop Color="{StaticResource Primary}" Offset="0.0" />
+                                    <GradientStop Color="{StaticResource Secondary}" Offset="1.0" />
+                                </LinearGradientBrush>
+                            </Border.Background>
                             <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="10"/>
+                                <RoundRectangle CornerRadius="12"/>
                             </Border.StrokeShape>
                             <Button Text="✏  Nova Conversa"
                                     TextColor="White"
@@ -408,11 +430,13 @@
                                                           CommandParameter="{Binding Id}"/>
                                             </SwipeItems>
                                         </SwipeView.RightItems>
-                                        <Border BackgroundColor="#1e293b"
+                                        <Border BackgroundColor="{StaticResource BackgroundDark}"
+                                                Stroke="{StaticResource BorderColor}"
+                                                StrokeThickness="1"
                                                 Margin="0,2"
                                                 Padding="12">
                                             <Border.StrokeShape>
-                                                <RoundRectangle CornerRadius="8"/>
+                                                <RoundRectangle CornerRadius="10"/>
                                             </Border.StrokeShape>
                                             <Border.GestureRecognizers>
                                                 <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:ChatViewModel}}, Path=SelecionarChatCommand}"

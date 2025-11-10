@@ -2,6 +2,8 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DotIA.Mobile.Models;
 using DotIA.Mobile.Services;
+using DotIA.Mobile.Views;
+using Microsoft.Extensions.DependencyInjection;
 using System.Collections.ObjectModel;
 
 namespace DotIA.Mobile.ViewModels
@@ -130,7 +132,12 @@ namespace DotIA.Mobile.ViewModels
 
                     // Aguarda 2 segundos e volta para login
                     await Task.Delay(2000);
-                    await Shell.Current.GoToAsync("..");
+
+                    var loginPage = App.Current?.Handler?.MauiContext?.Services.GetService<LoginPage>();
+                    if (loginPage != null)
+                    {
+                        Application.Current!.MainPage = loginPage;
+                    }
                 }
                 else
                 {
@@ -150,7 +157,11 @@ namespace DotIA.Mobile.ViewModels
         [RelayCommand]
         private async Task NavigateToLoginAsync()
         {
-            await Shell.Current.GoToAsync("..");
+            var loginPage = App.Current?.Handler?.MauiContext?.Services.GetService<LoginPage>();
+            if (loginPage != null)
+            {
+                Application.Current!.MainPage = loginPage;
+            }
         }
     }
 }

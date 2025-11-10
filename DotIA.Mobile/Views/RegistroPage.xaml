@@ -5,109 +5,135 @@
              x:Class="DotIA.Mobile.Views.RegistroPage"
              x:DataType="viewmodels:RegistroViewModel"
              Shell.NavBarIsVisible="False"
-             BackgroundColor="#1a1a2e">
+             BackgroundColor="{StaticResource Background}">
 
     <ScrollView>
-        <VerticalStackLayout Padding="30" Spacing="15">
+        <VerticalStackLayout Padding="30" Spacing="18">
 
             <!-- Cabeçalho -->
             <Label Text="Criar Conta"
-                   FontSize="36"
+                   FontSize="42"
                    FontAttributes="Bold"
-                   TextColor="White"
+                   TextColor="{StaticResource Secondary}"
                    HorizontalOptions="Center"
-                   Margin="0,20,0,10"/>
+                   Margin="0,20,0,10" />
 
             <Label Text="Preencha os dados abaixo"
-                   FontSize="14"
-                   TextColor="#b0b0b0"
+                   FontSize="15"
+                   TextColor="{StaticResource TextTertiary}"
                    HorizontalOptions="Center"
                    Margin="0,0,0,30"/>
 
             <!-- Nome -->
-            <Border BackgroundColor="#16213e"
-                    StrokeShape="RoundRectangle 10"
-                    Stroke="Transparent"
-                    Padding="15">
+            <Border BackgroundColor="{StaticResource BackgroundDark}"
+                    StrokeShape="RoundRectangle 15"
+                    Stroke="{StaticResource BorderColor}"
+                    StrokeThickness="2"
+                    Padding="16">
                 <Entry Placeholder="Nome Completo"
-                       PlaceholderColor="#808080"
-                       TextColor="White"
-                       Text="{Binding Nome}"/>
+                       PlaceholderColor="{StaticResource TextMuted}"
+                       TextColor="{StaticResource TextSecondary}"
+                       Text="{Binding Nome}"
+                       FontSize="15"/>
             </Border>
 
             <!-- Email -->
-            <Border BackgroundColor="#16213e"
-                    StrokeShape="RoundRectangle 10"
-                    Stroke="Transparent"
-                    Padding="15">
-                <Entry Placeholder="Email"
-                       PlaceholderColor="#808080"
-                       TextColor="White"
+            <Border BackgroundColor="{StaticResource BackgroundDark}"
+                    StrokeShape="RoundRectangle 15"
+                    Stroke="{StaticResource BorderColor}"
+                    StrokeThickness="2"
+                    Padding="16">
+                <Entry Placeholder="seu@email.com"
+                       PlaceholderColor="{StaticResource TextMuted}"
+                       TextColor="{StaticResource TextSecondary}"
                        Text="{Binding Email}"
-                       Keyboard="Email"/>
+                       Keyboard="Email"
+                       FontSize="15"/>
             </Border>
 
             <!-- Departamento -->
-            <Border BackgroundColor="#16213e"
-                    StrokeShape="RoundRectangle 10"
-                    Stroke="Transparent"
-                    Padding="15">
+            <Border BackgroundColor="{StaticResource BackgroundDark}"
+                    StrokeShape="RoundRectangle 15"
+                    Stroke="{StaticResource BorderColor}"
+                    StrokeThickness="2"
+                    Padding="16,12">
                 <Picker Title="Selecione o Departamento"
-                        TitleColor="#808080"
-                        TextColor="White"
+                        TitleColor="{StaticResource TextMuted}"
+                        TextColor="{StaticResource TextSecondary}"
                         ItemsSource="{Binding Departamentos}"
                         ItemDisplayBinding="{Binding Nome}"
-                        SelectedItem="{Binding DepartamentoSelecionado}"/>
+                        SelectedItem="{Binding DepartamentoSelecionado}"
+                        FontSize="15"/>
             </Border>
 
             <!-- Senha -->
-            <Border BackgroundColor="#16213e"
-                    StrokeShape="RoundRectangle 10"
-                    Stroke="Transparent"
-                    Padding="15">
+            <Border BackgroundColor="{StaticResource BackgroundDark}"
+                    StrokeShape="RoundRectangle 15"
+                    Stroke="{StaticResource BorderColor}"
+                    StrokeThickness="2"
+                    Padding="16">
                 <Entry Placeholder="Senha (mínimo 6 caracteres)"
-                       PlaceholderColor="#808080"
-                       TextColor="White"
+                       PlaceholderColor="{StaticResource TextMuted}"
+                       TextColor="{StaticResource TextSecondary}"
                        Text="{Binding Senha}"
-                       IsPassword="True"/>
+                       IsPassword="True"
+                       FontSize="15"/>
             </Border>
 
             <!-- Confirmação de Senha -->
-            <Border BackgroundColor="#16213e"
-                    StrokeShape="RoundRectangle 10"
-                    Stroke="Transparent"
-                    Padding="15">
+            <Border BackgroundColor="{StaticResource BackgroundDark}"
+                    StrokeShape="RoundRectangle 15"
+                    Stroke="{StaticResource BorderColor}"
+                    StrokeThickness="2"
+                    Padding="16">
                 <Entry Placeholder="Confirmar Senha"
-                       PlaceholderColor="#808080"
-                       TextColor="White"
+                       PlaceholderColor="{StaticResource TextMuted}"
+                       TextColor="{StaticResource TextSecondary}"
                        Text="{Binding ConfirmacaoSenha}"
-                       IsPassword="True"/>
+                       IsPassword="True"
+                       FontSize="15"/>
             </Border>
 
             <!-- Mensagens -->
-            <Label Text="{Binding ErrorMessage}"
-                   TextColor="#ff6b6b"
-                   FontSize="14"
-                   IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}"
-                   HorizontalOptions="Center"/>
+            <Border BackgroundColor="#ef444422"
+                    Stroke="{StaticResource Error}"
+                    StrokeShape="RoundRectangle 15"
+                    Padding="15"
+                    IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}">
+                <Label Text="{Binding ErrorMessage}"
+                       TextColor="#fecaca"
+                       FontSize="14"
+                       HorizontalOptions="Center"/>
+            </Border>
 
-            <Label Text="{Binding SuccessMessage}"
-                   TextColor="#51cf66"
-                   FontSize="14"
-                   IsVisible="{Binding SuccessMessage, Converter={StaticResource StringNotEmptyConverter}}"
-                   HorizontalOptions="Center"/>
+            <Border BackgroundColor="#10b98122"
+                    Stroke="{StaticResource Success}"
+                    StrokeShape="RoundRectangle 15"
+                    Padding="15"
+                    IsVisible="{Binding SuccessMessage, Converter={StaticResource StringNotEmptyConverter}}">
+                <Label Text="{Binding SuccessMessage}"
+                       TextColor="#6ee7b7"
+                       FontSize="14"
+                       HorizontalOptions="Center"/>
+            </Border>
 
             <!-- Botão Cadastrar -->
-            <Button Text="CADASTRAR"
-                    Command="{Binding RegistrarCommand}"
-                    BackgroundColor="#10b981"
-                    TextColor="White"
-                    FontAttributes="Bold"
-                    FontSize="16"
-                    CornerRadius="10"
-                    HeightRequest="55"
-                    Margin="0,10,0,0"
-                    IsEnabled="{Binding IsLoading, Converter={StaticResource InvertedBoolConverter}}"/>
+            <Border StrokeShape="RoundRectangle 15" StrokeThickness="0" Margin="0,10,0,0">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="{StaticResource Primary}" Offset="0.0" />
+                        <GradientStop Color="{StaticResource Secondary}" Offset="1.0" />
+                    </LinearGradientBrush>
+                </Border.Background>
+                <Button Text="CADASTRAR"
+                        Command="{Binding RegistrarCommand}"
+                        BackgroundColor="Transparent"
+                        TextColor="White"
+                        FontAttributes="Bold"
+                        FontSize="16"
+                        HeightRequest="55"
+                        IsEnabled="{Binding IsLoading, Converter={StaticResource InvertedBoolConverter}}"/>
+            </Border>
 
             <!-- Loading -->
             <ActivityIndicator IsRunning="{Binding IsLoading}"
@@ -118,10 +144,10 @@
             <!-- Link para Login -->
             <HorizontalStackLayout HorizontalOptions="Center" Spacing="5" Margin="0,20,0,20">
                 <Label Text="Já tem conta?"
-                       TextColor="#b0b0b0"
+                       TextColor="{StaticResource TextTertiary}"
                        FontSize="14"/>
                 <Label Text="Fazer Login"
-                       TextColor="#7c3aed"
+                       TextColor="{StaticResource Secondary}"
                        FontSize="14"
                        FontAttributes="Bold">
                     <Label.GestureRecognizers>
