@@ -1,0 +1,227 @@
+-- =============================================================================
+-- TABELAS BASE
+-- =============================================================================
+
+-- Tabela: departamentos
+CREATE TABLE departamentos (
+    id_departamento SERIAL PRIMARY KEY,
+    nome_departamento VARCHAR(100) NOT NULL UNIQUE
+);
+
+-- Tabela: categorias
+CREATE TABLE categorias (
+    id_categoria SERIAL PRIMARY KEY,
+    nome_categoria VARCHAR(100) NOT NULL UNIQUE
+);
+
+-- Tabela: subcategorias
+CREATE TABLE subcategorias (
+    id_subcategoria SERIAL PRIMARY KEY,
+    nome_subcategoria VARCHAR(100) NOT NULL,
+    id_categoria INTEGER NOT NULL,
+    CONSTRAINT fk_subcategoria_categoria
+        FOREIGN KEY (id_categoria)
+        REFERENCES categorias(id_categoria)
+        ON DELETE CASCADE
+);
+
+-- Tabela: niveis_atendimento
+CREATE TABLE niveis_atendimento (
+    id_nivel SERIAL PRIMARY KEY,
+    descricao VARCHAR(50) NOT NULL UNIQUE
+);
+
+-- =============================================================================
+-- TABELAS DE USUÁRIOS
+-- =============================================================================
+
+-- Tabela: solicitantes
+CREATE TABLE solicitantes (
+    id_solicitante SERIAL PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    senha VARCHAR(100) NOT NULL,
+    id_departamento INTEGER NOT NULL,
+    tipo_usuario VARCHAR(20) NOT NULL DEFAULT 'solicitante',
+    CONSTRAINT fk_solicitante_departamento
+        FOREIGN KEY (id_departamento)
+        REFERENCES departamentos(id_departamento)
+        ON DELETE RESTRICT
+);
+
+-- Tabela: tecnicos
+CREATE TABLE tecnicos (
+    id_tecnico SERIAL PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    senha VARCHAR(100) NOT NULL,
+    id_especialidade INTEGER,
+    is_gerente BOOLEAN NOT NULL DEFAULT FALSE,
+    CONSTRAINT fk_tecnico_especialidade
+        FOREIGN KEY (id_especialidade)
+        REFERENCES categorias(id_categoria)
+        ON DELETE SET NULL
+);
+
+-- =============================================================================
+-- TABELAS DE ATENDIMENTO
+-- =============================================================================
+
+-- Tabela: tickets
+CREATE TABLE tickets (
+    id_ticket SERIAL PRIMARY KEY,
+    id_solicitante INTEGER NOT NULL,
+    descricao_problema TEXT NOT NULL,
+    id_subcategoria INTEGER,
+    id_nivel INTEGER,
+    id_tecnico INTEGER,
+    id_status INTEGER NOT NULL DEFAULT 1,
+    data_abertura TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW(),
+    data_encerramento TIMESTAMP WITHOUT TIME ZONE,
+    solucao TEXT,
+    CONSTRAINT fk_ticket_solicitante
+        FOREIGN KEY (id_solicitante)
+        REFERENCES solicitantes(id_solicitante)
+        ON DELETE CASCADE,
+    CONSTRAINT fk_ticket_subcategoria
+        FOREIGN KEY (id_subcategoria)
+        REFERENCES subcategorias(id_subcategoria)
+        ON DELETE SET NULL,
+    CONSTRAINT fk_ticket_nivel
+        FOREIGN KEY (id_nivel)
+        REFERENCES niveis_atendimento(id_nivel)
+        ON DELETE SET NULL,
+    CONSTRAINT fk_ticket_tecnico
+        FOREIGN KEY (id_tecnico)
+        REFERENCES tecnicos(id_tecnico)
+        ON DELETE SET NULL
+);
+
+-- Tabela: chat_historico
+CREATE TABLE chat_historico (
+    id SERIAL PRIMARY KEY,
+    id_solicitante INTEGER NOT NULL,
+    id_ticket INTEGER,
+    titulo VARCHAR(200),
+    pergunta TEXT NOT NULL,
+    resposta TEXT NOT NULL,
+    data_hora TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW(),
+    status INTEGER NOT NULL DEFAULT 1,
+    CONSTRAINT fk_chat_solicitante
+        FOREIGN KEY (id_solicitante)
+        REFERENCES solicitantes(id_solicitante)
+        ON DELETE CASCADE,
+    CONSTRAINT fk_chat_ticket
+        FOREIGN KEY (id_ticket)
+        REFERENCES tickets(id_ticket)
+        ON DELETE SET NULL
+);
+
+-- =============================================================================
+-- TABELAS DE AVALIAÇÃO E HISTÓRICO
+-- =============================================================================
+
+-- Tabela: historico_util
+CREATE TABLE historico_util (
+    id SERIAL PRIMARY KEY,
+    id_solicitante INTEGER NOT NULL,
+    pergunta TEXT NOT NULL,
+    resposta TEXT NOT NULL,
+    datahora TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW(),
+    CONSTRAINT fk_historico_solicitante
+        FOREIGN KEY (id_solicitante)
+        REFERENCES solicitantes(id_solicitante)
+        ON DELETE CASCADE
+);
+
+-- Tabela: avaliacao_resposta
+CREATE TABLE avaliacao_resposta (
+    id SERIAL PRIMARY KEY,
+    id_solicitante INTEGER NOT NULL,
+    pergunta TEXT NOT NULL,
+    foi_util BOOLEAN NOT NULL,
+    datahora TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW(),
+    CONSTRAINT fk_avaliacao_solicitante
+        FOREIGN KEY (id_solicitante)
+        REFERENCES solicitantes(id_solicitante)
+        ON DELETE CASCADE
+);
+
+-- =============================================================================
+-- ÍNDICES PARA PERFORMANCE
+-- =============================================================================
+
+-- Índices para pesquisas frequentes
+CREATE INDEX idx_solicitantes_email ON solicitantes(email);
+CREATE INDEX idx_solicitantes_departamento ON solicitantes(id_departamento);
+CREATE INDEX idx_tecnicos_email ON tecnicos(email);
+CREATE INDEX idx_tecnicos_especialidade ON tecnicos(id_especialidade);
+CREATE INDEX idx_tickets_solicitante ON tickets(id_solicitante);
+CREATE INDEX idx_tickets_tecnico ON tickets(id_tecnico);
+CREATE INDEX idx_tickets_status ON tickets(id_status);
+CREATE INDEX idx_tickets_data_abertura ON tickets(data_abertura);
+CREATE INDEX idx_chat_historico_solicitante ON chat_historico(id_solicitante);
+CREATE INDEX idx_chat_historico_ticket ON chat_historico(id_ticket);
+CREATE INDEX idx_chat_historico_data ON chat_historico(data_hora);
+CREATE INDEX idx_subcategorias_categoria ON subcategorias(id_categoria);
+
+-- =============================================================================
+-- DADOS INICIAIS (SEED)
+-- =============================================================================
+
+-- Departamentos padrão
+INSERT INTO departamentos (nome_departamento) VALUES
+    ('TI - Tecnologia da Informação'),
+    ('RH - Recursos Humanos'),
+    ('Financeiro'),
+    ('Comercial'),
+    ('Operações'),
+    ('Administração')
+ON CONFLICT (nome_departamento) DO NOTHING;
+
+-- Níveis de Atendimento
+INSERT INTO niveis_atendimento (descricao) VALUES
+    ('Baixo'),
+    ('Médio'),
+    ('Alto'),
+    ('Crítico')
+ON CONFLICT (descricao) DO NOTHING;
+
+-- Categorias de Problemas
+INSERT INTO categorias (nome_categoria) VALUES
+    ('Hardware'),
+    ('Software'),
+    ('Rede'),
+    ('Email'),
+    ('Impressora'),
+    ('Acesso ao Sistema'),
+    ('Backup'),
+    ('Outros')
+ON CONFLICT (nome_categoria) DO NOTHING;
+
+-- Subcategorias (exemplos para categoria Hardware)
+INSERT INTO subcategorias (nome_subcategoria, id_categoria) VALUES
+    ('Computador não liga', 1),
+    ('Tela com problema', 1),
+    ('Teclado com defeito', 1),
+    ('Mouse com defeito', 1),
+    ('Problema no sistema operacional', 2),
+    ('Aplicativo não abre', 2),
+    ('Erro de instalação', 2),
+    ('Internet lenta', 3),
+    ('Sem conexão', 3),
+    ('Problema com Wi-Fi', 3),
+    ('Não consigo enviar email', 4),
+    ('Não consigo receber email', 4),
+    ('Impressora não imprime', 5),
+    ('Papel preso', 5),
+    ('Esqueci minha senha', 6),
+    ('Não consigo acessar o sistema', 6)
+ON CONFLICT DO NOTHING;
+
+-- Técnico Administrador Padrão
+-- Senha: admin123 (você deve alterá-la após o primeiro acesso!)
+INSERT INTO tecnicos (nome, email, senha, is_gerente) VALUES
+    ('Administrador', 'admin@dotia.com', '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', TRUE)
+ON CONFLICT (email) DO NOTHING;
+
