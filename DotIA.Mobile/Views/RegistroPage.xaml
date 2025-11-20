@@ -94,7 +94,7 @@
                        FontSize="15"/>
             </Border>
 
-            <!-- Mensagens -->
+            <!-- Mensagens de Erro -->
             <Border BackgroundColor="#ef444422"
                     Stroke="{StaticResource Error}"
                     StrokeShape="RoundRectangle 15"
@@ -106,6 +106,7 @@
                        HorizontalOptions="Center"/>
             </Border>
 
+            <!-- Mensagens de Sucesso -->
             <Border BackgroundColor="#10b98122"
                     Stroke="{StaticResource Success}"
                     StrokeShape="RoundRectangle 15"
@@ -138,7 +139,7 @@
             <!-- Loading -->
             <ActivityIndicator IsRunning="{Binding IsLoading}"
                               IsVisible="{Binding IsLoading}"
-                              Color="#10b981"
+                              Color="{StaticResource Success}"
                               HeightRequest="40"/>
 
             <!-- Link para Login -->

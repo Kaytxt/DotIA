@@ -361,7 +361,7 @@
                 HorizontalOptions="Start"
                 TranslationX="-280"
                 ZIndex="100">
-            
+
             <Grid RowDefinitions="Auto,*,Auto">
 
                 <!-- Header do Menu -->

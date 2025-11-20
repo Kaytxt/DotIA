@@ -51,14 +51,14 @@
                                FontSize="18"
                                FontAttributes="Bold"/>
                         <Label Text="{Binding NomeUsuario}"
-                               TextColor="#94a3b8"
+                               TextColor="{StaticResource TextTertiary}"
                                FontSize="12"/>
                     </VerticalStackLayout>
                 </HorizontalStackLayout>
 
                 <!-- Badge de Pendentes -->
                 <Border Grid.Column="1"
-                        BackgroundColor="#ef4444"
+                        BackgroundColor="{StaticResource Error}"
                         Padding="10,6"
                         HorizontalOptions="End"
                         VerticalOptions="Center"
@@ -78,7 +78,7 @@
                 <Button Grid.Column="2"
                         Text="Sair"
                         Command="{Binding LogoutCommand}"
-                        BackgroundColor="#dc2626"
+                        BackgroundColor="{StaticResource Error}"
                         TextColor="White"
                         FontSize="13"
                         FontAttributes="Bold"
@@ -91,7 +91,7 @@
         <!-- Área Principal -->
         <Grid Grid.Row="1">
 
-            <!-- ====== LISTA DE CONVERSAS (estilo WhatsApp) ====== -->
+            <!-- Lista de Conversas (estilo WhatsApp) -->
             <ScrollView IsVisible="{Binding MostrarLista}"
                        Padding="0">
                 <VerticalStackLayout Spacing="0">
@@ -138,7 +138,7 @@
                                             <VisualState x:Name="Normal"/>
                                             <VisualState x:Name="PointerOver">
                                                 <VisualState.Setters>
-                                                    <Setter Property="BackgroundColor" Value="#334155"/>
+                                                    <Setter Property="BackgroundColor" Value="{StaticResource CardBgHover}"/>
                                                 </VisualState.Setters>
                                             </VisualState>
                                         </VisualStateGroup>
@@ -148,10 +148,15 @@
 
                                         <!-- Foto do Usuário -->
                                         <Border Grid.Column="0"
-                                                BackgroundColor="{StaticResource Primary}"
                                                 HeightRequest="50"
                                                 WidthRequest="50"
                                                 StrokeThickness="0">
+                                            <Border.Background>
+                                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                    <GradientStop Color="{StaticResource Primary}" Offset="0.0" />
+                                                    <GradientStop Color="{StaticResource Secondary}" Offset="1.0" />
+                                                </LinearGradientBrush>
+                                            </Border.Background>
                                             <Border.StrokeShape>
                                                 <RoundRectangle CornerRadius="25"/>
                                             </Border.StrokeShape>
@@ -174,7 +179,7 @@
 
                                             <!-- Preview da Mensagem -->
                                             <Label Text="{Binding DescricaoProblema}"
-                                                   TextColor="#94a3b8"
+                                                   TextColor="{StaticResource TextTertiary}"
                                                    FontSize="14"
                                                    LineBreakMode="TailTruncation"
                                                    MaxLines="2"
@@ -186,12 +191,12 @@
 
                                             <!-- Horário -->
                                             <Label Text="{Binding DataAbertura, StringFormat='{0:HH:mm}'}"
-                                                   TextColor="#64748b"
+                                                   TextColor="{StaticResource TextMuted}"
                                                    FontSize="12"
                                                    HorizontalOptions="End"/>
 
                                             <!-- Badge de Status -->
-                                            <Border BackgroundColor="#fbbf24"
+                                            <Border BackgroundColor="{StaticResource Warning}"
                                                     Padding="8,4"
                                                     HorizontalOptions="End"
                                                     StrokeThickness="0">
@@ -199,7 +204,7 @@
                                                     <RoundRectangle CornerRadius="10"/>
                                                 </Border.StrokeShape>
                                                 <Label Text="{Binding Status}"
-                                                       TextColor="#1a1a2e"
+                                                       TextColor="{StaticResource WarningDark}"
                                                        FontSize="10"
                                                        FontAttributes="Bold"/>
                                             </Border>
@@ -221,7 +226,7 @@
                 </VerticalStackLayout>
             </ScrollView>
 
-            <!-- ====== CHAT (estilo WhatsApp) ====== -->
+            <!-- Chat (estilo WhatsApp) -->
             <Grid IsVisible="{Binding MostrarChat}"
                   RowDefinitions="Auto,*,Auto">
 
@@ -238,7 +243,7 @@
                                 Text="←"
                                 Command="{Binding FecharChatCommand}"
                                 BackgroundColor="Transparent"
-                                TextColor="#3b82f6"
+                                TextColor="{StaticResource Info}"
                                 FontSize="28"
                                 Padding="0"
                                 Margin="0,0,10,0"
@@ -246,11 +251,16 @@
 
                         <!-- Foto do Cliente -->
                         <Border Grid.Column="1"
-                                BackgroundColor="{StaticResource Primary}"
                                 HeightRequest="40"
                                 WidthRequest="40"
                                 Margin="0,0,12,0"
                                 StrokeThickness="0">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                    <GradientStop Color="{StaticResource Primary}" Offset="0.0" />
+                                    <GradientStop Color="{StaticResource Secondary}" Offset="1.0" />
+                                </LinearGradientBrush>
+                            </Border.Background>
                             <Border.StrokeShape>
                                 <RoundRectangle CornerRadius="20"/>
                             </Border.StrokeShape>
@@ -267,13 +277,13 @@
                                    FontSize="16"
                                    FontAttributes="Bold"/>
                             <Label Text="{Binding TicketSelecionado.Status}"
-                                   TextColor="#94a3b8"
+                                   TextColor="{StaticResource TextTertiary}"
                                    FontSize="12"/>
                         </VerticalStackLayout>
 
                         <!-- Ticket ID -->
                         <Border Grid.Column="3"
-                                BackgroundColor="#3b82f6"
+                                BackgroundColor="{StaticResource Info}"
                                 Padding="8,4"
                                 VerticalOptions="Center"
                                 StrokeThickness="0">
@@ -318,10 +328,15 @@
                                             <VerticalStackLayout Spacing="8">
                                                 <!-- Nome do Remetente -->
                                                 <HorizontalStackLayout Spacing="8">
-                                                    <Border BackgroundColor="{StaticResource Primary}"
-                                                            HeightRequest="24"
+                                                    <Border HeightRequest="24"
                                                             WidthRequest="24"
                                                             StrokeThickness="0">
+                                                        <Border.Background>
+                                                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                                <GradientStop Color="{StaticResource Primary}" Offset="0.0" />
+                                                                <GradientStop Color="{StaticResource Secondary}" Offset="1.0" />
+                                                            </LinearGradientBrush>
+                                                        </Border.Background>
                                                         <Border.StrokeShape>
                                                             <RoundRectangle CornerRadius="12"/>
                                                         </Border.StrokeShape>
@@ -331,7 +346,7 @@
                                                                VerticalOptions="Center"/>
                                                     </Border>
                                                     <Label Text="{Binding NomeRemetente}"
-                                                           TextColor="#3b82f6"
+                                                           TextColor="{StaticResource Info}"
                                                            FontSize="13"
                                                            FontAttributes="Bold"
                                                            VerticalOptions="Center"/>
@@ -345,7 +360,7 @@
 
                                                 <!-- Horário -->
                                                 <Label Text="{Binding DataHora, StringFormat='{0:dd/MM HH:mm}'}"
-                                                       TextColor="#64748b"
+                                                       TextColor="{StaticResource TextMuted}"
                                                        FontSize="11"
                                                        HorizontalOptions="End"/>
                                             </VerticalStackLayout>
@@ -353,7 +368,7 @@
 
                                         <!-- Mensagem da IA (esquerda, verde escuro) -->
                                         <Border x:Name="BorderIA"
-                                                BackgroundColor="#1e3a29"
+                                                BackgroundColor="{StaticResource SuccessBg}"
                                                 Padding="12"
                                                 HorizontalOptions="Start"
                                                 MaximumWidthRequest="300"
@@ -366,14 +381,14 @@
                                                 <DataTrigger TargetType="Border" Binding="{Binding IsUsuario}" Value="True">
                                                     <Setter Property="IsVisible" Value="False"/>
                                                 </DataTrigger>
-                                                <DataTrigger TargetType="Border" Binding="{Binding NomeRemetente}" Value="Técnico 🔧">
+                                                <DataTrigger TargetType="Border" Binding="{Binding NomeRemetente}" Value="Técnico">
                                                     <Setter Property="IsVisible" Value="False"/>
                                                 </DataTrigger>
                                             </Border.Triggers>
                                             <VerticalStackLayout Spacing="8">
                                                 <!-- Nome do Remetente IA -->
                                                 <HorizontalStackLayout Spacing="8">
-                                                    <Border BackgroundColor="#10b981"
+                                                    <Border BackgroundColor="{StaticResource Success}"
                                                             HeightRequest="24"
                                                             WidthRequest="24"
                                                             StrokeThickness="0">
@@ -386,7 +401,7 @@
                                                                VerticalOptions="Center"/>
                                                     </Border>
                                                     <Label Text="{Binding NomeRemetente}"
-                                                           TextColor="#10b981"
+                                                           TextColor="{StaticResource Success}"
                                                            FontSize="13"
                                                            FontAttributes="Bold"
                                                            VerticalOptions="Center"/>
@@ -394,13 +409,13 @@
 
                                                 <!-- Texto da Mensagem -->
                                                 <Label Text="{Binding Texto}"
-                                                       TextColor="#cbd5e1"
+                                                       TextColor="{StaticResource TextSlate300}"
                                                        FontSize="15"
                                                        LineBreakMode="WordWrap"/>
 
                                                 <!-- Horário -->
                                                 <Label Text="{Binding DataHora, StringFormat='{0:dd/MM HH:mm}'}"
-                                                       TextColor="#64748b"
+                                                       TextColor="{StaticResource TextSlate500}"
                                                        FontSize="11"
                                                        HorizontalOptions="End"/>
                                             </VerticalStackLayout>
@@ -408,7 +423,7 @@
 
                                         <!-- Mensagem do Técnico (esquerda, verde claro) -->
                                         <Border x:Name="BorderTecnico"
-                                                BackgroundColor="#059669"
+                                                BackgroundColor="{StaticResource SuccessAlt}"
                                                 Padding="12"
                                                 HorizontalOptions="Start"
                                                 MaximumWidthRequest="300"
@@ -421,14 +436,14 @@
                                                 <DataTrigger TargetType="Border" Binding="{Binding IsUsuario}" Value="True">
                                                     <Setter Property="IsVisible" Value="False"/>
                                                 </DataTrigger>
-                                                <DataTrigger TargetType="Border" Binding="{Binding NomeRemetente}" Value="DotIA 🤖">
+                                                <DataTrigger TargetType="Border" Binding="{Binding NomeRemetente}" Value="DotIA">
                                                     <Setter Property="IsVisible" Value="False"/>
                                                 </DataTrigger>
                                             </Border.Triggers>
                                             <VerticalStackLayout Spacing="8">
                                                 <!-- Nome do Remetente Técnico -->
                                                 <HorizontalStackLayout Spacing="8">
-                                                    <Border BackgroundColor="#10b981"
+                                                    <Border BackgroundColor="{StaticResource Success}"
                                                             HeightRequest="24"
                                                             WidthRequest="24"
                                                             StrokeThickness="0">
@@ -441,7 +456,7 @@
                                                                VerticalOptions="Center"/>
                                                     </Border>
                                                     <Label Text="{Binding NomeRemetente}"
-                                                           TextColor="#d1fae5"
+                                                           TextColor="{StaticResource SuccessLight}"
                                                            FontSize="13"
                                                            FontAttributes="Bold"
                                                            VerticalOptions="Center"/>
@@ -455,7 +470,7 @@
 
                                                 <!-- Horário -->
                                                 <Label Text="{Binding DataHora, StringFormat='{0:dd/MM HH:mm}'}"
-                                                       TextColor="#a7f3d0"
+                                                       TextColor="{StaticResource SuccessLight2}"
                                                        FontSize="11"
                                                        HorizontalOptions="End"/>
                                             </VerticalStackLayout>
@@ -466,8 +481,8 @@
                         </CollectionView>
 
                         <!-- Espaço para resposta do técnico -->
-                        <Label Text="Digite sua resposta abaixo 👇"
-                               TextColor="#64748b"
+                        <Label Text="Digite sua resposta abaixo"
+                               TextColor="{StaticResource TextMuted}"
                                FontSize="13"
                                HorizontalOptions="Center"
                                Margin="0,20,0,0"/>
@@ -492,7 +507,7 @@
                                 <RoundRectangle CornerRadius="12"/>
                             </Border.StrokeShape>
                             <Editor Placeholder="Digite sua resposta..."
-                                    PlaceholderColor="#64748b"
+                                    PlaceholderColor="{StaticResource TextMuted}"
                                     TextColor="White"
                                     Text="{Binding Solucao}"
                                     HeightRequest="120"
@@ -503,34 +518,34 @@
                         <!-- Botões de Ação -->
                         <Grid Grid.Row="1" ColumnDefinitions="*,*" ColumnSpacing="10" Margin="0,10,0,0">
                             <Button Grid.Column="0"
-                                    Text="📤 Enviar"
+                                    Text="Enviar"
                                     Command="{Binding EnviarRespostaCommand}"
                                     TextColor="White"
                                     FontSize="15"
                                     FontAttributes="Bold"
                                     CornerRadius="10"
                                     HeightRequest="50"
-                                    Shadow="{Shadow Brush=#3b82f6, Offset='0,4', Radius=12, Opacity=0.4}">
+                                    Shadow="{Shadow Brush={StaticResource Info}, Offset='0,4', Radius=12, Opacity=0.4}">
                                 <Button.Background>
                                     <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                        <GradientStop Color="#3b82f6" Offset="0.0" />
-                                        <GradientStop Color="#2563eb" Offset="1.0" />
+                                        <GradientStop Color="{StaticResource Info}" Offset="0.0" />
+                                        <GradientStop Color="{StaticResource PrimaryAlt}" Offset="1.0" />
                                     </LinearGradientBrush>
                                 </Button.Background>
                             </Button>
                             <Button Grid.Column="1"
-                                    Text="✅ Resolver"
+                                    Text="Resolver"
                                     Command="{Binding ResolverTicketCompletoCommand}"
                                     TextColor="White"
                                     FontSize="15"
                                     FontAttributes="Bold"
                                     CornerRadius="10"
                                     HeightRequest="50"
-                                    Shadow="{Shadow Brush=#10b981, Offset='0,4', Radius=12, Opacity=0.4}">
+                                    Shadow="{Shadow Brush={StaticResource Success}, Offset='0,4', Radius=12, Opacity=0.4}">
                                 <Button.Background>
                                     <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                        <GradientStop Color="#10b981" Offset="0.0" />
-                                        <GradientStop Color="#059669" Offset="1.0" />
+                                        <GradientStop Color="{StaticResource Success}" Offset="0.0" />
+                                        <GradientStop Color="{StaticResource SuccessAlt}" Offset="1.0" />
                                     </LinearGradientBrush>
                                 </Button.Background>
                             </Button>
@@ -538,8 +553,8 @@
 
                         <!-- Dica -->
                         <Label Grid.Row="2"
-                               Text="💡 Enviar: mantém aberto | Resolver: fecha o ticket"
-                               TextColor="#64748b"
+                               Text="Enviar: mantém aberto | Resolver: fecha o ticket"
+                               TextColor="{StaticResource TextMuted}"
                                FontSize="11"
                                HorizontalOptions="Center"
                                Margin="0,8,0,0"/>
@@ -553,7 +568,7 @@
         <!-- Loading Indicator -->
         <Border Grid.Row="1"
                 IsVisible="{Binding IsLoading}"
-                BackgroundColor="#1a1a2e"
+                BackgroundColor="{StaticResource LoadingBg}"
                 Opacity="0.95"
                 HorizontalOptions="Fill"
                 VerticalOptions="Fill">
@@ -561,11 +576,11 @@
                                 HorizontalOptions="Center"
                                 VerticalOptions="Center">
                 <ActivityIndicator IsRunning="{Binding IsLoading}"
-                                  Color="#3b82f6"
+                                  Color="{StaticResource Info}"
                                   HeightRequest="50"
                                   WidthRequest="50"/>
                 <Label Text="Carregando..."
-                       TextColor="#3b82f6"
+                       TextColor="{StaticResource Info}"
                        FontSize="16"
                        FontAttributes="Bold"/>
             </VerticalStackLayout>

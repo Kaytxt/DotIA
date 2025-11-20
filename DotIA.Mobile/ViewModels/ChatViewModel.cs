@@ -19,6 +19,19 @@ namespace DotIA.Mobile.ViewModels
         private int? _chatAtualId = null;
         private int? _chatAtualStatus = null;
 
+        // ✅ HashSet para rastrear mensagens já exibidas (evita reload visual)
+        private readonly HashSet<string> _mensagensProcessadas = new HashSet<string>();
+
+        // ✅ Método auxiliar para verificar se mensagem já existe (com janela de tempo de 2 minutos)
+        private bool MensagemJaExiste(string texto, string remetente, DateTime dataHora)
+        {
+            // Verifica se já existe uma mensagem com mesmo texto e remetente dentro de 2 minutos
+            return Mensagens.Any(m =>
+                m.Texto == texto &&
+                m.NomeRemetente == remetente &&
+                Math.Abs((m.DataHora - dataHora).TotalMinutes) < 2);
+        }
+
         [ObservableProperty]
         private string pergunta = string.Empty;
 
@@ -89,7 +102,7 @@ namespace DotIA.Mobile.ViewModels
         {
             StopAutoRefresh();
 
-            _refreshTimer = new System.Timers.Timer(5000); // 5 segundos (igual ao web)
+            _refreshTimer = new System.Timers.Timer(10000); // ✅ 10 segundos (reduzido carga de polling)
             _refreshTimer.Elapsed += async (s, e) => await CarregarHistoricoAsync();
             _refreshTimer.Start();
         }
@@ -103,14 +116,6 @@ namespace DotIA.Mobile.ViewModels
             {
                 var historico = await _apiService.ObterHistoricoChatAsync(_userSession.UsuarioId.Value);
 
-                System.Diagnostics.Debug.WriteLine($"CarregarHistorico: {historico.Count} chats recebidos");
-
-                // Debug: Mostrar títulos
-                foreach (var chat in historico)
-                {
-                    System.Diagnostics.Debug.WriteLine($"  Chat {chat.Id}: Titulo='{chat.Titulo}' Pergunta='{chat.Pergunta?.Substring(0, Math.Min(50, chat.Pergunta?.Length ?? 0))}'");
-                }
-
                 // ✅ Se há chat atualmente aberto, verificar se houve atualizações
                 if (_chatAtualId.HasValue)
                 {
@@ -120,88 +125,21 @@ namespace DotIA.Mobile.ViewModels
                     if (chatAtualizado != null && chatAnterior != null)
                     {
                         // Verifica se houve mudanças no chat atual (novas mensagens do técnico, mudança de status, etc)
-                        bool chatMudou = chatAtualizado.Status != chatAnterior.Status ||
-                                        chatAtualizado.Resposta != chatAnterior.Resposta ||
-                                        chatAtualizado.Solucao != chatAnterior.Solucao;
+                        bool statusMudou = chatAtualizado.Status != chatAnterior.Status;
+                        bool respostaMudou = chatAtualizado.Resposta != chatAnterior.Resposta;
+                        bool solucaoMudou = chatAtualizado.Solucao != chatAnterior.Solucao;
+                        bool chatMudou = statusMudou || respostaMudou || solucaoMudou;
 
                         if (chatMudou)
                         {
-                            System.Diagnostics.Debug.WriteLine($"✅ Chat {_chatAtualId} teve atualizações! Recarregando mensagens...");
                             // Atualiza o status atual
                             _chatAtualStatus = chatAtualizado.Status;
                             MostrarBotoesAvaliacao = chatAtualizado.Status == 1;
                             StatusAtual = chatAtualizado.StatusTexto;
                             MostrarStatusBadge = true;
 
-                            // ✅ IMPORTANTE: Limpar mensagens antes de recarregar (seguindo padrão do Web)
-                            Mensagens.Clear();
-
-                            // Recarrega as mensagens do chat atual
-                            ParsearMensagensChat(chatAtualizado);
-
-                            // ✅ Se tem ticket, buscar mensagens do técnico via API (igual ao Web)
-                            if (chatAtualizado.IdTicket.HasValue)
-                            {
-                                try
-                                {
-                                    var respostaTecnico = await _apiService.VerificarRespostaTecnicoAsync(chatAtualizado.Id);
-                                    if (respostaTecnico != null && respostaTecnico.TemResposta && !string.IsNullOrWhiteSpace(respostaTecnico.Solucao))
-                                    {
-                                        System.Diagnostics.Debug.WriteLine($"✅ Auto-refresh: Mensagens do técnico recebidas!");
-
-                                        var mensagens = respostaTecnico.Solucao.Split(new[] { "\n\n" }, StringSplitOptions.None);
-
-                                        foreach (var mensagem in mensagens)
-                                        {
-                                            if (!string.IsNullOrWhiteSpace(mensagem))
-                                            {
-                                                var mensagemTrimmed = mensagem.Trim();
-                                                var usuarioRegex = new System.Text.RegularExpressions.Regex(@"^\[USUÁRIO\s*-\s*(\d{2}/\d{2}/\d{4}\s+\d{2}:\d{2})\]\s*(.+)$", System.Text.RegularExpressions.RegexOptions.Singleline);
-                                                var tecnicoRegex = new System.Text.RegularExpressions.Regex(@"^\[TÉCNICO\s*-\s*(\d{2}/\d{2}/\d{4}\s+\d{2}:\d{2})\]\s*(.+)$", System.Text.RegularExpressions.RegexOptions.Singleline);
-
-                                                var matchUsuario = usuarioRegex.Match(mensagemTrimmed);
-                                                var matchTecnico = tecnicoRegex.Match(mensagemTrimmed);
-
-                                                if (matchUsuario.Success && DateTime.TryParseExact(matchUsuario.Groups[1].Value, "dd/MM/yyyy HH:mm",
-                                                    null, System.Globalization.DateTimeStyles.None, out DateTime dataHoraUsuario))
-                                                {
-                                                    Mensagens.Add(new ChatMensagem
-                                                    {
-                                                        Texto = matchUsuario.Groups[2].Value.Trim(),
-                                                        IsUsuario = true,
-                                                        DataHora = dataHoraUsuario,
-                                                        NomeRemetente = "Você"
-                                                    });
-                                                }
-                                                else if (matchTecnico.Success && DateTime.TryParseExact(matchTecnico.Groups[1].Value, "dd/MM/yyyy HH:mm",
-                                                    null, System.Globalization.DateTimeStyles.None, out DateTime dataHoraTecnico))
-                                                {
-                                                    Mensagens.Add(new ChatMensagem
-                                                    {
-                                                        Texto = matchTecnico.Groups[2].Value.Trim(),
-                                                        IsUsuario = false,
-                                                        DataHora = dataHoraTecnico,
-                                                        NomeRemetente = "Técnico 🔧"
-                                                    });
-                                                    System.Diagnostics.Debug.WriteLine($"  🔧 Auto-refresh adicionou mensagem do técnico!");
-                                                }
-                                            }
-                                        }
-
-                                        // Reordenar por data
-                                        var mensagensOrdenadas = Mensagens.OrderBy(m => m.DataHora).ToList();
-                                        Mensagens.Clear();
-                                        foreach (var msg in mensagensOrdenadas)
-                                        {
-                                            Mensagens.Add(msg);
-                                        }
-                                    }
-                                }
-                                catch (Exception ex)
-                                {
-                                    System.Diagnostics.Debug.WriteLine($"Erro ao buscar mensagens do técnico no auto-refresh: {ex.Message}");
-                                }
-                            }
+                            // ✅ NÃO fazer Clear() - apenas adicionar mensagens novas
+                            ParsearMensagensNovas(chatAtualizado);
                         }
                     }
                 }
@@ -210,7 +148,6 @@ namespace DotIA.Mobile.ViewModels
                 if (!ChatsIguais(Chats, historico))
                 {
                     Chats = new ObservableCollection<ChatHistoricoDTO>(historico);
-                    System.Diagnostics.Debug.WriteLine($"CarregarHistorico: Chats atualizados na UI");
                 }
             }
             catch (Exception ex)
@@ -245,6 +182,7 @@ namespace DotIA.Mobile.ViewModels
             ChatSelecionado = null;
             _chatAtualId = null;
             _chatAtualStatus = null;
+            _mensagensProcessadas.Clear(); // ✅ Limpa rastreamento
             MostrarBotoesAvaliacao = false; // Esconde botões em novo chat
             MostrarStatusBadge = false; // Esconde badge de status
             StatusAtual = string.Empty;
@@ -281,6 +219,7 @@ namespace DotIA.Mobile.ViewModels
             System.Diagnostics.Debug.WriteLine($"Chat Status: {chat.Status} - Bloqueado: {ChatBloqueado}");
 
             Mensagens.Clear();
+            _mensagensProcessadas.Clear(); // ✅ Limpa rastreamento ao carregar novo chat
 
             // Primeiro, parseia as mensagens do histórico (pergunta e resposta da IA)
             ParsearMensagensChat(chat);
@@ -288,15 +227,11 @@ namespace DotIA.Mobile.ViewModels
             // ✅ SEGUINDO PADRÃO DO WEB: Se tem ticket, buscar soluções do técnico via endpoint separado
             if (chat.IdTicket.HasValue)
             {
-                System.Diagnostics.Debug.WriteLine($"📞 Chat tem ticket {chat.IdTicket.Value}, buscando respostas do técnico...");
                 try
                 {
                     var respostaTecnico = await _apiService.VerificarRespostaTecnicoAsync(chat.Id);
                     if (respostaTecnico != null && respostaTecnico.TemResposta && !string.IsNullOrWhiteSpace(respostaTecnico.Solucao))
                     {
-                        System.Diagnostics.Debug.WriteLine($"✅ Resposta do técnico recebida via API!");
-                        System.Diagnostics.Debug.WriteLine($"Solucao: {respostaTecnico.Solucao}");
-
                         // Processar mensagens do técnico (mesmo código do Web, linhas 1702-1727)
                         var mensagens = respostaTecnico.Solucao.Split(new[] { "\n\n" }, StringSplitOptions.None);
 
@@ -315,45 +250,38 @@ namespace DotIA.Mobile.ViewModels
                                 if (matchUsuario.Success)
                                 {
                                     if (DateTime.TryParseExact(matchUsuario.Groups[1].Value, "dd/MM/yyyy HH:mm",
-                                        null, System.Globalization.DateTimeStyles.None, out DateTime dataHora))
+                                        null, System.Globalization.DateTimeStyles.AssumeUniversal, out DateTime dataHora))
                                     {
                                         Mensagens.Add(new ChatMensagem
                                         {
                                             Texto = matchUsuario.Groups[2].Value.Trim(),
                                             IsUsuario = true,
-                                            DataHora = dataHora,
+                                            DataHora = dataHora.ToLocalTime(), // ✅ Converte UTC para horário local
                                             NomeRemetente = "Você"
                                         });
-                                        System.Diagnostics.Debug.WriteLine($"  ➕ Mensagem do usuário adicionada");
                                     }
                                 }
                                 else if (matchTecnico.Success)
                                 {
                                     if (DateTime.TryParseExact(matchTecnico.Groups[1].Value, "dd/MM/yyyy HH:mm",
-                                        null, System.Globalization.DateTimeStyles.None, out DateTime dataHora))
+                                        null, System.Globalization.DateTimeStyles.AssumeUniversal, out DateTime dataHora))
                                     {
                                         Mensagens.Add(new ChatMensagem
                                         {
                                             Texto = matchTecnico.Groups[2].Value.Trim(),
                                             IsUsuario = false,
-                                            DataHora = dataHora,
-                                            NomeRemetente = "Técnico 🔧"
+                                            DataHora = dataHora.ToLocalTime(), // ✅ Converte UTC para horário local
+                                            NomeRemetente = "Técnico"
                                         });
-                                        System.Diagnostics.Debug.WriteLine($"  ➕ Mensagem do TÉCNICO adicionada: {matchTecnico.Groups[2].Value.Substring(0, Math.Min(50, matchTecnico.Groups[2].Value.Length))}...");
                                     }
                                 }
                             }
                         }
-
-                    }
-                    else
-                    {
-                        System.Diagnostics.Debug.WriteLine($"ℹ️ Nenhuma resposta do técnico ainda");
                     }
                 }
                 catch (Exception ex)
                 {
-                    System.Diagnostics.Debug.WriteLine($"❌ Erro ao buscar resposta do técnico: {ex.Message}");
+                    System.Diagnostics.Debug.WriteLine($"Erro ao buscar resposta do técnico: {ex.Message}");
                 }
             }
 
@@ -364,10 +292,10 @@ namespace DotIA.Mobile.ViewModels
             foreach (var msg in mensagensOrdenadas)
             {
                 Mensagens.Add(msg);
-                System.Diagnostics.Debug.WriteLine($"  📩 {msg.NomeRemetente} ({msg.DataHora:dd/MM HH:mm}): {msg.Texto.Substring(0, Math.Min(30, msg.Texto.Length))}...");
+                // ✅ Marca mensagens como processadas para o polling (incluindo timestamp)
+                var chave = $"{msg.NomeRemetente}:{msg.DataHora:dd/MM/yyyy HH:mm}:{msg.Texto}";
+                _mensagensProcessadas.Add(chave);
             }
-
-            System.Diagnostics.Debug.WriteLine($"SelecionarChat: {Mensagens.Count} mensagens carregadas e ordenadas");
         }
 
         private void ParsearMensagensChat(ChatHistoricoDTO chat)
@@ -387,13 +315,13 @@ namespace DotIA.Mobile.ViewModels
                     foreach (System.Text.RegularExpressions.Match match in matchesPerguntas)
                     {
                         if (DateTime.TryParseExact(match.Groups[1].Value, "dd/MM/yyyy HH:mm",
-                            null, System.Globalization.DateTimeStyles.None, out DateTime dataHora))
+                            null, System.Globalization.DateTimeStyles.AssumeUniversal, out DateTime dataHora))
                         {
                             Mensagens.Add(new ChatMensagem
                             {
                                 Texto = match.Groups[2].Value.Trim(),
                                 IsUsuario = true,
-                                DataHora = dataHora,
+                                DataHora = dataHora.ToLocalTime(), // ✅ Converte UTC para horário local
                                 NomeRemetente = "Você"
                             });
                         }
@@ -423,14 +351,14 @@ namespace DotIA.Mobile.ViewModels
                     foreach (System.Text.RegularExpressions.Match match in matchesRespostas)
                     {
                         if (DateTime.TryParseExact(match.Groups[1].Value, "dd/MM/yyyy HH:mm",
-                            null, System.Globalization.DateTimeStyles.None, out DateTime dataHora))
+                            null, System.Globalization.DateTimeStyles.AssumeUniversal, out DateTime dataHora))
                         {
                             Mensagens.Add(new ChatMensagem
                             {
                                 Texto = match.Groups[2].Value.Trim(),
                                 IsUsuario = false,
-                                DataHora = dataHora,
-                                NomeRemetente = "DotIA 🤖"
+                                DataHora = dataHora.ToLocalTime(), // ✅ Converte UTC para horário local
+                                NomeRemetente = "DotIA"
                             });
                         }
                     }
@@ -443,68 +371,204 @@ namespace DotIA.Mobile.ViewModels
                         Texto = chat.Resposta,
                         IsUsuario = false,
                         DataHora = chat.DataHora,
-                        NomeRemetente = "DotIA 🤖"
+                        NomeRemetente = "DotIA"
                     });
                 }
             }
 
-            // Processar soluções do técnico (formato: [TÉCNICO - dd/MM/yyyy HH:mm] mensagem)
-            if (!string.IsNullOrWhiteSpace(chat.Solucao))
+            // ✅ NÃO processar chat.Solucao aqui se tem ticket - será processado via API em SelecionarChatAsync
+            // (Evita duplicação de mensagens do técnico)
+
+            // ✅ Não ordenar aqui - ordenação única será feita em SelecionarChatAsync após todas mensagens
+            // (Problema: ordenar aqui + ordenar lá = mensagens fora de ordem ao reabrir chat)
+        }
+
+        // ✅ Adiciona apenas mensagens novas (sem Clear - evita reload visual)
+        private async void ParsearMensagensNovas(ChatHistoricoDTO chat)
+        {
+            var novasMensagens = new List<ChatMensagem>();
+            var regexTimestamp = new System.Text.RegularExpressions.Regex(
+                @"\[(\d{2}/\d{2}/\d{4}\s\d{2}:\d{2})\]\s*(.+?)(?=\n\n\[|$)",
+                System.Text.RegularExpressions.RegexOptions.Singleline);
+
+            // Processar perguntas do usuário
+            if (!string.IsNullOrWhiteSpace(chat.Pergunta))
             {
-                System.Diagnostics.Debug.WriteLine($"📧 ===== SOLUCAO DO TÉCNICO RECEBIDA =====");
-                System.Diagnostics.Debug.WriteLine($"Chat ID: {chat.Id}");
-                System.Diagnostics.Debug.WriteLine($"Conteúdo completo da Solucao:");
-                System.Diagnostics.Debug.WriteLine(chat.Solucao);
-                System.Diagnostics.Debug.WriteLine($"==========================================");
-
-                var regexTecnico = new System.Text.RegularExpressions.Regex(
-                    @"\[TÉCNICO\s*-\s*(\d{2}/\d{2}/\d{4}\s\d{2}:\d{2})\]\s*(.+?)(?=\n\n\[|$)",
-                    System.Text.RegularExpressions.RegexOptions.Singleline);
-
-                var matchesTecnico = regexTecnico.Matches(chat.Solucao);
-
-                System.Diagnostics.Debug.WriteLine($"Regex matches encontrados: {matchesTecnico.Count}");
-
-                if (matchesTecnico.Count > 0)
+                var matchesPerguntas = regexTimestamp.Matches(chat.Pergunta);
+                if (matchesPerguntas.Count > 0)
                 {
-                    foreach (System.Text.RegularExpressions.Match match in matchesTecnico)
+                    foreach (System.Text.RegularExpressions.Match match in matchesPerguntas)
                     {
-                        System.Diagnostics.Debug.WriteLine($"Match {match.Index}: Data='{match.Groups[1].Value}', Texto='{match.Groups[2].Value.Substring(0, Math.Min(50, match.Groups[2].Value.Length))}...'");
-
                         if (DateTime.TryParseExact(match.Groups[1].Value, "dd/MM/yyyy HH:mm",
-                            null, System.Globalization.DateTimeStyles.None, out DateTime dataHora))
+                            null, System.Globalization.DateTimeStyles.AssumeUniversal, out DateTime dataHora))
                         {
-                            var mensagemTecnico = new ChatMensagem
-                            {
-                                Texto = match.Groups[2].Value.Trim(),
-                                IsUsuario = false,
-                                DataHora = dataHora,
-                                NomeRemetente = "Técnico 🔧"
-                            };
+                            var dataHoraLocal = dataHora.ToLocalTime(); // ✅ Converte UTC para horário local
+                            var texto = match.Groups[2].Value.Trim();
+                            var chave = $"Você:{dataHoraLocal:dd/MM/yyyy HH:mm}:{texto}";
 
-                            Mensagens.Add(mensagemTecnico);
-                            System.Diagnostics.Debug.WriteLine($"✅ Mensagem do técnico adicionada: '{mensagemTecnico.Texto.Substring(0, Math.Min(50, mensagemTecnico.Texto.Length))}...'");
+                            // ✅ Verifica HashSet E janela de tempo para evitar duplicação visual
+                            var hashSetContains = _mensagensProcessadas.Contains(chave);
+                            var jaExiste = MensagemJaExiste(texto, "Você", dataHoraLocal);
+
+                            System.Diagnostics.Debug.WriteLine($"🔍 Polling - Usuário: '{texto.Substring(0, Math.Min(30, texto.Length))}...' | Chave: {chave} | HashSet: {hashSetContains} | JáExiste: {jaExiste}");
+
+                            if (!hashSetContains && !jaExiste)
+                            {
+                                novasMensagens.Add(new ChatMensagem
+                                {
+                                    Texto = texto,
+                                    IsUsuario = true,
+                                    DataHora = dataHoraLocal,
+                                    NomeRemetente = "Você"
+                                });
+                                _mensagensProcessadas.Add(chave);
+                                System.Diagnostics.Debug.WriteLine($"✅ Mensagem do usuário adicionada ao polling");
+                            }
+                            else
+                            {
+                                System.Diagnostics.Debug.WriteLine($"⏭️ Mensagem do usuário ignorada (já existe)");
+                            }
                         }
-                        else
-                        {
-                            System.Diagnostics.Debug.WriteLine($"❌ Falha ao parsear data: '{match.Groups[1].Value}'");
-                        }
-                    }
-                }
-                else
-                {
-                    System.Diagnostics.Debug.WriteLine($"⚠️ Nenhuma mensagem do técnico encontrada no regex. Testando formato alternativo...");
-                    // Debug: Mostrar as primeiras linhas da Solucao para análise
-                    var linhas = chat.Solucao.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
-                    for (int i = 0; i < Math.Min(5, linhas.Length); i++)
-                    {
-                        System.Diagnostics.Debug.WriteLine($"  Linha {i}: '{linhas[i]}'");
                     }
                 }
             }
 
-            // ✅ Não ordenar aqui - ordenação única será feita em SelecionarChatAsync após todas mensagens
-            // (Problema: ordenar aqui + ordenar lá = mensagens fora de ordem ao reabrir chat)
+            // Processar respostas da IA
+            if (!string.IsNullOrWhiteSpace(chat.Resposta))
+            {
+                var matchesRespostas = regexTimestamp.Matches(chat.Resposta);
+                if (matchesRespostas.Count > 0)
+                {
+                    foreach (System.Text.RegularExpressions.Match match in matchesRespostas)
+                    {
+                        if (DateTime.TryParseExact(match.Groups[1].Value, "dd/MM/yyyy HH:mm",
+                            null, System.Globalization.DateTimeStyles.AssumeUniversal, out DateTime dataHora))
+                        {
+                            var dataHoraLocal = dataHora.ToLocalTime(); // ✅ Converte UTC para horário local
+                            var texto = match.Groups[2].Value.Trim();
+                            var chave = $"DotIA:{dataHoraLocal:dd/MM/yyyy HH:mm}:{texto}";
+
+                            // ✅ Verifica HashSet E janela de tempo para evitar duplicação visual
+                            if (!_mensagensProcessadas.Contains(chave) && !MensagemJaExiste(texto, "DotIA", dataHoraLocal))
+                            {
+                                novasMensagens.Add(new ChatMensagem
+                                {
+                                    Texto = texto,
+                                    IsUsuario = false,
+                                    DataHora = dataHoraLocal,
+                                    NomeRemetente = "DotIA"
+                                });
+                                _mensagensProcessadas.Add(chave);
+                            }
+                        }
+                    }
+                }
+            }
+
+            // ✅ Processar mensagens do técnico via API
+            if (chat.IdTicket.HasValue)
+            {
+                try
+                {
+                    var respostaTecnico = await _apiService.VerificarRespostaTecnicoAsync(chat.Id);
+                    if (respostaTecnico != null && respostaTecnico.TemResposta && !string.IsNullOrWhiteSpace(respostaTecnico.Solucao))
+                    {
+                        var mensagens = respostaTecnico.Solucao.Split(new[] { "\n\n" }, StringSplitOptions.None);
+
+                        foreach (var mensagem in mensagens)
+                        {
+                            if (!string.IsNullOrWhiteSpace(mensagem))
+                            {
+                                var mensagemTrimmed = mensagem.Trim();
+
+                                var usuarioRegex = new System.Text.RegularExpressions.Regex(@"^\[USUÁRIO\s*-\s*(\d{2}/\d{2}/\d{4}\s+\d{2}:\d{2})\]\s*(.+)$", System.Text.RegularExpressions.RegexOptions.Singleline);
+                                var tecnicoRegex = new System.Text.RegularExpressions.Regex(@"^\[TÉCNICO\s*-\s*(\d{2}/\d{2}/\d{4}\s+\d{2}:\d{2})\]\s*(.+)$", System.Text.RegularExpressions.RegexOptions.Singleline);
+
+                                var matchUsuario = usuarioRegex.Match(mensagemTrimmed);
+                                var matchTecnico = tecnicoRegex.Match(mensagemTrimmed);
+
+                                if (matchUsuario.Success)
+                                {
+                                    if (DateTime.TryParseExact(matchUsuario.Groups[1].Value, "dd/MM/yyyy HH:mm",
+                                        null, System.Globalization.DateTimeStyles.AssumeUniversal, out DateTime dataHoraUsuario))
+                                    {
+                                        var dataHoraLocal = dataHoraUsuario.ToLocalTime(); // ✅ Converte UTC para horário local
+                                        var texto = matchUsuario.Groups[2].Value.Trim();
+                                        var chave = $"Você:{dataHoraLocal:dd/MM/yyyy HH:mm}:{texto}";
+
+                                        // ✅ Verifica se mensagem já existe usando janela de tempo
+                                        if (!_mensagensProcessadas.Contains(chave) && !MensagemJaExiste(texto, "Você", dataHoraLocal))
+                                        {
+                                            novasMensagens.Add(new ChatMensagem
+                                            {
+                                                Texto = texto,
+                                                IsUsuario = true,
+                                                DataHora = dataHoraLocal,
+                                                NomeRemetente = "Você"
+                                            });
+                                            _mensagensProcessadas.Add(chave);
+                                        }
+                                    }
+                                }
+                                else if (matchTecnico.Success)
+                                {
+                                    if (DateTime.TryParseExact(matchTecnico.Groups[1].Value, "dd/MM/yyyy HH:mm",
+                                        null, System.Globalization.DateTimeStyles.AssumeUniversal, out DateTime dataHoraTecnico))
+                                    {
+                                        var dataHoraLocal = dataHoraTecnico.ToLocalTime(); // ✅ Converte UTC para horário local
+                                        var texto = matchTecnico.Groups[2].Value.Trim();
+                                        var chave = $"Técnico:{dataHoraLocal:dd/MM/yyyy HH:mm}:{texto}";
+
+                                        // ✅ Verifica se mensagem já existe usando janela de tempo
+                                        if (!_mensagensProcessadas.Contains(chave) && !MensagemJaExiste(texto, "Técnico", dataHoraLocal))
+                                        {
+                                            novasMensagens.Add(new ChatMensagem
+                                            {
+                                                Texto = texto,
+                                                IsUsuario = false,
+                                                DataHora = dataHoraLocal,
+                                                NomeRemetente = "Técnico"
+                                            });
+                                            _mensagensProcessadas.Add(chave);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Erro ao buscar mensagens do técnico no polling: {ex.Message}");
+                }
+            }
+
+            // Adiciona novas mensagens ordenadas
+            if (novasMensagens.Count > 0)
+            {
+                // ✅ OTIMIZAÇÃO: Adiciona novas mensagens na posição correta sem Clear()
+                Microsoft.Maui.ApplicationModel.MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    foreach (var novaMensagem in novasMensagens.OrderBy(m => m.DataHora))
+                    {
+                        // Encontra a posição correta para inserir (mantém ordem cronológica)
+                        int index = Mensagens.Count;
+                        for (int i = Mensagens.Count - 1; i >= 0; i--)
+                        {
+                            if (Mensagens[i].DataHora <= novaMensagem.DataHora)
+                            {
+                                index = i + 1;
+                                break;
+                            }
+                            if (i == 0)
+                            {
+                                index = 0;
+                            }
+                        }
+                        Mensagens.Insert(index, novaMensagem);
+                    }
+                });
+            }
         }
 
         [RelayCommand]
@@ -546,12 +610,25 @@ namespace DotIA.Mobile.ViewModels
                 System.Diagnostics.Debug.WriteLine("📤 Enviando mensagem para técnico (chat pendente)");
 
                 // Adiciona mensagem do usuário
-                Mensagens.Add(new ChatMensagem
+                // ✅ Usa timestamp da última mensagem + 1 segundo para garantir ordem cronológica
+                var ultimaMensagem = Mensagens.LastOrDefault();
+                var dataHoraEnvio = ultimaMensagem != null && ultimaMensagem.DataHora >= DateTime.Now
+                    ? ultimaMensagem.DataHora.AddSeconds(1)
+                    : DateTime.Now;
+
+                var mensagemTecnico = new ChatMensagem
                 {
-                    Texto = perguntaTexto,
+                    Texto = perguntaTexto.Trim(),
                     IsUsuario = true,
-                    DataHora = DateTime.Now
-                });
+                    DataHora = dataHoraEnvio,
+                    NomeRemetente = "Você"
+                };
+                Mensagens.Add(mensagemTecnico);
+
+                // ✅ Marca mensagem como processada para evitar duplicação no polling
+                var chaveTecnico = $"Você:{dataHoraEnvio:dd/MM/yyyy HH:mm}:{perguntaTexto.Trim()}";
+                _mensagensProcessadas.Add(chaveTecnico);
+                System.Diagnostics.Debug.WriteLine($"🔑 Chave adicionada ao HashSet (Técnico): {chaveTecnico}");
 
                 try
                 {
@@ -570,7 +647,8 @@ namespace DotIA.Mobile.ViewModels
                             "Mensagem enviada ao técnico!",
                             "OK"
                         );
-                        await CarregarHistoricoAsync();
+                        // ✅ NÃO chamar CarregarHistoricoAsync aqui - mensagem já foi adicionada localmente
+                        // O polling de 10s sincronizará automaticamente
                     }
                     else
                     {
@@ -601,17 +679,29 @@ namespace DotIA.Mobile.ViewModels
             // ✅ SEGUINDO A LÓGICA DO WEB: Enviar para IA
             System.Diagnostics.Debug.WriteLine("🤖 Enviando mensagem para IA");
 
+            // ✅ Usa timestamp da última mensagem + 1 segundo para garantir ordem cronológica
+            var ultimaMensagemIA = Mensagens.LastOrDefault();
+            var dataHoraEnvioUsuario = ultimaMensagemIA != null && ultimaMensagemIA.DataHora >= DateTime.Now
+                ? ultimaMensagemIA.DataHora.AddSeconds(1)
+                : DateTime.Now;
+
             // Adiciona a mensagem do usuário imediatamente
             var mensagemUsuario = new ChatMensagem
             {
-                Texto = perguntaTexto,
+                Texto = perguntaTexto.Trim(),
                 IsUsuario = true,
-                DataHora = DateTime.Now
+                DataHora = dataHoraEnvioUsuario,
+                NomeRemetente = "Você"
             };
 
             System.Diagnostics.Debug.WriteLine($"Criou ChatMensagem: Texto='{mensagemUsuario.Texto}', IsUsuario={mensagemUsuario.IsUsuario}");
 
             Mensagens.Add(mensagemUsuario);
+
+            // ✅ Marca mensagem como processada para evitar duplicação no polling
+            var chaveUsuario = $"Você:{dataHoraEnvioUsuario:dd/MM/yyyy HH:mm}:{perguntaTexto.Trim()}";
+            _mensagensProcessadas.Add(chaveUsuario);
+            System.Diagnostics.Debug.WriteLine($"🔑 Chave adicionada ao HashSet (IA): {chaveUsuario}");
 
             System.Diagnostics.Debug.WriteLine($"Total de mensagens após adicionar: {Mensagens.Count}");
 
@@ -638,42 +728,52 @@ namespace DotIA.Mobile.ViewModels
                     // ✅ Mostra botões de avaliação fixos
                     MostrarBotoesAvaliacao = true;
 
-                    // Adiciona a resposta da IA
+                    // ✅ Adiciona a resposta da IA com timestamp +1 segundo da mensagem do usuário
+                    var dataHoraRespostaIA = dataHoraEnvioUsuario.AddSeconds(1);
                     var mensagemIA = new ChatMensagem
                     {
                         Texto = response.Resposta,
                         IsUsuario = false,
-                        DataHora = DateTime.Now
+                        DataHora = dataHoraRespostaIA,
+                        NomeRemetente = "DotIA"
                     };
 
                     System.Diagnostics.Debug.WriteLine($"Criou ChatMensagem IA: Texto='{mensagemIA.Texto?.Substring(0, Math.Min(50, mensagemIA.Texto?.Length ?? 0))}', IsUsuario={mensagemIA.IsUsuario}");
 
                     Mensagens.Add(mensagemIA);
 
+                    // ✅ Marca mensagem da IA como processada para evitar duplicação no polling
+                    var chaveIA = $"DotIA:{dataHoraRespostaIA:dd/MM/yyyy HH:mm}:{response.Resposta?.Trim()}";
+                    _mensagensProcessadas.Add(chaveIA);
+
                     System.Diagnostics.Debug.WriteLine($"Total de mensagens após resposta: {Mensagens.Count}");
 
                     Resposta = response.Resposta;
 
-                    // Atualiza histórico
-                    await CarregarHistoricoAsync();
+                    // ✅ NÃO chamar CarregarHistoricoAsync aqui - mensagens já foram adicionadas localmente
+                    // O polling de 10s sincronizará automaticamente
                 }
                 else
                 {
+                    var dataHoraErro = Mensagens.LastOrDefault()?.DataHora.AddSeconds(1) ?? DateTime.Now;
                     Mensagens.Add(new ChatMensagem
                     {
                         Texto = "Erro: " + response.Resposta,
                         IsUsuario = false,
-                        DataHora = DateTime.Now
+                        DataHora = dataHoraErro,
+                        NomeRemetente = "DotIA"
                     });
                 }
             }
             catch (Exception ex)
             {
+                var dataHoraErro = Mensagens.LastOrDefault()?.DataHora.AddSeconds(1) ?? DateTime.Now;
                 Mensagens.Add(new ChatMensagem
                 {
                     Texto = $"Erro: {ex.Message}",
                     IsUsuario = false,
-                    DataHora = DateTime.Now
+                    DataHora = dataHoraErro,
+                    NomeRemetente = "DotIA"
                 });
             }
             finally

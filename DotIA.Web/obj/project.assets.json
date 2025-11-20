@@ -61,11 +61,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\kauan\\Desktop\\DotIA\\dotia.web\\DotIA.Web.csproj",
+      "projectUniqueName": "C:\\Users\\kauan\\Desktop\\DotIABait\\dotia.web\\DotIA.Web.csproj",
       "projectName": "DotIA.Web",
-      "projectPath": "C:\\Users\\kauan\\Desktop\\DotIA\\dotia.web\\DotIA.Web.csproj",
+      "projectPath": "C:\\Users\\kauan\\Desktop\\DotIABait\\dotia.web\\DotIA.Web.csproj",
       "packagesPath": "C:\\Users\\kauan\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\kauan\\Desktop\\DotIA\\dotia.web\\obj\\",
+      "outputPath": "C:\\Users\\kauan\\Desktop\\DotIABait\\dotia.web\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -129,7 +129,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.306/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.305/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

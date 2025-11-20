@@ -14,10 +14,15 @@
             <!-- Header -->
             <Grid ColumnDefinitions="Auto,*,Auto" Margin="0,0,0,10" ColumnSpacing="12">
                 <Border Grid.Column="0"
-                        BackgroundColor="{StaticResource Primary}"
                         HeightRequest="40"
                         WidthRequest="40"
                         StrokeThickness="0">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="{StaticResource Primary}" Offset="0.0" />
+                            <GradientStop Color="{StaticResource Secondary}" Offset="1.0" />
+                        </LinearGradientBrush>
+                    </Border.Background>
                     <Border.StrokeShape>
                         <RoundRectangle CornerRadius="20"/>
                     </Border.StrokeShape>
@@ -35,7 +40,7 @@
                 <Button Grid.Column="2"
                         Text="Sair"
                         Command="{Binding SairCommand}"
-                        BackgroundColor="#dc2626"
+                        BackgroundColor="{StaticResource Error}"
                         TextColor="White"/>
             </Grid>
 
@@ -57,7 +62,7 @@
                                 WidthRequest="55"
                                 HeightRequest="55"
                                 HorizontalOptions="Center"
-                                Stroke="#ffffff30"
+                                Stroke="{StaticResource BorderColor}"
                                 StrokeThickness="1"
                                 Shadow="{Shadow Brush=Black, Offset='0,4', Radius=10, Opacity=0.3}">
                             <Border.StrokeShape>
@@ -81,7 +86,7 @@
                                 WidthRequest="55"
                                 HeightRequest="55"
                                 HorizontalOptions="Center"
-                                Stroke="#ffffff30"
+                                Stroke="{StaticResource BorderColor}"
                                 StrokeThickness="1"
                                 Shadow="{Shadow Brush=Black, Offset='0,4', Radius=10, Opacity=0.3}">
                             <Border.StrokeShape>
@@ -105,7 +110,7 @@
                                 WidthRequest="55"
                                 HeightRequest="55"
                                 HorizontalOptions="Center"
-                                Stroke="#ffffff30"
+                                Stroke="{StaticResource BorderColor}"
                                 StrokeThickness="1"
                                 Shadow="{Shadow Brush=Black, Offset='0,4', Radius=10, Opacity=0.3}">
                             <Border.StrokeShape>
@@ -129,7 +134,7 @@
                                 WidthRequest="55"
                                 HeightRequest="55"
                                 HorizontalOptions="Center"
-                                Stroke="#ffffff30"
+                                Stroke="{StaticResource BorderColor}"
                                 StrokeThickness="1"
                                 Shadow="{Shadow Brush=Black, Offset='0,4', Radius=10, Opacity=0.3}">
                             <Border.StrokeShape>
@@ -153,7 +158,7 @@
                                 WidthRequest="55"
                                 HeightRequest="55"
                                 HorizontalOptions="Center"
-                                Stroke="#ffffff30"
+                                Stroke="{StaticResource BorderColor}"
                                 StrokeThickness="1"
                                 Shadow="{Shadow Brush=Black, Offset='0,4', Radius=10, Opacity=0.3}">
                             <Border.StrokeShape>
@@ -177,7 +182,7 @@
                                 WidthRequest="55"
                                 HeightRequest="55"
                                 HorizontalOptions="Center"
-                                Stroke="#ffffff30"
+                                Stroke="{StaticResource BorderColor}"
                                 StrokeThickness="1"
                                 Shadow="{Shadow Brush=Black, Offset='0,4', Radius=10, Opacity=0.3}">
                             <Border.StrokeShape>
@@ -193,24 +198,77 @@
 
             <!-- Tabs -->
             <Grid ColumnDefinitions="*,*,*" ColumnSpacing="5" Margin="0,10,0,0">
-                <Button Grid.Column="0"
-                        Text="Tickets"
-                        Command="{Binding MudarAbaCommand}"
-                        CommandParameter="Tickets"
-                        BackgroundColor="{Binding AbaAtiva, Converter={StaticResource IntEqualsConverter}, ConverterParameter=0}"
-                        TextColor="White"/>
-                <Button Grid.Column="1"
-                        Text="Usuários"
-                        Command="{Binding MudarAbaCommand}"
-                        CommandParameter="Usuarios"
-                        BackgroundColor="{Binding AbaAtiva, Converter={StaticResource IntEqualsConverter}, ConverterParameter=1}"
-                        TextColor="White"/>
-                <Button Grid.Column="2"
-                        Text="Relatórios"
-                        Command="{Binding MudarAbaCommand}"
-                        CommandParameter="Relatorios"
-                        BackgroundColor="{Binding AbaAtiva, Converter={StaticResource IntEqualsConverter}, ConverterParameter=2}"
-                        TextColor="White"/>
+                <!-- Tab Tickets -->
+                <Border Grid.Column="0"
+                        BackgroundColor="{StaticResource BackgroundLight}"
+                        StrokeThickness="0">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="10"/>
+                    </Border.StrokeShape>
+                    <Border.Triggers>
+                        <DataTrigger TargetType="Border" Binding="{Binding AbaAtiva}" Value="0">
+                            <Setter Property="Background">
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                    <GradientStop Color="{StaticResource Primary}" Offset="0.0" />
+                                    <GradientStop Color="{StaticResource Secondary}" Offset="1.0" />
+                                </LinearGradientBrush>
+                            </Setter>
+                        </DataTrigger>
+                    </Border.Triggers>
+                    <Button Text="Tickets"
+                            Command="{Binding MudarAbaCommand}"
+                            CommandParameter="Tickets"
+                            BackgroundColor="Transparent"
+                            TextColor="White"/>
+                </Border>
+
+                <!-- Tab Usuários -->
+                <Border Grid.Column="1"
+                        BackgroundColor="{StaticResource BackgroundLight}"
+                        StrokeThickness="0">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="10"/>
+                    </Border.StrokeShape>
+                    <Border.Triggers>
+                        <DataTrigger TargetType="Border" Binding="{Binding AbaAtiva}" Value="1">
+                            <Setter Property="Background">
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                    <GradientStop Color="{StaticResource Primary}" Offset="0.0" />
+                                    <GradientStop Color="{StaticResource Secondary}" Offset="1.0" />
+                                </LinearGradientBrush>
+                            </Setter>
+                        </DataTrigger>
+                    </Border.Triggers>
+                    <Button Text="Usuários"
+                            Command="{Binding MudarAbaCommand}"
+                            CommandParameter="Usuarios"
+                            BackgroundColor="Transparent"
+                            TextColor="White"/>
+                </Border>
+
+                <!-- Tab Relatórios -->
+                <Border Grid.Column="2"
+                        BackgroundColor="{StaticResource BackgroundLight}"
+                        StrokeThickness="0">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="10"/>
+                    </Border.StrokeShape>
+                    <Border.Triggers>
+                        <DataTrigger TargetType="Border" Binding="{Binding AbaAtiva}" Value="2">
+                            <Setter Property="Background">
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                    <GradientStop Color="{StaticResource Primary}" Offset="0.0" />
+                                    <GradientStop Color="{StaticResource Secondary}" Offset="1.0" />
+                                </LinearGradientBrush>
+                            </Setter>
+                        </DataTrigger>
+                    </Border.Triggers>
+                    <Button Text="Relatórios"
+                            Command="{Binding MudarAbaCommand}"
+                            CommandParameter="Relatorios"
+                            BackgroundColor="Transparent"
+                            TextColor="White"/>
+                </Border>
             </Grid>
 
             <!-- ABA TICKETS -->
@@ -220,23 +278,27 @@
                     <Label Text="Tickets" TextColor="White" FontSize="16" FontAttributes="Bold" VerticalOptions="Center"/>
                 </HorizontalStackLayout>
 
-                <Label Text="{Binding Tickets.Count, StringFormat='Total: {0} tickets'}" TextColor="#94a3b8" FontSize="12"/>
+                <Label Text="{Binding Tickets.Count, StringFormat='Total: {0} tickets'}" TextColor="{StaticResource TextTertiary}" FontSize="12"/>
 
                 <CollectionView ItemsSource="{Binding Tickets}">
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="models:TicketGerenteDTO">
-                            <Frame BackgroundColor="#1e293b" Padding="10" Margin="0,0,0,5" CornerRadius="8">
+                            <Border BackgroundColor="{StaticResource BackgroundLight}"
+                                    Padding="10"
+                                    Margin="0,0,0,5"
+                                    StrokeShape="RoundRectangle 12"
+                                    StrokeThickness="0">
                                 <VerticalStackLayout Spacing="4">
-                                    <Label Text="{Binding Id, StringFormat='ID: {0}'}" TextColor="#3b82f6" FontSize="12" FontAttributes="Bold"/>
+                                    <Label Text="{Binding Id, StringFormat='ID: {0}'}" TextColor="{StaticResource Info}" FontSize="12" FontAttributes="Bold"/>
                                     <Label Text="{Binding NomeSolicitante, StringFormat='Solicitante: {0}'}" TextColor="White" FontSize="13"/>
-                                    <Label Text="{Binding Departamento, StringFormat='Depto: {0}'}" TextColor="#94a3b8" FontSize="11"/>
-                                    <Label Text="{Binding DescricaoProblema}" TextColor="#cbd5e1" FontSize="12" MaxLines="2"/>
+                                    <Label Text="{Binding Departamento, StringFormat='Depto: {0}'}" TextColor="{StaticResource TextTertiary}" FontSize="11"/>
+                                    <Label Text="{Binding DescricaoProblema}" TextColor="{StaticResource TextSecondary}" FontSize="12" MaxLines="2"/>
                                     <Grid ColumnDefinitions="*,Auto">
-                                        <Label Grid.Column="0" Text="{Binding DataAbertura, StringFormat='{0:dd/MM/yy HH:mm}'}" TextColor="#64748b" FontSize="10"/>
-                                        <Label Grid.Column="1" Text="{Binding Status}" TextColor="#10b981" FontSize="10"/>
+                                        <Label Grid.Column="0" Text="{Binding DataAbertura, StringFormat='{0:dd/MM/yy HH:mm}'}" TextColor="{StaticResource TextMuted}" FontSize="10"/>
+                                        <Label Grid.Column="1" Text="{Binding Status}" TextColor="{StaticResource Success}" FontSize="10"/>
                                     </Grid>
                                 </VerticalStackLayout>
-                            </Frame>
+                            </Border>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
@@ -249,17 +311,21 @@
                     <Label Text="Usuários" TextColor="White" FontSize="16" FontAttributes="Bold" VerticalOptions="Center"/>
                 </HorizontalStackLayout>
 
-                <Label Text="{Binding Usuarios.Count, StringFormat='Total: {0} usuários'}" TextColor="#94a3b8" FontSize="12"/>
+                <Label Text="{Binding Usuarios.Count, StringFormat='Total: {0} usuários'}" TextColor="{StaticResource TextTertiary}" FontSize="12"/>
 
                 <CollectionView ItemsSource="{Binding Usuarios}">
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="models:UsuarioGerenteDTO">
-                            <Frame BackgroundColor="#1e293b" Padding="10" Margin="0,0,0,5" CornerRadius="8">
+                            <Border BackgroundColor="{StaticResource BackgroundLight}"
+                                    Padding="10"
+                                    Margin="0,0,0,5"
+                                    StrokeShape="RoundRectangle 12"
+                                    StrokeThickness="0">
                                 <VerticalStackLayout Spacing="5">
                                     <Label Text="{Binding Nome}" TextColor="White" FontSize="14" FontAttributes="Bold"/>
-                                    <Label Text="{Binding Email}" TextColor="#94a3b8" FontSize="12"/>
-                                    <Label Text="{Binding Departamento, StringFormat='Depto: {0}'}" TextColor="#3b82f6" FontSize="11"/>
-                                    <Label TextColor="#94a3b8" FontSize="10">
+                                    <Label Text="{Binding Email}" TextColor="{StaticResource TextTertiary}" FontSize="12"/>
+                                    <Label Text="{Binding Departamento, StringFormat='Depto: {0}'}" TextColor="{StaticResource Info}" FontSize="11"/>
+                                    <Label TextColor="{StaticResource TextTertiary}" FontSize="10">
                                         <Label.FormattedText>
                                             <FormattedString>
                                                 <Span Text="Tickets: "/>
@@ -276,22 +342,22 @@
                                     <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="5" RowSpacing="5" Margin="0,5,0,0">
                                         <Button Grid.Row="0" Grid.Column="0" Text="Editar" FontSize="10" Padding="5"
                                                 Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:GerenteViewModel}}, Path=EditarUsuarioCommand}"
-                                                CommandParameter="{Binding .}" BackgroundColor="#3b82f6"/>
+                                                CommandParameter="{Binding .}" BackgroundColor="{StaticResource Info}"/>
                                         <Button Grid.Row="0" Grid.Column="1" Text="Cargo" FontSize="10" Padding="5"
                                                 Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:GerenteViewModel}}, Path=AlterarCargoCommand}"
-                                                CommandParameter="{Binding .}" BackgroundColor="#8b5cf6"/>
+                                                CommandParameter="{Binding .}" BackgroundColor="{StaticResource Secondary}"/>
                                         <Button Grid.Row="1" Grid.Column="0" Text="Senha" FontSize="10" Padding="5"
                                                 Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:GerenteViewModel}}, Path=AlterarSenhaCommand}"
-                                                CommandParameter="{Binding .}" BackgroundColor="#fbbf24"/>
+                                                CommandParameter="{Binding .}" BackgroundColor="{StaticResource Warning}"/>
                                         <Button Grid.Row="1" Grid.Column="1" Text="Ver Tickets" FontSize="10" Padding="5"
                                                 Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:GerenteViewModel}}, Path=VerTicketsUsuarioCommand}"
-                                                CommandParameter="{Binding .}" BackgroundColor="#10b981"/>
+                                                CommandParameter="{Binding .}" BackgroundColor="{StaticResource Success}"/>
                                         <Button Grid.Row="2" Grid.ColumnSpan="2" Text="Excluir Usuário" FontSize="10" Padding="5"
                                                 Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:GerenteViewModel}}, Path=ExcluirUsuarioCommand}"
-                                                CommandParameter="{Binding .}" BackgroundColor="#ef4444"/>
+                                                CommandParameter="{Binding .}" BackgroundColor="{StaticResource Error}"/>
                                     </Grid>
                                 </VerticalStackLayout>
-                            </Frame>
+                            </Border>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
@@ -299,19 +365,26 @@
 
             <!-- ABA RELATÓRIOS -->
             <VerticalStackLayout IsVisible="{Binding AbaAtiva, Converter={StaticResource IntEqualsConverter}, ConverterParameter=2}" Spacing="10">
-                <Label Text="📊 Relatórios" TextColor="White" FontSize="16" FontAttributes="Bold" Margin="0,10,0,5"/>
+                <HorizontalStackLayout Spacing="8" Margin="0,10,0,5">
+                    <Image Source="icon_grafico.png" WidthRequest="18" HeightRequest="18" VerticalOptions="Center"/>
+                    <Label Text="Relatórios" TextColor="White" FontSize="16" FontAttributes="Bold" VerticalOptions="Center"/>
+                </HorizontalStackLayout>
 
                 <!-- Por Departamento -->
                 <Label Text="Por Departamento" TextColor="White" FontSize="14" FontAttributes="Bold"/>
-                <Label Text="{Binding RelatoriosDepartamentos.Count, StringFormat='Total: {0} departamentos'}" TextColor="#94a3b8" FontSize="12"/>
+                <Label Text="{Binding RelatoriosDepartamentos.Count, StringFormat='Total: {0} departamentos'}" TextColor="{StaticResource TextTertiary}" FontSize="12"/>
 
                 <CollectionView ItemsSource="{Binding RelatoriosDepartamentos}">
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="models:RelatorioDepartamentoDTO">
-                            <Frame BackgroundColor="#1e293b" Padding="10" Margin="0,0,0,5" CornerRadius="8">
+                            <Border BackgroundColor="{StaticResource BackgroundLight}"
+                                    Padding="10"
+                                    Margin="0,0,0,5"
+                                    StrokeShape="RoundRectangle 12"
+                                    StrokeThickness="0">
                                 <VerticalStackLayout Spacing="4">
                                     <Label Text="{Binding Departamento}" TextColor="White" FontSize="13" FontAttributes="Bold"/>
-                                    <Label TextColor="#94a3b8" FontSize="11">
+                                    <Label TextColor="{StaticResource TextTertiary}" FontSize="11">
                                         <Label.FormattedText>
                                             <FormattedString>
                                                 <Span Text="Usuários: "/>
@@ -321,18 +394,18 @@
                                             </FormattedString>
                                         </Label.FormattedText>
                                     </Label>
-                                    <Label TextColor="#94a3b8" FontSize="11">
+                                    <Label TextColor="{StaticResource TextTertiary}" FontSize="11">
                                         <Label.FormattedText>
                                             <FormattedString>
-                                                <Span Text="Abertos: " TextColor="#fbbf24"/>
-                                                <Span Text="{Binding TicketsAbertos}" TextColor="#fbbf24"/>
-                                                <Span Text=" | Resolvidos: " TextColor="#10b981"/>
-                                                <Span Text="{Binding TicketsResolvidos}" TextColor="#10b981"/>
+                                                <Span Text="Abertos: " TextColor="{StaticResource Warning}"/>
+                                                <Span Text="{Binding TicketsAbertos}" TextColor="{StaticResource Warning}"/>
+                                                <Span Text=" | Resolvidos: " TextColor="{StaticResource Success}"/>
+                                                <Span Text="{Binding TicketsResolvidos}" TextColor="{StaticResource Success}"/>
                                             </FormattedString>
                                         </Label.FormattedText>
                                     </Label>
                                 </VerticalStackLayout>
-                            </Frame>
+                            </Border>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
@@ -342,24 +415,28 @@
                     <Image Source="icon_check.png" WidthRequest="16" HeightRequest="16" VerticalOptions="Center"/>
                     <Label Text="Top Usuários" TextColor="White" FontSize="14" FontAttributes="Bold" VerticalOptions="Center"/>
                 </HorizontalStackLayout>
-                <Label Text="{Binding Ranking.Count, StringFormat='Total: {0} usuários'}" TextColor="#94a3b8" FontSize="12"/>
+                <Label Text="{Binding Ranking.Count, StringFormat='Total: {0} usuários'}" TextColor="{StaticResource TextTertiary}" FontSize="12"/>
 
                 <CollectionView ItemsSource="{Binding Ranking}">
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="models:RankingUsuarioDTO">
-                            <Frame BackgroundColor="#1e293b" Padding="10" Margin="0,0,0,5" CornerRadius="8">
+                            <Border BackgroundColor="{StaticResource BackgroundLight}"
+                                    Padding="10"
+                                    Margin="0,0,0,5"
+                                    StrokeShape="RoundRectangle 12"
+                                    StrokeThickness="0">
                                 <Grid ColumnDefinitions="*,Auto">
                                     <Label Grid.Column="0" Text="{Binding Nome}" TextColor="White" FontSize="12"/>
-                                    <Label Grid.Column="1" Text="{Binding TotalTickets, StringFormat='{0} tickets'}" TextColor="#3b82f6" FontSize="12" FontAttributes="Bold"/>
+                                    <Label Grid.Column="1" Text="{Binding TotalTickets, StringFormat='{0} tickets'}" TextColor="{StaticResource Info}" FontSize="12" FontAttributes="Bold"/>
                                 </Grid>
-                            </Frame>
+                            </Border>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
             </VerticalStackLayout>
 
             <!-- Loading -->
-            <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}" Color="#7c3aed" Margin="0,20"/>
+            <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}" Color="{StaticResource Primary}" Margin="0,20"/>
 
         </VerticalStackLayout>
     </ScrollView>

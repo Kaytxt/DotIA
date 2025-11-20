@@ -34,13 +34,39 @@ namespace DotIA.Web.Services
                 var response = await _httpClient.PostAsync("api/Auth/login", content);
                 var result = await response.Content.ReadAsStringAsync();
 
-                if (response.IsSuccessStatusCode)
+                // Tenta deserializar a resposta
+                if (!string.IsNullOrEmpty(result))
                 {
-                    return JsonSerializer.Deserialize<LoginResponse>(result, _jsonOpts)
-                           ?? new LoginResponse { Sucesso = false, Mensagem = "Erro ao processar resposta" };
+                    try
+                    {
+                        var loginResponse = JsonSerializer.Deserialize<LoginResponse>(result, _jsonOpts);
+                        if (loginResponse != null)
+                        {
+                            // Se Sucesso = true, valida se tem UsuarioId
+                            if (loginResponse.Sucesso)
+                            {
+                                if (loginResponse.UsuarioId.HasValue)
+                                {
+                                    return loginResponse;
+                                }
+                                return new LoginResponse { Sucesso = false, Mensagem = "Erro ao processar resposta do servidor" };
+                            }
+
+                            // Se Sucesso = false, retorna a mensagem de erro da API
+                            if (!string.IsNullOrEmpty(loginResponse.Mensagem))
+                            {
+                                return loginResponse;
+                            }
+                        }
+                    }
+                    catch
+                    {
+                        // Se não conseguir deserializar, continua para mensagem padrão
+                    }
                 }
 
-                return new LoginResponse { Sucesso = false, Mensagem = "Erro ao fazer login" };
+                // Mensagem padrão se algo der errado
+                return new LoginResponse { Sucesso = false, Mensagem = "Email ou senha inválidos, tente novamente" };
             }
             catch (Exception ex)
             {
@@ -587,7 +613,7 @@ namespace DotIA.Web.Services
     {
         public bool Sucesso { get; set; }
         public string TipoUsuario { get; set; } = string.Empty;
-        public int UsuarioId { get; set; }
+        public int? UsuarioId { get; set; }
         public string Nome { get; set; } = string.Empty;
         public string Mensagem { get; set; } = string.Empty;
     }

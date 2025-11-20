@@ -2,59 +2,75 @@ using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
+using System.Text.RegularExpressions;
+using System.IO;
 using DotIA.Desktop.Services;
+using DotIA.Desktop.Controls;
 
 namespace DotIA.Desktop.Forms
 {
-    public partial class RegistroForm : Form // ? CORRIGIDO: Nome da classe estava errado
+    public partial class RegistroForm : Form
     {
         private readonly ApiClient _apiClient;
 
-        // Cores - Exatamente iguais ao Web
+        // Cores (exatas da web)
         private readonly Color PrimaryPurple = ColorTranslator.FromHtml("#8d4bff");
         private readonly Color SecondaryPurple = ColorTranslator.FromHtml("#a855f7");
+        private readonly Color PinkAccent = ColorTranslator.FromHtml("#ec4899");
         private readonly Color DarkBg = ColorTranslator.FromHtml("#1a132f");
         private readonly Color DarkerBg = ColorTranslator.FromHtml("#140e25");
         private readonly Color CardBg = ColorTranslator.FromHtml("#2c204d");
+        private readonly Color TextGray = ColorTranslator.FromHtml("#9ca3af");
+        private readonly Color BorderColor = Color.FromArgb(77, 141, 75, 255);
+
+        // Animação
+        private System.Windows.Forms.Timer pulseTimer;
+        private float pulseScale = 1.0f;
+        private bool pulseGrowing = true;
 
         // Controles
         private Panel scrollPanel;
-        private Panel card;
+        private Panel mainCard;
+        private PictureBox logoPicture;
         private Label lblTitulo;
         private Label lblSubtitulo;
-        private Label lblErro;
-        private RoundedTextBox txtNome;
-        private RoundedTextBox txtEmail;
+        private Label lblNomeLabel, lblEmailLabel, lblDeptLabel, lblSenhaLabel, lblConfirmLabel;
+        private RoundedTextBox txtNome, txtEmail, txtSenha, txtConfirmacaoSenha;
         private RoundedComboBox cboDepartamento;
-        private RoundedTextBox txtSenha;
-        private RoundedTextBox txtConfirmacaoSenha;
-        private Button btnToggleSenha;
-        private Button btnToggleConfirmacao;
-        private RoundedButton btnCadastrar;
-        private RoundedButton btnVoltar;
+        private Button btnToggleSenha, btnToggleConfirmacao;
+        private Panel strengthContainer;
         private Panel strengthBar;
-        private Label lblStrength;
+        private Label lblStrengthText;
+        private Label lblSenhasDiferentes;
+        private RoundedButton btnCadastrar;
+        private Button btnVoltar;
+        private Label lblFooter;
+        private Label lblErro;
+        private Panel loadingOverlay;
 
         public RegistroForm()
         {
             InitializeComponent();
             _apiClient = new ApiClient();
+            IniciarAnimacoes();
             CarregarDepartamentosAsync();
         }
 
         private void InitializeComponent()
         {
+            // Form - FULLSCREEN
             Text = "DotIA - Cadastro";
-            StartPosition = FormStartPosition.CenterScreen;
-            BackColor = DarkBg;
-            Size = new Size(1400, 900);
-            FormBorderStyle = FormBorderStyle.Sizable;
             WindowState = FormWindowState.Maximized;
-            MaximizeBox = true;
+            FormBorderStyle = FormBorderStyle.Sizable;
+            BackColor = DarkBg;
             DoubleBuffered = true;
-            Paint += (s, e) => PaintBackgroundGlow(e.Graphics);
+            Font = new Font("Segoe UI", 10f);
+            StartPosition = FormStartPosition.CenterScreen;
+            MinimumSize = new Size(800, 600);
 
-            // Scroll Panel
+            Paint += RegistroForm_Paint;
+
+            // Scroll Panel (para conter o card)
             scrollPanel = new Panel
             {
                 Dock = DockStyle.Fill,
@@ -63,209 +79,602 @@ namespace DotIA.Desktop.Forms
             };
             Controls.Add(scrollPanel);
 
-            // Card principal
-            card = new Panel
+            // Card centralizado (550px width máximo como na web)
+            mainCard = new Panel
             {
-                Size = new Size(500, 750),
+                Size = new Size(550, 960),
                 BackColor = Color.Transparent,
-                Location = new Point(40, 30)
+                Anchor = AnchorStyles.None
             };
-            card.Paint += Card_Paint;
-            scrollPanel.Controls.Add(card);
+            mainCard.Paint += MainCard_Paint;
+            scrollPanel.Controls.Add(mainCard);
 
-            // Logo
-            var logo = new Panel
+            Resize += (s, e) => CenterCard();
+            Load += (s, e) => CenterCard();
+
+            int yPos = 30;
+
+            // Logo (PNG)
+            logoPicture = new PictureBox
             {
-                Size = new Size(80, 80),
-                Location = new Point((card.Width - 80) / 2, 25)
+                Size = new Size(120, 120),
+                Location = new Point((mainCard.Width - 120) / 2, yPos),
+                SizeMode = PictureBoxSizeMode.Zoom,
+                BackColor = Color.Transparent
             };
-            logo.Paint += Logo_Paint;
 
-            // T�tulo
+            // Carregar logo PNG
+            string logoPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "dotia-logo.png");
+            if (File.Exists(logoPath))
+            {
+                logoPicture.Image = Image.FromFile(logoPath);
+            }
+
+            logoPicture.Paint += LogoPicture_Paint;
+            mainCard.Controls.Add(logoPicture);
+
+            yPos += 135;
+
+            // Título "Criar Conta"
             lblTitulo = new Label
             {
                 Text = "Criar Conta",
-                Font = new Font("Segoe UI", 36f, FontStyle.Bold), // ? Ajustado de 28 para 36 (igual ao web)
-                ForeColor = Color.White,
+                Font = new Font("Segoe UI", 36f, FontStyle.Bold),
                 AutoSize = false,
+                Size = new Size(550, 50),
+                Location = new Point(0, yPos),
                 TextAlign = ContentAlignment.MiddleCenter,
-                Size = new Size(card.Width, 45),
-                Location = new Point(0, 115)
+                BackColor = Color.Transparent
             };
+            lblTitulo.Paint += LblTitulo_Paint;
+            mainCard.Controls.Add(lblTitulo);
 
+            yPos += 55;
+
+            // Subtítulo
             lblSubtitulo = new Label
             {
                 Text = "Preencha os dados abaixo para se cadastrar",
-                Font = new Font("Segoe UI", 15, FontStyle.Regular), // ? Ajustado de 10 para 15
-                ForeColor = Color.FromArgb(156, 163, 175),
+                Font = new Font("Segoe UI", 15f),
+                ForeColor = TextGray,
                 AutoSize = false,
+                Size = new Size(550, 30),
+                Location = new Point(0, yPos),
                 TextAlign = ContentAlignment.MiddleCenter,
-                Size = new Size(card.Width, 26),
-                Location = new Point(0, 165)
+                BackColor = Color.Transparent
             };
+            mainCard.Controls.Add(lblSubtitulo);
 
-            // Mensagem de erro
+            yPos += 50;
+
+            // Label de erro
             lblErro = new Label
             {
-                Text = "",
-                Visible = false,
                 AutoSize = false,
-                Size = new Size(card.Width - 80, 60),
-                Location = new Point(40, 195),
+                Size = new Size(490, 40),
+                Location = new Point(30, yPos),
+                TextAlign = ContentAlignment.MiddleLeft,
+                Font = new Font("Segoe UI", 10f),
                 ForeColor = Color.FromArgb(254, 202, 202),
-                BackColor = Color.FromArgb(40, 239, 68, 68),
-                Padding = new Padding(15),
-                Font = new Font("Segoe UI", 9, FontStyle.Regular)
+                BackColor = Color.Transparent,
+                Visible = false,
+                Padding = new Padding(15, 10, 15, 10)
             };
-            lblErro.Paint += (s, e) => PaintRoundedPanel(e.Graphics, lblErro.ClientRectangle, Color.FromArgb(40, 239, 68, 68), 15);
+            lblErro.Paint += LblErro_Paint;
+            mainCard.Controls.Add(lblErro);
 
-            // Nome
-            var lblNome = BuildLabel("??  Nome Completo", new Point(40, 265));
+            yPos += 50;
+
+            // Nome Completo
+            lblNomeLabel = CreateLabel("👤 Nome Completo", new Point(30, yPos));
+            mainCard.Controls.Add(lblNomeLabel);
+            yPos += 30;
+
             txtNome = new RoundedTextBox
             {
-                Location = new Point(40, 295),
-                Size = new Size(card.Width - 80, 44),
+                Location = new Point(30, yPos),
+                Size = new Size(490, 48),
                 PlaceholderText = "Digite seu nome completo",
-                BackColor = DarkerBg,
-                ForeColor = Color.White,
-                Font = new Font("Segoe UI", 11)
+                BorderRadius = 15
             };
+            mainCard.Controls.Add(txtNome);
+            yPos += 63;
 
             // Email
-            var lblEmail = BuildLabel("??  Email", new Point(40, 355));
+            lblEmailLabel = CreateLabel("✉ Email", new Point(30, yPos));
+            mainCard.Controls.Add(lblEmailLabel);
+            yPos += 30;
+
             txtEmail = new RoundedTextBox
             {
-                Location = new Point(40, 385),
-                Size = new Size(card.Width - 80, 44),
+                Location = new Point(30, yPos),
+                Size = new Size(490, 48),
                 PlaceholderText = "seu@email.com",
-                BackColor = DarkerBg,
-                ForeColor = Color.White,
-                Font = new Font("Segoe UI", 11)
+                BorderRadius = 15
             };
+            mainCard.Controls.Add(txtEmail);
+            yPos += 63;
 
             // Departamento
-            var lblDept = BuildLabel("??  Departamento", new Point(40, 445));
+            lblDeptLabel = CreateLabel("🏢 Departamento", new Point(30, yPos));
+            mainCard.Controls.Add(lblDeptLabel);
+            yPos += 30;
+
             cboDepartamento = new RoundedComboBox
             {
-                Location = new Point(40, 475),
-                Size = new Size(card.Width - 80, 44),
-                BackColor = DarkerBg,
-                ForeColor = Color.White,
-                Font = new Font("Segoe UI", 11)
+                Location = new Point(30, yPos),
+                Size = new Size(490, 48),
+                BorderRadius = 15
             };
+            mainCard.Controls.Add(cboDepartamento);
+            yPos += 63;
 
             // Senha
-            var lblSenha = BuildLabel("??  Senha", new Point(40, 535));
+            lblSenhaLabel = CreateLabel("🔒 Senha", new Point(30, yPos));
+            mainCard.Controls.Add(lblSenhaLabel);
+            yPos += 30;
+
             txtSenha = new RoundedTextBox
             {
-                Location = new Point(40, 565),
-                Size = new Size(card.Width - 80, 44),
-                PlaceholderText = "M�nimo 6 caracteres",
-                PasswordChar = '?',
-                BackColor = DarkerBg,
-                ForeColor = Color.White,
-                Font = new Font("Segoe UI", 11)
+                Location = new Point(30, yPos),
+                Size = new Size(440, 48),
+                UseSystemPasswordChar = true,
+                BorderRadius = 15
             };
             txtSenha.TextChanged += TxtSenha_TextChanged;
+            mainCard.Controls.Add(txtSenha);
 
-            btnToggleSenha = CreateToggleButton(new Point(card.Width - 90, 573));
+            btnToggleSenha = CreateToggleButton(new Point(470, yPos));
             btnToggleSenha.Click += (s, e) => TogglePassword(txtSenha, btnToggleSenha);
+            mainCard.Controls.Add(btnToggleSenha);
 
-            // Barra de for�a da senha
-            strengthBar = new Panel
+            yPos += 56;
+
+            // Strength bar
+            strengthContainer = new Panel
             {
-                Location = new Point(40, 615),
-                Size = new Size(card.Width - 80, 6),
+                Size = new Size(490, 4),
+                Location = new Point(30, yPos),
                 BackColor = Color.FromArgb(40, 255, 255, 255)
             };
+            mainCard.Controls.Add(strengthContainer);
 
-            lblStrength = new Label
+            strengthBar = new Panel
             {
-                Location = new Point(40, 625),
-                AutoSize = true,
-                Font = new Font("Segoe UI", 9),
-                ForeColor = Color.Silver
+                Size = new Size(0, 4),
+                Location = new Point(0, 0),
+                BackColor = Color.Red
             };
+            strengthBar.Paint += StrengthBar_Paint;
+            strengthContainer.Controls.Add(strengthBar);
 
-            // Confirma��o de Senha
-            var lblConfirm = BuildLabel("??  Confirmar Senha", new Point(40, 655));
+            yPos += 8;
+
+            lblStrengthText = new Label
+            {
+                Text = "",
+                Font = new Font("Segoe UI", 9f),
+                ForeColor = TextGray,
+                AutoSize = true,
+                Location = new Point(30, yPos),
+                BackColor = Color.Transparent
+            };
+            mainCard.Controls.Add(lblStrengthText);
+
+            yPos += 30;
+
+            // Confirmar Senha
+            lblConfirmLabel = CreateLabel("🔐 Confirmar Senha", new Point(30, yPos));
+            mainCard.Controls.Add(lblConfirmLabel);
+            yPos += 30;
+
             txtConfirmacaoSenha = new RoundedTextBox
             {
-                Location = new Point(40, 685),
-                Size = new Size(card.Width - 80, 44),
-                PlaceholderText = "Digite a senha novamente",
-                PasswordChar = '?',
-                BackColor = DarkerBg,
-                ForeColor = Color.White,
-                Font = new Font("Segoe UI", 11)
+                Location = new Point(30, yPos),
+                Size = new Size(440, 48),
+                UseSystemPasswordChar = true,
+                BorderRadius = 15
             };
             txtConfirmacaoSenha.TextChanged += TxtConfirmacaoSenha_TextChanged;
+            mainCard.Controls.Add(txtConfirmacaoSenha);
 
-            btnToggleConfirmacao = CreateToggleButton(new Point(card.Width - 90, 693));
+            btnToggleConfirmacao = CreateToggleButton(new Point(470, yPos));
             btnToggleConfirmacao.Click += (s, e) => TogglePassword(txtConfirmacaoSenha, btnToggleConfirmacao);
+            mainCard.Controls.Add(btnToggleConfirmacao);
 
-            // Bot�o Cadastrar (gradiente)
+            yPos += 56;
+
+            // Aviso senhas diferentes
+            lblSenhasDiferentes = new Label
+            {
+                Text = "⚠ As senhas não coincidem",
+                Font = new Font("Segoe UI", 9f),
+                ForeColor = Color.FromArgb(239, 68, 68),
+                AutoSize = true,
+                Location = new Point(30, yPos),
+                BackColor = Color.Transparent,
+                Visible = false
+            };
+            mainCard.Controls.Add(lblSenhasDiferentes);
+
+            yPos += 35;
+
+            // Botão Cadastrar
             btnCadastrar = new RoundedButton
             {
-                Text = "CRIAR CONTA  ?", // ? Uppercase como no web
-                Location = new Point(40, 750),
-                Size = new Size(card.Width - 80, 50),
-                Font = new Font("Segoe UI", 12, FontStyle.Bold),
-                ForeColor = Color.White
+                Text = "CRIAR CONTA ✓",
+                Size = new Size(490, 50),
+                Location = new Point(30, yPos),
+                Font = new Font("Segoe UI", 12f, FontStyle.Bold),
+                BorderRadius = 15
             };
             btnCadastrar.Click += BtnCadastrar_Click;
+            mainCard.Controls.Add(btnCadastrar);
 
-            // Bot�o Voltar (outline)
-            btnVoltar = new RoundedButton
+            yPos += 63;
+
+            // Botão Voltar
+            btnVoltar = new Button
             {
-                Text = "?  VOLTAR PARA O LOGIN", // ? Uppercase e �cone ajustado
-                Location = new Point(40, 810),
-                Size = new Size(card.Width - 80, 50), // ? Altura ajustada de 48 para 50
-                Font = new Font("Segoe UI", 11, FontStyle.Bold),
-                ForeColor = Color.White, // ? Cor ajustada
-                IsOutline = true
+                Text = "← VOLTAR PARA O LOGIN",
+                Size = new Size(490, 50),
+                Location = new Point(30, yPos),
+                Font = new Font("Segoe UI", 11f, FontStyle.Bold),
+                FlatStyle = FlatStyle.Flat,
+                BackColor = Color.Transparent,
+                ForeColor = Color.FromArgb(229, 231, 235),
+                Cursor = Cursors.Hand
             };
-            btnVoltar.Click += (s, e) => this.Close();
+            btnVoltar.FlatAppearance.BorderSize = 0;
+            btnVoltar.FlatAppearance.MouseOverBackColor = Color.Transparent;
+            btnVoltar.FlatAppearance.MouseDownBackColor = Color.Transparent;
+            btnVoltar.Paint += BtnVoltar_Paint;
+            btnVoltar.Click += BtnVoltar_Click;
+            mainCard.Controls.Add(btnVoltar);
 
-            // Adiciona controles ao card
-            card.Controls.Add(logo);
-            card.Controls.Add(lblTitulo);
-            card.Controls.Add(lblSubtitulo);
-            card.Controls.Add(lblErro);
-            card.Controls.Add(lblNome);
-            card.Controls.Add(txtNome);
-            card.Controls.Add(lblEmail);
-            card.Controls.Add(txtEmail);
-            card.Controls.Add(lblDept);
-            card.Controls.Add(cboDepartamento);
-            card.Controls.Add(lblSenha);
-            card.Controls.Add(txtSenha);
-            card.Controls.Add(btnToggleSenha);
-            card.Controls.Add(strengthBar);
-            card.Controls.Add(lblStrength);
-            card.Controls.Add(lblConfirm);
-            card.Controls.Add(txtConfirmacaoSenha);
-            card.Controls.Add(btnToggleConfirmacao);
-            card.Controls.Add(btnCadastrar);
-            card.Controls.Add(btnVoltar);
+            yPos += 30;
+
+            // Footer
+            lblFooter = new Label
+            {
+                Text = "© 2025 DotIA. Todos os direitos reservados.",
+                Font = new Font("Segoe UI", 9f),
+                ForeColor = Color.FromArgb(107, 114, 128),
+                AutoSize = false,
+                Size = new Size(490, 25),
+                Location = new Point(30, yPos),
+                TextAlign = ContentAlignment.MiddleCenter,
+                BackColor = Color.Transparent
+            };
+            mainCard.Controls.Add(lblFooter);
+
+            // Loading overlay
+            loadingOverlay = new Panel
+            {
+                Size = mainCard.Size,
+                Location = new Point(0, 0),
+                BackColor = Color.FromArgb(200, CardBg.R, CardBg.G, CardBg.B),
+                Visible = false
+            };
+            var lblLoading = new Label
+            {
+                Text = "Criando conta...",
+                Font = new Font("Segoe UI", 18f, FontStyle.Bold),
+                ForeColor = Color.White,
+                AutoSize = false,
+                Size = new Size(550, 50),
+                Location = new Point(0, 400),
+                TextAlign = ContentAlignment.MiddleCenter,
+                BackColor = Color.Transparent
+            };
+            loadingOverlay.Controls.Add(lblLoading);
+            mainCard.Controls.Add(loadingOverlay);
+
+            // Enter key navigation
+            txtNome.KeyPress += (s, e) => { if (e.KeyChar == (char)Keys.Enter) { e.Handled = true; txtEmail.Focus(); } };
+            txtEmail.KeyPress += (s, e) => { if (e.KeyChar == (char)Keys.Enter) { e.Handled = true; cboDepartamento.Focus(); } };
+            txtSenha.KeyPress += (s, e) => { if (e.KeyChar == (char)Keys.Enter) { e.Handled = true; txtConfirmacaoSenha.Focus(); } };
+            txtConfirmacaoSenha.KeyPress += (s, e) => { if (e.KeyChar == (char)Keys.Enter) { e.Handled = true; BtnCadastrar_Click(null, null); } };
+        }
+
+        private Label CreateLabel(string text, Point location)
+        {
+            return new Label
+            {
+                Text = text,
+                Font = new Font("Segoe UI", 11f, FontStyle.Bold),
+                ForeColor = Color.FromArgb(229, 231, 235),
+                AutoSize = true,
+                Location = location,
+                BackColor = Color.Transparent
+            };
         }
 
         private Button CreateToggleButton(Point location)
         {
             var btn = new Button
             {
-                Size = new Size(36, 36),
+                Text = "👁",
+                Size = new Size(50, 48),
                 Location = location,
-                Text = "??",
-                Font = new Font("Segoe UI Emoji", 12),
-                BackColor = Color.Transparent,
-                ForeColor = Color.FromArgb(156, 163, 175),
                 FlatStyle = FlatStyle.Flat,
-                Cursor = Cursors.Hand,
-                TabStop = false
+                BackColor = DarkerBg,
+                ForeColor = TextGray,
+                Font = new Font("Segoe UI", 16f),
+                Cursor = Cursors.Hand
             };
-            btn.FlatAppearance.BorderSize = 0;
+            btn.FlatAppearance.BorderSize = 2;
+            btn.FlatAppearance.BorderColor = BorderColor;
+            btn.Paint += BtnToggle_Paint;
             return btn;
+        }
+
+        private void CenterCard()
+        {
+            int x = (scrollPanel.ClientSize.Width - mainCard.Width) / 2;
+            int y = Math.Max(20, (scrollPanel.ClientSize.Height - mainCard.Height) / 2);
+            mainCard.Location = new Point(x, y);
+        }
+
+        private void RegistroForm_Paint(object sender, PaintEventArgs e)
+        {
+            // Background glows
+            using (GraphicsPath path1 = new GraphicsPath())
+            {
+                path1.AddEllipse(new Rectangle(-200, ClientSize.Height / 3, 800, 800));
+                using (PathGradientBrush brush1 = new PathGradientBrush(path1))
+                {
+                    brush1.CenterColor = Color.FromArgb(38, PrimaryPurple);
+                    brush1.SurroundColors = new[] { Color.Transparent };
+                    e.Graphics.FillPath(brush1, path1);
+                }
+            }
+
+            using (GraphicsPath path2 = new GraphicsPath())
+            {
+                path2.AddEllipse(new Rectangle(ClientSize.Width - 600, -200, 800, 800));
+                using (PathGradientBrush brush2 = new PathGradientBrush(path2))
+                {
+                    brush2.CenterColor = Color.FromArgb(38, SecondaryPurple);
+                    brush2.SurroundColors = new[] { Color.Transparent };
+                    e.Graphics.FillPath(brush2, path2);
+                }
+            }
+        }
+
+        private void MainCard_Paint(object sender, PaintEventArgs e)
+        {
+            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+
+            using (GraphicsPath path = GetRoundedRect(mainCard.ClientRectangle, 30))
+            {
+                using (LinearGradientBrush brush = new LinearGradientBrush(
+                    mainCard.ClientRectangle, CardBg, DarkerBg, 135f))
+                {
+                    e.Graphics.FillPath(brush, path);
+                }
+
+                using (Pen borderPen = new Pen(BorderColor, 2))
+                {
+                    e.Graphics.DrawPath(borderPen, path);
+                }
+            }
+        }
+
+        private void LogoPicture_Paint(object sender, PaintEventArgs e)
+        {
+            // Drop shadow na logo
+            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+
+            using (GraphicsPath shadowPath = new GraphicsPath())
+            {
+                shadowPath.AddEllipse(new Rectangle(20, 20, 80, 80));
+                using (PathGradientBrush shadowBrush = new PathGradientBrush(shadowPath))
+                {
+                    shadowBrush.CenterColor = Color.FromArgb(100, PrimaryPurple);
+                    shadowBrush.SurroundColors = new[] { Color.Transparent };
+                    e.Graphics.FillPath(shadowBrush, shadowPath);
+                }
+            }
+        }
+
+        private void LblTitulo_Paint(object sender, PaintEventArgs e)
+        {
+            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+            e.Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
+
+            using (LinearGradientBrush brush = new LinearGradientBrush(
+                lblTitulo.ClientRectangle, SecondaryPurple, PinkAccent, 135f))
+            {
+                using (StringFormat sf = new StringFormat
+                {
+                    Alignment = StringAlignment.Center,
+                    LineAlignment = StringAlignment.Center
+                })
+                {
+                    e.Graphics.DrawString(lblTitulo.Text, lblTitulo.Font, brush, lblTitulo.ClientRectangle, sf);
+                }
+            }
+        }
+
+        private void LblErro_Paint(object sender, PaintEventArgs e)
+        {
+            if (!lblErro.Visible) return;
+
+            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+
+            using (GraphicsPath path = GetRoundedRect(lblErro.ClientRectangle, 15))
+            {
+                using (LinearGradientBrush brush = new LinearGradientBrush(
+                    lblErro.ClientRectangle,
+                    Color.FromArgb(50, 239, 68, 68),
+                    Color.FromArgb(50, 220, 38, 38), 135f))
+                {
+                    e.Graphics.FillPath(brush, path);
+                }
+
+                using (Pen borderPen = new Pen(Color.FromArgb(128, 239, 68, 68), 1))
+                {
+                    e.Graphics.DrawPath(borderPen, path);
+                }
+            }
+        }
+
+        private void BtnToggle_Paint(object sender, PaintEventArgs e)
+        {
+            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+
+            Button btn = (Button)sender;
+            using (GraphicsPath path = GetRoundedRect(btn.ClientRectangle, 15))
+            {
+                using (SolidBrush brush = new SolidBrush(DarkerBg))
+                {
+                    e.Graphics.FillPath(brush, path);
+                }
+
+                using (Pen borderPen = new Pen(BorderColor, 2))
+                {
+                    e.Graphics.DrawPath(borderPen, path);
+                }
+            }
+
+            // Desenha o emoji
+            TextRenderer.DrawText(e.Graphics, btn.Text, btn.Font,
+                btn.ClientRectangle, btn.ForeColor,
+                TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter);
+        }
+
+        private void StrengthBar_Paint(object sender, PaintEventArgs e)
+        {
+            if (strengthBar.Width == 0) return;
+
+            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+
+            using (GraphicsPath path = GetRoundedRect(strengthBar.ClientRectangle, 10))
+            {
+                using (SolidBrush brush = new SolidBrush(strengthBar.BackColor))
+                {
+                    e.Graphics.FillPath(brush, path);
+                }
+            }
+        }
+
+        private void BtnVoltar_Paint(object sender, PaintEventArgs e)
+        {
+            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+
+            using (GraphicsPath path = GetRoundedRect(btnVoltar.ClientRectangle, 15))
+            {
+                using (Pen borderPen = new Pen(BorderColor, 2))
+                {
+                    e.Graphics.DrawPath(borderPen, path);
+                }
+            }
+
+            TextRenderer.DrawText(e.Graphics, btnVoltar.Text, btnVoltar.Font,
+                btnVoltar.ClientRectangle, Color.FromArgb(229, 231, 235),
+                TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter);
+        }
+
+        private GraphicsPath GetRoundedRect(Rectangle rect, int radius)
+        {
+            GraphicsPath path = new GraphicsPath();
+            int diameter = radius * 2;
+
+            rect.Inflate(-1, -1);
+
+            path.AddArc(rect.X, rect.Y, diameter, diameter, 180, 90);
+            path.AddArc(rect.Right - diameter, rect.Y, diameter, diameter, 270, 90);
+            path.AddArc(rect.Right - diameter, rect.Bottom - diameter, diameter, diameter, 0, 90);
+            path.AddArc(rect.X, rect.Bottom - diameter, diameter, diameter, 90, 90);
+            path.CloseFigure();
+
+            return path;
+        }
+
+        private void IniciarAnimacoes()
+        {
+            pulseTimer = new System.Windows.Forms.Timer { Interval = 30 };
+            pulseTimer.Tick += (s, e) =>
+            {
+                if (pulseGrowing)
+                {
+                    pulseScale += 0.002f;
+                    if (pulseScale >= 1.05f) pulseGrowing = false;
+                }
+                else
+                {
+                    pulseScale -= 0.002f;
+                    if (pulseScale <= 1.0f) pulseGrowing = true;
+                }
+
+                if (logoPicture != null)
+                {
+                    int newSize = (int)(120 * pulseScale);
+                    logoPicture.Size = new Size(newSize, newSize);
+                    logoPicture.Location = new Point((mainCard.Width - newSize) / 2, 30);
+                }
+            };
+            pulseTimer.Start();
+        }
+
+        private void TogglePassword(RoundedTextBox textBox, Button button)
+        {
+            textBox.UseSystemPasswordChar = !textBox.UseSystemPasswordChar;
+            button.Text = textBox.UseSystemPasswordChar ? "👁" : "🙈";
+        }
+
+        private void TxtSenha_TextChanged(object sender, EventArgs e)
+        {
+            string senha = txtSenha.Text;
+            int forca = 0;
+
+            if (senha.Length >= 6) forca++;
+            if (senha.Length >= 8) forca++;
+            if (Regex.IsMatch(senha, @"[A-Z]")) forca++;
+            if (Regex.IsMatch(senha, @"[0-9]")) forca++;
+            if (Regex.IsMatch(senha, @"[^A-Za-z0-9]")) forca++;
+
+            if (forca <= 2)
+            {
+                strengthBar.Width = (int)(490 * 0.33);
+                strengthBar.BackColor = Color.FromArgb(239, 68, 68);
+                lblStrengthText.Text = "Senha fraca";
+                lblStrengthText.ForeColor = Color.FromArgb(239, 68, 68);
+            }
+            else if (forca <= 3)
+            {
+                strengthBar.Width = (int)(490 * 0.66);
+                strengthBar.BackColor = Color.FromArgb(251, 191, 36);
+                lblStrengthText.Text = "Senha média";
+                lblStrengthText.ForeColor = Color.FromArgb(251, 191, 36);
+            }
+            else
+            {
+                strengthBar.Width = 490;
+                strengthBar.BackColor = Color.FromArgb(16, 185, 129);
+                lblStrengthText.Text = "Senha forte";
+                lblStrengthText.ForeColor = Color.FromArgb(16, 185, 129);
+            }
+
+            strengthBar.Invalidate();
+        }
+
+        private void TxtConfirmacaoSenha_TextChanged(object sender, EventArgs e)
+        {
+            string senha = txtSenha.Text;
+            string confirmacao = txtConfirmacaoSenha.Text;
+
+            if (confirmacao.Length > 0 && senha != confirmacao)
+            {
+                lblSenhasDiferentes.Visible = true;
+                btnCadastrar.Enabled = false;
+            }
+            else
+            {
+                lblSenhasDiferentes.Visible = false;
+                btnCadastrar.Enabled = true;
+            }
         }
 
         private async void CarregarDepartamentosAsync()
@@ -273,83 +682,26 @@ namespace DotIA.Desktop.Forms
             try
             {
                 var departamentos = await _apiClient.ObterDepartamentosAsync();
+
                 cboDepartamento.Items.Clear();
-                cboDepartamento.Items.Add("Selecione seu departamento");
-                cboDepartamento.SelectedIndex = 0;
+                cboDepartamento.Items.Add(new DepartamentoItem { Id = 0, Nome = "Selecione seu departamento" });
 
                 foreach (var dept in departamentos)
                 {
-                    cboDepartamento.Items.Add(dept);
-                    cboDepartamento.DisplayMember = "Nome";
-                    cboDepartamento.ValueMember = "Id";
+                    cboDepartamento.Items.Add(new DepartamentoItem
+                    {
+                        Id = dept.Id,
+                        Nome = dept.Nome
+                    });
                 }
+
+                if (cboDepartamento.Items.Count > 0)
+                    cboDepartamento.SelectedIndex = 0;
             }
-            catch { }
-        }
-
-        private void TxtSenha_TextChanged(object sender, EventArgs e)
-        {
-            VerificarForcaSenha();
-        }
-
-        private void TxtConfirmacaoSenha_TextChanged(object sender, EventArgs e)
-        {
-            if (txtConfirmacaoSenha.Text.Length > 0 && txtSenha.Text != txtConfirmacaoSenha.Text)
+            catch (Exception ex)
             {
-                lblStrength.Text = "? As senhas n�o coincidem";
-                lblStrength.ForeColor = Color.FromArgb(239, 68, 68);
+                MostrarErro($"⚠ Erro ao carregar departamentos: {ex.Message}");
             }
-            else if (txtConfirmacaoSenha.Text.Length > 0)
-            {
-                lblStrength.Text = "? As senhas coincidem";
-                lblStrength.ForeColor = Color.FromArgb(16, 185, 129);
-            }
-        }
-
-        private void VerificarForcaSenha()
-        {
-            string senha = txtSenha.Text;
-            int forca = 0;
-
-            if (senha.Length >= 6) forca++;
-            if (senha.Length >= 8) forca++;
-            if (System.Text.RegularExpressions.Regex.IsMatch(senha, "[A-Z]")) forca++;
-            if (System.Text.RegularExpressions.Regex.IsMatch(senha, "[0-9]")) forca++;
-            if (System.Text.RegularExpressions.Regex.IsMatch(senha, "[^A-Za-z0-9]")) forca++;
-
-            strengthBar.Controls.Clear();
-            var bar = new Panel { Dock = DockStyle.Left, Height = 6 };
-            bar.Paint += (s, e) =>
-            {
-                using var path = RoundedRect(bar.ClientRectangle, 10);
-                e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-                using var br = new SolidBrush(bar.BackColor);
-                e.Graphics.FillPath(br, path);
-            };
-
-            if (forca <= 2)
-            {
-                bar.Width = (strengthBar.Width / 3);
-                bar.BackColor = Color.FromArgb(239, 68, 68);
-                lblStrength.Text = "Senha fraca";
-                lblStrength.ForeColor = Color.FromArgb(239, 68, 68);
-            }
-            else if (forca <= 3)
-            {
-                bar.Width = (strengthBar.Width * 2 / 3);
-                bar.BackColor = Color.FromArgb(251, 191, 36);
-                lblStrength.Text = "Senha m�dia";
-                lblStrength.ForeColor = Color.FromArgb(251, 191, 36);
-            }
-            else
-            {
-                bar.Width = strengthBar.Width;
-                bar.BackColor = Color.FromArgb(16, 185, 129);
-                lblStrength.Text = "Senha forte";
-                lblStrength.ForeColor = Color.FromArgb(16, 185, 129);
-            }
-
-            strengthBar.Controls.Add(bar);
         }
 
         private async void BtnCadastrar_Click(object sender, EventArgs e)
@@ -359,313 +711,115 @@ namespace DotIA.Desktop.Forms
             string senha = txtSenha.Text;
             string confirmacao = txtConfirmacaoSenha.Text;
 
-            if (string.IsNullOrEmpty(nome) || nome.Length < 3)
+            if (string.IsNullOrEmpty(nome))
             {
-                ShowError("Por favor, informe seu nome completo.");
+                MostrarErro("⚠ Por favor, informe seu nome completo");
                 return;
             }
 
-            if (string.IsNullOrEmpty(email) || !email.Contains("@"))
+            if (string.IsNullOrEmpty(email) || !IsValidEmail(email))
             {
-                ShowError("Por favor, informe um email v�lido.");
+                MostrarErro("⚠ Por favor, informe um e-mail válido");
                 return;
             }
 
             if (cboDepartamento.SelectedIndex <= 0)
             {
-                ShowError("Por favor, selecione um departamento.");
+                MostrarErro("⚠ Por favor, selecione um departamento");
                 return;
             }
 
             if (string.IsNullOrEmpty(senha) || senha.Length < 6)
             {
-                ShowError("A senha deve ter no m�nimo 6 caracteres.");
+                MostrarErro("⚠ A senha deve ter no mínimo 6 caracteres");
                 return;
             }
 
             if (senha != confirmacao)
             {
-                ShowError("As senhas n�o coincidem.");
+                MostrarErro("⚠ As senhas não coincidem");
                 return;
             }
 
-            btnCadastrar.Enabled = false;
-            btnCadastrar.Text = "Criando conta...";
+            loadingOverlay.Visible = true;
+            loadingOverlay.BringToFront();
+            lblErro.Visible = false;
 
             try
             {
-                var dept = (DepartamentoDTO)cboDepartamento.SelectedItem;
-                var resposta = await _apiClient.RegistrarAsync(nome, email, senha, confirmacao, dept.Id);
+                var deptItem = (DepartamentoItem)cboDepartamento.SelectedItem;
+                var response = await _apiClient.RegistrarAsync(nome, email, senha, confirmacao, deptItem.Id);
 
-                if (resposta.Sucesso)
+                loadingOverlay.Visible = false;
+
+                if (response.Sucesso)
                 {
-                    MessageBox.Show("? Cadastro realizado com sucesso!\n\nVoc� j� pode fazer login.",
+                    MessageBox.Show("✓ Conta criada com sucesso! Faça login para continuar.",
                         "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    this.Close();
+                    Close();
                 }
                 else
                 {
-                    ShowError(resposta.Mensagem ?? "Erro ao realizar cadastro.");
+                    MostrarErro("⚠ " + (response.Mensagem ?? "Erro ao criar conta"));
                 }
             }
             catch (Exception ex)
             {
-                ShowError($"Erro de conex�o: {ex.Message}");
-            }
-            finally
-            {
-                btnCadastrar.Enabled = true;
-                btnCadastrar.Text = "Criar Conta  ?";
+                loadingOverlay.Visible = false;
+                MostrarErro($"⚠ Erro ao conectar: {ex.Message}");
             }
         }
 
-        // Helpers de UI
-        private Label BuildLabel(string text, Point location)
+        private bool IsValidEmail(string email)
         {
-            return new Label
+            try
             {
-                Text = text,
-                ForeColor = Color.FromArgb(229, 231, 235),
-                Font = new Font("Segoe UI", 10.5f, FontStyle.Bold),
-                AutoSize = true,
-                Location = location,
-                BackColor = Color.Transparent
-            };
-        }
-
-        private void TogglePassword(RoundedTextBox tb, Button btn)
-        {
-            if (tb.PasswordChar == '\0')
-            {
-                tb.PasswordChar = '?';
-                btn.Text = "??";
+                var addr = new System.Net.Mail.MailAddress(email);
+                return addr.Address == email;
             }
-            else
+            catch
             {
-                tb.PasswordChar = '\0';
-                btn.Text = "??";
+                return false;
             }
         }
 
-        private void ShowError(string msg)
+        private void BtnVoltar_Click(object sender, EventArgs e)
         {
-            lblErro.Text = "  ?  " + msg;
+            Close();
+        }
+
+        private void MostrarErro(string mensagem)
+        {
+            lblErro.Text = mensagem;
             lblErro.Visible = true;
-        }
+            lblErro.BringToFront();
 
-        // M�todos de pintura
-        private void Logo_Paint(object sender, PaintEventArgs e)
-        {
-            var p = (Panel)sender;
-            using var path = RoundedRect(p.ClientRectangle, 20);
-            using var lg = new LinearGradientBrush(p.ClientRectangle, PrimaryPurple, SecondaryPurple, 45f);
-            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-            e.Graphics.FillPath(lg, path);
-
-            using var sf = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center };
-            using var f = new Font("Segoe UI Emoji", 40, FontStyle.Regular);
-            e.Graphics.DrawString("??", f, Brushes.White, p.ClientRectangle, sf);
-
-            // Sombra
-            using var shadow = new SolidBrush(Color.FromArgb(80, 0, 0, 0));
-            var shadowRect = new Rectangle(10, p.Height - 5, p.Width - 20, 8);
-            using var shadowPath = new GraphicsPath();
-            shadowPath.AddEllipse(shadowRect);
-            e.Graphics.FillPath(shadow, shadowPath);
-        }
-
-        private void Card_Paint(object sender, PaintEventArgs e)
-        {
-            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-            var r = card.ClientRectangle;
-            r.Height -= 30;
-
-            using var path = RoundedRect(r, 30);
-            using var lg = new LinearGradientBrush(r, CardBg, DarkerBg, 135f);
-            e.Graphics.FillPath(lg, path);
-
-            // Borda com brilho
-            using var pen = new Pen(Color.FromArgb(100, PrimaryPurple), 2f);
-            e.Graphics.DrawPath(pen, path);
-
-            // Sombra do card
-            using var shadow = new SolidBrush(Color.FromArgb(60, 0, 0, 0));
-            var shadowRect = new Rectangle(r.X + 10, r.Bottom + 5, r.Width - 20, 20);
-            using var shadowPath = new GraphicsPath();
-            shadowPath.AddEllipse(shadowRect);
-            e.Graphics.FillPath(shadow, shadowPath);
-        }
-
-        private void PaintBackgroundGlow(Graphics g)
-        {
-            g.SmoothingMode = SmoothingMode.AntiAlias;
-
-            // Glow 1
-            using var b1 = new PathGradientBrush(new[] {
-                new Point(0, Height/2),
-                new Point(Width/3, 0),
-                new Point(Width/3, Height)
-            });
-            b1.CenterColor = Color.FromArgb(50, PrimaryPurple);
-            b1.SurroundColors = new[] { Color.Transparent, Color.Transparent, Color.Transparent };
-
-            // Glow 2
-            using var b2 = new PathGradientBrush(new[] {
-                new Point(Width, Height),
-                new Point(Width*2/3, Height/2),
-                new Point(Width, Height/3)
-            });
-            b2.CenterColor = Color.FromArgb(40, SecondaryPurple);
-            b2.SurroundColors = new[] { Color.Transparent, Color.Transparent, Color.Transparent };
-
-            g.FillRectangle(new SolidBrush(DarkBg), ClientRectangle);
-            g.FillRectangle(b1, ClientRectangle);
-            g.FillRectangle(b2, ClientRectangle);
-        }
-
-        private void PaintRoundedPanel(Graphics g, Rectangle rect, Color color, int radius)
-        {
-            using var path = RoundedRect(rect, radius);
-            g.SmoothingMode = SmoothingMode.AntiAlias;
-            using var br = new SolidBrush(color);
-            g.FillPath(br, path);
-        }
-
-        private GraphicsPath RoundedRect(Rectangle r, int radius)
-        {
-            int d = radius * 2;
-            var path = new GraphicsPath();
-            path.AddArc(r.X, r.Y, d, d, 180, 90);
-            path.AddArc(r.Right - d, r.Y, d, d, 270, 90);
-            path.AddArc(r.Right - d, r.Bottom - d, d, d, 0, 90);
-            path.AddArc(r.X, r.Bottom - d, d, d, 90, 90);
-            path.CloseFigure();
-            return path;
-        }
-    }
-
-    // Controles customizados arredondados
-    public class RoundedTextBox : TextBox
-    {
-        public string PlaceholderText { get; set; }
-
-        public RoundedTextBox()
-        {
-            BorderStyle = BorderStyle.None;
-            Padding = new Padding(15, 12, 15, 12);
-        }
-
-        protected override void OnPaint(PaintEventArgs e)
-        {
-            base.OnPaint(e);
-            DrawRoundedBorder(e.Graphics);
-        }
-
-        protected override void WndProc(ref Message m)
-        {
-            base.WndProc(ref m);
-            if (m.Msg == 0xF || m.Msg == 0x133)
+            System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer { Interval = 5000 };
+            timer.Tick += (s, e) =>
             {
-                using var g = CreateGraphics();
-                DrawRoundedBorder(g);
-            }
+                lblErro.Visible = false;
+                timer.Stop();
+                timer.Dispose();
+            };
+            timer.Start();
         }
 
-        private void DrawRoundedBorder(Graphics g)
+        protected override void Dispose(bool disposing)
         {
-            var rect = new Rectangle(0, 0, Width - 1, Height - 1);
-            using var path = RoundedRect(rect, 15);
-            g.SmoothingMode = SmoothingMode.AntiAlias;
-
-            using var bg = new SolidBrush(BackColor);
-            g.FillPath(bg, path);
-
-            var borderColor = Focused
-                ? Color.FromArgb(141, 75, 255)
-                : Color.FromArgb(61, 46, 107);
-            using var pen = new Pen(borderColor, 2);
-            g.DrawPath(pen, path);
-        }
-
-        private GraphicsPath RoundedRect(Rectangle r, int radius)
-        {
-            int d = radius * 2;
-            var path = new GraphicsPath();
-            path.AddArc(r.X, r.Y, d, d, 180, 90);
-            path.AddArc(r.Right - d, r.Y, d, d, 270, 90);
-            path.AddArc(r.Right - d, r.Bottom - d, d, d, 0, 90);
-            path.AddArc(r.X, r.Bottom - d, d, d, 90, 90);
-            path.CloseFigure();
-            return path;
-        }
-    }
-
-    public class RoundedComboBox : ComboBox
-    {
-        public RoundedComboBox()
-        {
-            DrawMode = DrawMode.OwnerDrawFixed;
-            DropDownStyle = ComboBoxStyle.DropDownList;
-            FlatStyle = FlatStyle.Flat;
-        }
-
-        protected override void OnDrawItem(DrawItemEventArgs e)
-        {
-            if (e.Index < 0) return;
-
-            e.DrawBackground();
-            using var br = new SolidBrush(e.ForeColor);
-            e.Graphics.DrawString(GetItemText(Items[e.Index]), e.Font, br, e.Bounds);
-            e.DrawFocusRectangle();
-        }
-    }
-
-    public class RoundedButton : Button
-    {
-        public bool IsOutline { get; set; }
-
-        public RoundedButton()
-        {
-            FlatStyle = FlatStyle.Flat;
-            FlatAppearance.BorderSize = 0;
-            Cursor = Cursors.Hand;
-        }
-
-        protected override void OnPaint(PaintEventArgs e)
-        {
-            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-            var rect = new Rectangle(0, 0, Width - 1, Height - 1);
-            using var path = RoundedRect(rect, 15);
-
-            if (IsOutline)
+            if (disposing)
             {
-                using var br = new SolidBrush(BackColor);
-                e.Graphics.FillPath(br, path);
-                using var pen = new Pen(Color.FromArgb(100, 141, 75, 255), 2);
-                e.Graphics.DrawPath(pen, path);
+                pulseTimer?.Stop();
+                pulseTimer?.Dispose();
             }
-            else
-            {
-                var c1 = ColorTranslator.FromHtml("#8d4bff");
-                var c2 = ColorTranslator.FromHtml("#a855f7");
-                using var lg = new LinearGradientBrush(rect, c1, c2, 135f);
-                e.Graphics.FillPath(lg, path);
-            }
-
-            using var sf = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center };
-            e.Graphics.DrawString(Text, Font, new SolidBrush(ForeColor), ClientRectangle, sf);
+            base.Dispose(disposing);
         }
 
-        private GraphicsPath RoundedRect(Rectangle r, int radius)
+        private class DepartamentoItem
         {
-            int d = radius * 2;
-            var path = new GraphicsPath();
-            path.AddArc(r.X, r.Y, d, d, 180, 90);
-            path.AddArc(r.Right - d, r.Y, d, d, 270, 90);
-            path.AddArc(r.Right - d, r.Bottom - d, d, d, 0, 90);
-            path.AddArc(r.X, r.Bottom - d, d, d, 90, 90);
-            path.CloseFigure();
-            return path;
+            public int Id { get; set; }
+            public string Nome { get; set; }
+
+            public override string ToString() => Nome;
         }
     }
 }

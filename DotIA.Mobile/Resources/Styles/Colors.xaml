@@ -9,12 +9,18 @@
     <Color x:Key="Primary">#8d4bff</Color>
     <Color x:Key="Secondary">#a855f7</Color>
     <Color x:Key="PrimaryLight">#ec4899</Color>
+    <Color x:Key="Tertiary">#8d4bff</Color>
 
     <!-- Fundos (Tom roxo escuro) -->
     <Color x:Key="Background">#1a132f</Color>
     <Color x:Key="BackgroundDark">#140e25</Color>
     <Color x:Key="BackgroundLight">#2c204d</Color>
     <Color x:Key="CardBackground">#2c204d</Color>
+
+    <!-- Aliases para compatibilidade -->
+    <Color x:Key="DarkBg">#1a132f</Color>
+    <Color x:Key="DarkerBg">#140e25</Color>
+    <Color x:Key="CardBg">#2c204d</Color>
 
     <!-- Texto -->
     <Color x:Key="TextPrimary">#ffffff</Color>
@@ -26,10 +32,31 @@
     <Color x:Key="Success">#10b981</Color>
     <Color x:Key="Warning">#f59e0b</Color>
     <Color x:Key="Error">#dc2626</Color>
+    <Color x:Key="Danger">#dc2626</Color>
     <Color x:Key="Info">#3b82f6</Color>
 
     <!-- Bordas -->
     <Color x:Key="BorderColor">#8d4bff</Color>
     <Color x:Key="BorderColorLight">#a855f7</Color>
+
+    <!-- Cores adicionais para compatibilidade com outras páginas -->
+    <Color x:Key="DarkBgAlt">#1a132f</Color>
+    <Color x:Key="CardBgAlt">#2c204d</Color>
+    <Color x:Key="CardBgHover">#3d2f5d</Color>
+    <Color x:Key="LoadingBg">#140e25</Color>
+    <Color x:Key="OverlayBg">#000000</Color>
+    <Color x:Key="TextSlate400">#9ca3af</Color>
+    <Color x:Key="TextSlate500">#6b7280</Color>
+    <Color x:Key="TextSlate300">#d1d5db</Color>
+    <Color x:Key="SuccessAlt">#059669</Color>
+    <Color x:Key="SuccessBg">#064e3b</Color>
+    <Color x:Key="SuccessLight">#d1fae5</Color>
+    <Color x:Key="SuccessLight2">#a7f3d0</Color>
+    <Color x:Key="WarningAlt">#f59e0b</Color>
+    <Color x:Key="WarningDark">#78350f</Color>
+    <Color x:Key="DangerAlt">#dc2626</Color>
+    <Color x:Key="ErrorAlt">#ef4444</Color>
+    <Color x:Key="InfoAlt">#3b82f6</Color>
+    <Color x:Key="PrimaryAlt">#7c3aed</Color>
 
 </ResourceDictionary>

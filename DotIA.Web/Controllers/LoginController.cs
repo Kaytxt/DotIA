@@ -24,9 +24,9 @@ namespace DotIA.Web.Controllers
             {
                 var resultado = await _apiClient.LoginAsync(email, senha);
 
-                if (resultado.Sucesso)
+                if (resultado.Sucesso && resultado.UsuarioId.HasValue)
                 {
-                    HttpContext.Session.SetInt32("UsuarioId", resultado.UsuarioId);
+                    HttpContext.Session.SetInt32("UsuarioId", resultado.UsuarioId.Value);
                     HttpContext.Session.SetString("Nome", resultado.Nome);
                     HttpContext.Session.SetString("TipoUsuario", resultado.TipoUsuario);
 

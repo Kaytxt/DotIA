@@ -433,6 +433,11 @@
         .message-content {
             color: var(--text-color);
             line-height: 1.6;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            word-break: break-word;
+            white-space: normal;
+            max-width: 100%;
         }
 
         .solution-area {
@@ -858,30 +863,74 @@
             const conversationArea = document.getElementById('conversationArea');
             conversationArea.innerHTML = '';
 
-            adicionarMensagemAoChat('user', ticket.perguntaOriginal, ticket.nomeSolicitante);
-            adicionarMensagemAoChat('bot', ticket.respostaIA || 'A resposta automática não foi suficiente para resolver o problema do usuário.', 'DotIA');
+            // ✅ ORDEM CRONOLÓGICA: Coleta todas mensagens com timestamp
+            const todasMensagens = [];
+
+            // ✅ Função auxiliar para parsear mensagens com formato [dd/MM/yyyy HH:mm]
+            function parsearMensagensSimples(texto, tipo, autor, dataDefault) {
+                if (!texto || !texto.trim()) return [];
+
+                const mensagensParsed = [];
+                const regex = /\[(\d{2}\/\d{2}\/\d{4}\s\d{2}:\d{2})\]\s*(.+?)(?=\n\n\[|$)/gs;
+                let match;
+                let encontrouTimestamp = false;
+
+                while ((match = regex.exec(texto)) !== null) {
+                    encontrouTimestamp = true;
+                    const [, dataStr, conteudo] = match;
+                    const [dia, mes, ano, hora, min] = dataStr.match(/\d+/g);
+                    const timestamp = new Date(ano, mes - 1, dia, hora, min);
+                    mensagensParsed.push({ tipo, conteudo: conteudo.trim(), autor, timestamp });
+                }
+
+                // Se não encontrou timestamps, adiciona mensagem inteira
+                if (!encontrouTimestamp) {
+                    mensagensParsed.push({ tipo, conteudo: texto.trim(), autor, timestamp: dataDefault });
+                }
+
+                return mensagensParsed;
+            }
+
+            // Adiciona perguntas parseadas (pode conter múltiplas mensagens)
+            const perguntas = parsearMensagensSimples(ticket.perguntaOriginal, 'user', ticket.nomeSolicitante, new Date(ticket.dataAbertura));
+            todasMensagens.push(...perguntas);
+
+            // Adiciona respostas parseadas (pode conter múltiplas mensagens)
+            const respostaPadrao = ticket.respostaIA || 'A resposta automática não foi suficiente para resolver o problema do usuário.';
+            const respostas = parsearMensagensSimples(respostaPadrao, 'bot', 'DotIA', new Date(ticket.dataAbertura));
+            todasMensagens.push(...respostas);
 
             if(ticket.solucao){
-                const mensagens = ticket.solucao.split('\n\n');
+                // Split melhorado: separa por quebra dupla ANTES de um timestamp
+                const mensagens = ticket.solucao.split(/\n\n(?=\[(?:USUÁRIO|TÉCNICO)\s*-)/);
                 mensagens.forEach(m => {
                     if(!m.trim()) return;
                     let s = m.trim();
 
-                    const usuarioRegex = /^\[USUÁRIO\s*-\s*\d{2}\/\d{2}\/\d{4}\s\d{2}:\d{2}\]\s*/;
-                    const tecnicoRegex = /^\[TÉCNICO\s*-\s*\d{2}\/\d{2}\/\d{4}\s\d{2}:\d{2}\]\s*/;
-                    const isUsuario = usuarioRegex.test(s);
-                    const isTecnico = tecnicoRegex.test(s);
+                    const usuarioMatch = /^\[USUÁRIO\s*-\s*(\d{2}\/\d{2}\/\d{4}\s\d{2}:\d{2})\]\s*(.+)$/s.exec(s);
+                    const tecnicoMatch = /^\[TÉCNICO\s*-\s*(\d{2}\/\d{2}\/\d{4}\s\d{2}:\d{2})\]\s*(.+)$/s.exec(s);
 
-                    const timestampRegex = /^\[\w+\s*-\s*\d{2}\/\d{2}\/\d{4}\s\d{2}:\d{2}\]\s*/;
-                    s = s.replace(timestampRegex, '');
-
-                    if(!s) return;
-
-                    if(isUsuario) adicionarMensagemAoChat('user', s, ticket.nomeSolicitante);
-                    else if(isTecnico) adicionarMensagemAoChat('tech', s, 'Você (Técnico)');
-                    else adicionarMensagemAoChat('tech', s, 'Você (Técnico)');
+                    if(usuarioMatch){
+                        const [, dataStr, conteudo] = usuarioMatch;
+                        const [dia,mes,ano,hora,min] = dataStr.match(/\d+/g);
+                        const timestamp = new Date(ano,mes-1,dia,hora,min);
+                        todasMensagens.push({ tipo:'user', conteudo:conteudo.trim(), autor:ticket.nomeSolicitante, timestamp });
+                    }else if(tecnicoMatch){
+                        const [, dataStr, conteudo] = tecnicoMatch;
+                        const [dia,mes,ano,hora,min] = dataStr.match(/\d+/g);
+                        const timestamp = new Date(ano,mes-1,dia,hora,min);
+                        todasMensagens.push({ tipo:'tech', conteudo:conteudo.trim(), autor:'Você (Técnico)', timestamp });
+                    }
                 });
             }
+
+            // ✅ ORDENAR por timestamp
+            todasMensagens.sort((a,b) => a.timestamp - b.timestamp);
+
+            // ✅ EXIBIR em ordem cronológica
+            todasMensagens.forEach(msg => {
+                adicionarMensagemAoChat(msg.tipo, msg.conteudo, msg.autor);
+            });
 
             document.getElementById('solutionArea').style.display = 'block';
             document.getElementById('solutionInput').value = '';
@@ -1063,28 +1112,71 @@
                             const conversationArea = document.getElementById('conversationArea');
                             conversationArea.innerHTML = '';
 
-                            adicionarMensagemAoChat('user', ticketSelecionado.perguntaOriginal, ticketSelecionado.nomeSolicitante);
-                            adicionarMensagemAoChat('bot', ticketSelecionado.respostaIA || 'A resposta automática não foi suficiente.', 'DotIA');
+                            // ✅ ORDEM CRONOLÓGICA: Coleta todas mensagens com timestamp
+                            const todasMensagens = [];
 
-                            const mensagens = data.ticket.solucao.split('\n\n');
+                            // ✅ Função auxiliar para parsear mensagens com formato [dd/MM/yyyy HH:mm]
+                            function parsearMensagensSimples(texto, tipo, autor, dataDefault) {
+                                if (!texto || !texto.trim()) return [];
+
+                                const mensagensParsed = [];
+                                const regex = /\[(\d{2}\/\d{2}\/\d{4}\s\d{2}:\d{2})\]\s*(.+?)(?=\n\n\[|$)/gs;
+                                let match;
+                                let encontrouTimestamp = false;
+
+                                while ((match = regex.exec(texto)) !== null) {
+                                    encontrouTimestamp = true;
+                                    const [, dataStr, conteudo] = match;
+                                    const [dia, mes, ano, hora, min] = dataStr.match(/\d+/g);
+                                    const timestamp = new Date(ano, mes - 1, dia, hora, min);
+                                    mensagensParsed.push({ tipo, conteudo: conteudo.trim(), autor, timestamp });
+                                }
+
+                                // Se não encontrou timestamps, adiciona mensagem inteira
+                                if (!encontrouTimestamp) {
+                                    mensagensParsed.push({ tipo, conteudo: texto.trim(), autor, timestamp: dataDefault });
+                                }
+
+                                return mensagensParsed;
+                            }
+
+                            // Adiciona perguntas parseadas (pode conter múltiplas mensagens)
+                            const perguntas = parsearMensagensSimples(ticketSelecionado.perguntaOriginal, 'user', ticketSelecionado.nomeSolicitante, new Date(ticketSelecionado.dataAbertura));
+                            todasMensagens.push(...perguntas);
+
+                            // Adiciona respostas parseadas (pode conter múltiplas mensagens)
+                            const respostaPadrao = ticketSelecionado.respostaIA || 'A resposta automática não foi suficiente.';
+                            const respostas = parsearMensagensSimples(respostaPadrao, 'bot', 'DotIA', new Date(ticketSelecionado.dataAbertura));
+                            todasMensagens.push(...respostas);
+
+                            // Split melhorado: separa por quebra dupla ANTES de um timestamp
+                            const mensagens = data.ticket.solucao.split(/\n\n(?=\[(?:USUÁRIO|TÉCNICO)\s*-)/);
                             mensagens.forEach(m => {
                                 if(!m.trim()) return;
                                 let s = m.trim();
 
-                                const usuarioRegex = /^\[USUÁRIO\s*-\s*\d{2}\/\d{2}\/\d{4}\s\d{2}:\d{2}\]\s*/;
-                                const tecnicoRegex = /^\[TÉCNICO\s*-\s*\d{2}\/\d{2}\/\d{4}\s\d{2}:\d{2}\]\s*/;
+                                const usuarioMatch = /^\[USUÁRIO\s*-\s*(\d{2}\/\d{2}\/\d{4}\s\d{2}:\d{2})\]\s*(.+)$/s.exec(s);
+                                const tecnicoMatch = /^\[TÉCNICO\s*-\s*(\d{2}\/\d{2}\/\d{4}\s\d{2}:\d{2})\]\s*(.+)$/s.exec(s);
 
-                                const isUsuario = usuarioRegex.test(s);
-                                const isTecnico = tecnicoRegex.test(s);
+                                if(usuarioMatch){
+                                    const [, dataStr, conteudo] = usuarioMatch;
+                                    const [dia,mes,ano,hora,min] = dataStr.match(/\d+/g);
+                                    const timestamp = new Date(ano,mes-1,dia,hora,min);
+                                    todasMensagens.push({ tipo:'user', conteudo:conteudo.trim(), autor:ticketSelecionado.nomeSolicitante, timestamp });
+                                }else if(tecnicoMatch){
+                                    const [, dataStr, conteudo] = tecnicoMatch;
+                                    const [dia,mes,ano,hora,min] = dataStr.match(/\d+/g);
+                                    const timestamp = new Date(ano,mes-1,dia,hora,min);
+                                    todasMensagens.push({ tipo:'tech', conteudo:conteudo.trim(), autor:'Você (Técnico)', timestamp });
+                                }
+                            });
 
-                                const timestampRegex = /^\[\w+\s*-\s*\d{2}\/\d{2}\/\d{4}\s\d{2}:\d{2}\]\s*/;
-                                s = s.replace(timestampRegex, '');
+                            // ✅ ORDENAR por timestamp
+                            todasMensagens.sort((a,b) => a.timestamp - b.timestamp);
 
-                                if(!s) return;
-
-                                if(isUsuario) adicionarMensagemAoChat('user', s, ticketSelecionado.nomeSolicitante);
-                                else if(isTecnico) adicionarMensagemAoChat('tech', s, 'Você (Técnico)');
-                                else adicionarMensagemAoChat('tech', s, 'Você (Técnico)');
+                            // ✅ EXIBIR em ordem cronológica
+                            todasMensagens.forEach(msg => {
+                                adicionarMensagemAoChat(msg.tipo, msg.conteudo, msg.autor);
                             });
 
                             mostrarNotificacao('Nova mensagem do usuário!','success');

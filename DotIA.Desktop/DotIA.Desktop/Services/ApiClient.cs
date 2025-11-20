@@ -106,11 +106,11 @@ namespace DotIA.Desktop.Services
         }
 
         // ─── CHAT ───
-        public async Task<ChatResponse> EnviarPerguntaAsync(int usuarioId, string pergunta)
+        public async Task<ChatResponse> EnviarPerguntaAsync(int usuarioId, string pergunta, int? chatId = null)
         {
             try
             {
-                var request = new { UsuarioId = usuarioId, Pergunta = pergunta };
+                var request = new { UsuarioId = usuarioId, Pergunta = pergunta, ChatId = chatId };
                 var json = JsonConvert.SerializeObject(request);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
@@ -158,7 +158,7 @@ namespace DotIA.Desktop.Services
                 var json = JsonConvert.SerializeObject(request);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                var response = await _httpClient.PostAsync("/Chat/avaliar", content);
+                var response = await _httpClient.PostAsync("/api/Chat/avaliar", content);
                 return response.IsSuccessStatusCode;
             }
             catch

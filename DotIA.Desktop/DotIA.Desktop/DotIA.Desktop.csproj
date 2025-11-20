@@ -13,4 +13,10 @@
 		<PackageReference Include="Microsoft.VisualBasic" Version="10.3.0" />
 	</ItemGroup>
 
+	<ItemGroup>
+		<None Update="Resources\*.png">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
 </Project>

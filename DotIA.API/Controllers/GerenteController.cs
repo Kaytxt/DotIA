@@ -30,8 +30,9 @@ namespace DotIA.API.Controllers
                 var totalTickets = await _context.Tickets.CountAsync();
                 var ticketsAbertos = await _context.Tickets.CountAsync(t => t.IdStatus == 1);
                 var ticketsResolvidos = await _context.Tickets.CountAsync(t => t.IdStatus == 2);
-                var totalChats = await _context.ChatsHistorico.CountAsync();
-                var chatsResolvidos = await _context.ChatsHistorico.CountAsync(c => c.Status == 2 || c.Status == 4);
+                // ✅ Conta chats em aberto e resolvidos pelo técnico (Status 1, 3 e 4)
+                var totalChats = await _context.ChatsHistorico.CountAsync(c => c.Status == 1 || c.Status == 3 || c.Status == 4);
+                var chatsResolvidos = await _context.ChatsHistorico.CountAsync(c => (c.Status == 2 || c.Status == 4) && !string.IsNullOrEmpty(c.Resposta));
 
                 // Tickets resolvidos hoje
                 var hoje = DateTime.UtcNow.Date;

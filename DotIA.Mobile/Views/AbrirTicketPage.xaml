@@ -23,16 +23,22 @@
             <Border.StrokeShape>
                 <RoundRectangle CornerRadius="15"/>
             </Border.StrokeShape>
-            <VerticalStackLayout Spacing="5">
-                <Label Text="💡 Precisa de ajuda urgente?"
-                       TextColor="White"
-                       FontSize="16"
-                       FontAttributes="Bold"/>
-                <Label Text="Abra um ticket diretamente com um técnico sem passar pela IA."
-                       TextColor="White"
-                       FontSize="13"
-                       Opacity="0.9"/>
-            </VerticalStackLayout>
+            <HorizontalStackLayout Spacing="12">
+                <Image Source="icon_ticket.png"
+                       HeightRequest="24"
+                       WidthRequest="24"
+                       VerticalOptions="Center"/>
+                <VerticalStackLayout Spacing="5">
+                    <Label Text="Precisa de ajuda urgente?"
+                           TextColor="White"
+                           FontSize="16"
+                           FontAttributes="Bold"/>
+                    <Label Text="Abra um ticket diretamente com um técnico sem passar pela IA."
+                           TextColor="White"
+                           FontSize="13"
+                           Opacity="0.9"/>
+                </VerticalStackLayout>
+            </HorizontalStackLayout>
         </Border>
 
         <!-- Formulário -->
@@ -41,10 +47,17 @@
 
                 <!-- Título -->
                 <VerticalStackLayout Spacing="8">
-                    <Label Text="📌 Título do Problema"
-                           TextColor="White"
-                           FontSize="15"
-                           FontAttributes="Bold"/>
+                    <HorizontalStackLayout Spacing="8">
+                        <Image Source="icon_ticket.png"
+                               HeightRequest="18"
+                               WidthRequest="18"
+                               VerticalOptions="Center"/>
+                        <Label Text="Título do Problema"
+                               TextColor="White"
+                               FontSize="15"
+                               FontAttributes="Bold"
+                               VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
                     <Border BackgroundColor="{StaticResource BackgroundDark}"
                             Stroke="{StaticResource BorderColor}"
                             StrokeThickness="2"
@@ -53,24 +66,31 @@
                             <RoundRectangle CornerRadius="15"/>
                         </Border.StrokeShape>
                         <Entry Placeholder="Ex: Problema com impressora"
-                               PlaceholderColor="#64748b"
-                               TextColor="White"
+                               PlaceholderColor="{StaticResource TextMuted}"
+                               TextColor="{StaticResource TextSecondary}"
                                Text="{Binding Titulo}"
                                BackgroundColor="Transparent"
                                MaxLength="100"
                                FontSize="15"/>
                     </Border>
                     <Label Text="Dê um título breve e descritivo (mínimo 5 caracteres)"
-                           TextColor="#94a3b8"
+                           TextColor="{StaticResource TextTertiary}"
                            FontSize="12"/>
                 </VerticalStackLayout>
 
                 <!-- Descrição -->
                 <VerticalStackLayout Spacing="8">
-                    <Label Text="📝 Descrição Detalhada"
-                           TextColor="White"
-                           FontSize="15"
-                           FontAttributes="Bold"/>
+                    <HorizontalStackLayout Spacing="8">
+                        <Image Source="icon_balao.png"
+                               HeightRequest="18"
+                               WidthRequest="18"
+                               VerticalOptions="Center"/>
+                        <Label Text="Descrição Detalhada"
+                               TextColor="White"
+                               FontSize="15"
+                               FontAttributes="Bold"
+                               VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
                     <Border BackgroundColor="{StaticResource BackgroundDark}"
                             Stroke="{StaticResource BorderColor}"
                             StrokeThickness="2"
@@ -79,8 +99,8 @@
                             <RoundRectangle CornerRadius="15"/>
                         </Border.StrokeShape>
                         <Editor Placeholder="Descreva seu problema em detalhes...&#x0a;&#x0a;Exemplo:&#x0a;- O que aconteceu?&#x0a;- Quando começou?&#x0a;- Já tentou alguma solução?"
-                                PlaceholderColor="#64748b"
-                                TextColor="White"
+                                PlaceholderColor="{StaticResource TextMuted}"
+                                TextColor="{StaticResource TextSecondary}"
                                 Text="{Binding Descricao}"
                                 BackgroundColor="Transparent"
                                 HeightRequest="200"
@@ -88,7 +108,7 @@
                                 AutoSize="TextChanges"/>
                     </Border>
                     <Label Text="Quanto mais detalhes, mais rápido o técnico poderá ajudar! (mínimo 20 caracteres)"
-                           TextColor="#94a3b8"
+                           TextColor="{StaticResource TextTertiary}"
                            FontSize="12"/>
                 </VerticalStackLayout>
 
@@ -103,13 +123,14 @@
 
             <!-- Cancelar -->
             <Border Grid.Column="0"
-                    BackgroundColor="#475569"
-                    Stroke="Transparent">
+                    BackgroundColor="{StaticResource BackgroundLight}"
+                    Stroke="{StaticResource BorderColor}"
+                    StrokeThickness="1">
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="12"/>
                 </Border.StrokeShape>
                 <Button Text="Cancelar"
-                        TextColor="White"
+                        TextColor="{StaticResource TextSecondary}"
                         BackgroundColor="Transparent"
                         FontSize="16"
                         FontAttributes="Bold"
@@ -119,12 +140,17 @@
 
             <!-- Enviar -->
             <Border Grid.Column="1"
-                    BackgroundColor="#7c3aed"
-                    Stroke="Transparent">
+                    StrokeThickness="0">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="{StaticResource Primary}" Offset="0.0" />
+                        <GradientStop Color="{StaticResource Secondary}" Offset="1.0" />
+                    </LinearGradientBrush>
+                </Border.Background>
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="12"/>
                 </Border.StrokeShape>
-                <Button Text="🎫 Abrir Ticket"
+                <Button Text="Abrir Ticket"
                         TextColor="White"
                         BackgroundColor="Transparent"
                         FontSize="16"

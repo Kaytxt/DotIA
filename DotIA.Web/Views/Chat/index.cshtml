@@ -261,9 +261,11 @@
     .message{ display:flex; margin-bottom:25px; animation:slideIn .3s ease-out; }
     @@keyframes slideIn{ from{opacity:0; transform:translateY(20px)} to{opacity:1; transform:translateY(0)} }
     .message.user{ justify-content:flex-end; }
+    /* Mensagens do técnico à esquerda (como bot) */
 
     .message-content{ display:flex; gap:12px; max-width:70%; }
     .message.user .message-content{ flex-direction:row-reverse; }
+    /* Avatar do técnico à esquerda (como bot) */
 
     /* Avatar base */
     .message-avatar{
@@ -324,6 +326,11 @@
       color:var(--text-color);
       padding:16px 20px; border-radius:18px;
       background:var(--card-bg);
+      word-wrap:break-word;
+      overflow-wrap:break-word;
+      word-break:break-word;
+      white-space:normal;
+      max-width:100%;
     }
     .message.user .message-bubble{ background:linear-gradient(135deg,var(--primary-purple),#7c3aed); border-bottom-right-radius:4px; }
     .message.bot  .message-bubble{ border-bottom-left-radius:4px; }
@@ -733,10 +740,8 @@ Exemplo:
               const el=document.querySelector(`[data-chat-id="${item.id}"]`);
               if(el){ el.classList.add('new-update'); setTimeout(()=>el.classList.remove('new-update'), 3000); }
             });
-            if(chatAtualId && dif.some(i=>i.id===chatAtualId)){
-              const atual=novo.find(h=>h.id===chatAtualId);
-              if(atual) await carregarChat(atual);
-            }
+            // ✅ NÃO recarrega o chat atual automaticamente para evitar duplicação visual
+            // O polling de técnico já cuida de atualizar mensagens novas
           }
           historicoAnterior=novo;
         }
@@ -792,13 +797,7 @@ Exemplo:
 
       document.getElementById('welcomeScreen').style.display='none';
 
-      if(chatAtualId){
-        try{
-          const r=await fetch(`/Chat/verificar-resposta/${chatAtualId}`);
-          const d=await r.json(); chatAtualStatus=d.status;
-        }catch{}
-      }
-
+      // Verifica se o chat está bloqueado (status 3 = aguardando técnico)
       if(chatAtualStatus===3 && chatAtualId){
         adicionarMensagem(msg,'user'); input.value=''; input.style.height='auto';
         const sendBtn=document.getElementById('sendBtn'); sendBtn.disabled=true;
@@ -808,6 +807,12 @@ Exemplo:
             body:JSON.stringify({ chatId:chatAtualId, mensagem:msg })
           });
           const d=await r.json();
+          if(d.sucesso){
+            // ✅ Marca mensagem como processada para evitar duplicação no polling (só pelo conteúdo)
+            mensagensProcessadas.push('U:' + msg);
+            // ✅ Garante que o polling está rodando para receber resposta do técnico
+            if(!pollingInterval) iniciarPolling(chatAtualId);
+          }
           mostrarNotificacao(d.sucesso?'Mensagem enviada ao técnico!':'Erro ao enviar mensagem', d.sucesso?'success':'warning');
         }catch{ mostrarNotificacao('Erro ao conectar com o servidor','warning'); }
         finally{ sendBtn.disabled=false; }
@@ -829,14 +834,18 @@ Exemplo:
         if(d.sucesso){
           chatAtualId=d.chatId; chatAtualStatus=1;
           adicionarMensagem(d.resposta,'bot',msg,d.chatId);
-          mostrarBotoesAvaliacao(msg,d.resposta,d.chatId);
+
+          // Apenas mostra botões se ainda não foi avaliado (status=1)
+          if(chatAtualStatus===1){
+            mostrarBotoesAvaliacao(msg,d.resposta,d.chatId);
+          }
           await carregarHistorico();
         }else{
           adicionarMensagem('Desculpe, ocorreu um erro ao processar sua pergunta.','bot');
         }
       }catch(e){
         typing.classList.remove('active');
-        adicionarMensagem('Erro ao conectar com o servidor.','bot');
+        adicionarMensagem('❌ Erro: '+(e.message||'Erro ao conectar com o servidor.'), 'bot');
       }finally{
         sendBtn.disabled=false;
       }
@@ -872,8 +881,11 @@ Exemplo:
       `;
 
       list.appendChild(wrapper);
+      // ✅ Scroll suave para o final usando requestAnimationFrame
       const container=document.getElementById('messagesContainer');
-      container.scrollTop=container.scrollHeight;
+      requestAnimationFrame(() => {
+        container.scrollTop = container.scrollHeight;
+      });
     }
 
     function escapeHtml(t){ const d=document.createElement('div'); d.textContent=t; return d.innerHTML.replace(/'/g,"\\'"); }
@@ -965,16 +977,21 @@ Exemplo:
     function processarNovasMensagens(solucao){
       const msgs=solucao.split('\n\n');
       msgs.forEach(m=>{
-        if(m.trim() && !mensagensProcessadas.includes(m.trim())){
-          mensagensProcessadas.push(m.trim());
+        if(m.trim()){
           let s=m.trim();
           const u=/^\[USUÁRIO\s*-\s*\d{2}\/\d{2}\/\d{4}\s+\d{2}:\d{2}\]\s*/;
           const t=/^\[TÉCNICO\s*-\s*\d{2}\/\d{2}\/\d{4}\s+\d{2}:\d{2}\]\s*/;
           const isU=u.test(s), isT=t.test(s);
-          s=s.replace(u,'').replace(t,'');
-          if(s){
-            if(isU) adicionarMensagem(s,'user');
-            else if(isT){ adicionarMensagem(s,'tech'); mostrarNotificacao('💬 Nova mensagem do técnico!','success'); }
+          const conteudo=s.replace(u,'').replace(t,'');
+
+          // ✅ Verifica duplicação pelo CONTEÚDO, não pela string completa com timestamp
+          const chaveMsg = (isU ? 'U:' : 'T:') + conteudo;
+          if(!mensagensProcessadas.includes(chaveMsg)){
+            mensagensProcessadas.push(chaveMsg);
+            if(conteudo){
+              if(isU) adicionarMensagem(conteudo,'user');
+              else if(isT){ adicionarMensagem(conteudo,'tech'); mostrarNotificacao('💬 Nova mensagem do técnico!','success'); }
+            }
           }
         }
       });
@@ -1098,8 +1115,38 @@ Exemplo:
       chatAtualId=chat.id;
       chatAtualStatus=chat.status;
 
-      adicionarMensagem(chat.pergunta,'user');
-      adicionarMensagem(chat.resposta,'bot',chat.pergunta,chat.id);
+      // ✅ Função auxiliar para parsear mensagens com formato [dd/MM/yyyy HH:mm]
+      function parsearMensagensSimples(texto) {
+        if (!texto || !texto.trim()) return [];
+
+        const mensagens = [];
+        const regex = /\[(\d{2}\/\d{2}\/\d{4}\s\d{2}:\d{2})\]\s*(.+?)(?=\n\n\[|$)/gs;
+        let match;
+        let encontrouTimestamp = false;
+
+        while ((match = regex.exec(texto)) !== null) {
+          encontrouTimestamp = true;
+          const conteudo = match[2].trim();
+          if(conteudo) mensagens.push(conteudo);
+        }
+
+        // Se não encontrou timestamps, adiciona mensagem inteira
+        if (!encontrouTimestamp && texto.trim()) {
+          mensagens.push(texto.trim());
+        }
+
+        return mensagens;
+      }
+
+      // Parseia perguntas e respostas
+      const perguntas = parsearMensagensSimples(chat.pergunta);
+      const respostas = parsearMensagensSimples(chat.resposta);
+
+      // Exibe perguntas e respostas alternadas
+      for(let i=0;i<Math.max(perguntas.length,respostas.length);i++){
+        if(i<perguntas.length && perguntas[i]) adicionarMensagem(perguntas[i],'user');
+        if(i<respostas.length && respostas[i]) adicionarMensagem(respostas[i],'bot');
+      }
 
       if(chat.status===3) bloquearChatParaIA(); else desbloquearChatParaIA();
 
@@ -1151,13 +1198,16 @@ Exemplo:
           if(d.temResposta && d.solucao){
             d.solucao.split('\n\n').forEach(m=>{
               if(m.trim()){
-                mensagensProcessadas.push(m.trim());
                 let s=m.trim();
                 const ur=/^\[USUÁRIO\s*-\s*\d{2}\/\d{2}\/\d{4}\s+\d{2}:\d{2}\]\s*/,
                       tr=/^\[TÉCNICO\s*-\s*\d{2}\/\d{2}\/\d{4}\s+\d{2}:\d{2}\]\s*/;
                 const isU=ur.test(s), isT=tr.test(s);
-                s=s.replace(ur,'').replace(tr,'');
-                if(s){ if(isU) adicionarMensagem(s,'user'); else if(isT) adicionarMensagem(s,'tech'); }
+                const conteudo=s.replace(ur,'').replace(tr,'');
+
+                // ✅ Marca pelo conteúdo para evitar duplicação
+                const chaveMsg = (isU ? 'U:' : 'T:') + conteudo;
+                mensagensProcessadas.push(chaveMsg);
+                if(conteudo){ if(isU) adicionarMensagem(conteudo,'user'); else if(isT) adicionarMensagem(conteudo,'tech'); }
               }
             });
             if(d.statusTicket===1 && chat.status===3) iniciarPolling(chat.id);
