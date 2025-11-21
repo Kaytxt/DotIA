@@ -73,7 +73,7 @@ namespace DotIA.Web.Controllers
             return Json(resposta);
         }
 
-        // ✅ NOVO: Editar título do chat
+        // edita titulo do chat
         [HttpPut("Chat/EditarTitulo/{chatId}")]
         public async Task<IActionResult> EditarTitulo(int chatId, [FromBody] EditarTituloRequest request)
         {
@@ -96,7 +96,7 @@ namespace DotIA.Web.Controllers
             return Json(new { sucesso });
         }
 
-        // ✅ NOVO: Excluir chat
+        // deleta chat
         [HttpDelete("Chat/Excluir/{chatId}")]
         public async Task<IActionResult> ExcluirChat(int chatId)
         {

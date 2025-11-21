@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DotIA.Web")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1e8ce0a151e71795f2e0e86c08104ede476ec066")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+947dbe116ff857e6ace7b972c9bf278ff6596cbb")]
 [assembly: System.Reflection.AssemblyProductAttribute("DotIA.Web")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DotIA.Web")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

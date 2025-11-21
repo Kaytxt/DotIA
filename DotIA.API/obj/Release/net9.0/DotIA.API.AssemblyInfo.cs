@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DotIA.API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1e8ce0a151e71795f2e0e86c08104ede476ec066")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c3cd54dbe18b37a235efab8df3baa9ae845c8c3b")]
 [assembly: System.Reflection.AssemblyProductAttribute("DotIA.API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DotIA.API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

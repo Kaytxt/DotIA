@@ -16,7 +16,7 @@ namespace DotIA.Desktop.Forms
         private readonly int _usuarioId;
         private readonly string _nomeUsuario;
 
-        // Imagens
+        // imagens
         private Image? _logoImage;
         private Image? _iconPessoa;
         private Image? _iconTicket;
@@ -24,7 +24,7 @@ namespace DotIA.Desktop.Forms
         private Image? _iconBalao;
         private Image? _iconGrafico;
 
-        // Cores
+        // cores do tema
         private readonly Color PrimaryBlue = ColorTranslator.FromHtml("#3b82f6");
         private readonly Color SecondaryBlue = ColorTranslator.FromHtml("#2563eb");
         private readonly Color PrimaryPurple = ColorTranslator.FromHtml("#8b5cf6");
@@ -33,23 +33,23 @@ namespace DotIA.Desktop.Forms
         private readonly Color DarkBg = ColorTranslator.FromHtml("#1a132f");
         private readonly Color DarkerBg = ColorTranslator.FromHtml("#1e1433");
         private readonly Color PanelBg = ColorTranslator.FromHtml("#221a3d");
-        private readonly Color PanelBg2 = ColorTranslator.FromHtml("#2d244e"); // Um pouco mais claro para diferenciar header da tabela
+        private readonly Color PanelBg2 = ColorTranslator.FromHtml("#2d244e");
         private readonly Color PanelBorder = ColorTranslator.FromHtml("#3d2e6b");
         private readonly Color TextColor = ColorTranslator.FromHtml("#e5e7eb");
-        private readonly Color GridSelectionColor = ColorTranslator.FromHtml("#5b21b6"); // Roxo escuro para seleção
+        private readonly Color GridSelectionColor = ColorTranslator.FromHtml("#5b21b6");
 
-        // Layout
+        // layout principal
         private Panel headerPanel = null!;
         private Panel contentPanel = null!;
         private FlowLayoutPanel statsPanel = null!;
         private Panel tabsPanel = null!;
         private Panel tabContent = null!;
 
-        // Header Controls (Variáveis de classe para permitir reposicionamento)
+        // controles do header
         private Label lblUser = null!;
         private Button btnSair = null!;
 
-        // Stats Cards
+        // cards de estatistica
         private Label lblTotalUsuarios = null!;
         private Label lblTicketsAbertos = null!;
         private Label lblTicketsResolvidos = null!;
@@ -57,24 +57,24 @@ namespace DotIA.Desktop.Forms
         private Label lblResolvidosHoje = null!;
         private Label lblChatsResolvidos = null!;
 
-        // Tabs
+        // abas
         private Button btnTabTickets = null!;
         private Button btnTabUsuarios = null!;
         private Button btnTabRelatorios = null!;
         private int _abaAtiva = 0;
 
-        // Content Panels
+        // paineis de conteudo
         private Panel panelTickets = null!;
         private Panel panelUsuarios = null!;
         private Panel panelRelatorios = null!;
 
-        // DataGrids
+        // grids
         private DataGridView dgvTickets = null!;
         private DataGridView dgvUsuarios = null!;
         private DataGridView dgvRelatorioDept = null!;
         private ListBox lstTopUsuarios = null!;
 
-        // Timer
+        // timer pra atualizar
         private WinTimer? _timerRefresh;
 
         public GerenteForm(int usuarioId, string nomeUsuario)
@@ -124,7 +124,7 @@ namespace DotIA.Desktop.Forms
         {
             SuspendLayout();
 
-            // ===== HEADER =====
+            // header
             headerPanel = new Panel
             {
                 Dock = DockStyle.Top,
@@ -134,11 +134,11 @@ namespace DotIA.Desktop.Forms
             };
             headerPanel.Paint += HeaderPanel_Paint;
 
-            // Logo
+            // logo
             var logoIcon = new PictureBox { Size = new Size(55, 55), Location = new Point(40, 12), SizeMode = PictureBoxSizeMode.Zoom, Image = _logoImage, BackColor = Color.Transparent };
             logoIcon.Paint += LogoIcon_Paint;
 
-            // Panel customizado para o logo text
+            // panel do texto do logo
             var logoTextPanel = new Panel
             {
                 Size = new Size(250, 35),
@@ -175,7 +175,7 @@ namespace DotIA.Desktop.Forms
                 BackColor = Color.Transparent
             };
 
-            // CORREÇÃO HEADER: Inicialização das variáveis de classe
+            // label do usuario
             lblUser = new Label
             {
                 Text = $"Olá, {_nomeUsuario}",
@@ -206,7 +206,7 @@ namespace DotIA.Desktop.Forms
                 loginForm.Show();
             };
 
-            // Evento Resize para recalcular posições e evitar sobreposição
+            // reposiciona quando redimensiona
             headerPanel.Resize += (s, e) => AtualizarPosicaoHeader();
 
             headerPanel.Controls.Add(logoIcon);
@@ -216,18 +216,17 @@ namespace DotIA.Desktop.Forms
             headerPanel.Controls.Add(btnSair);
             Controls.Add(headerPanel);
 
-            // ===== CONTENT PANEL =====
+            // painel de conteudo
             contentPanel = new Panel
             {
                 Dock = DockStyle.Fill,
                 BackColor = DarkBg,
-                // Padding Top de 110px garante que o conteúdo comece abaixo do header
                 Padding = new Padding(40, 110, 40, 30),
                 AutoScroll = true
             };
             Controls.Add(contentPanel);
 
-            // ===== STATS PANEL =====
+            // painel de estatisticas
             statsPanel = new FlowLayoutPanel
             {
                 Dock = DockStyle.Top,
@@ -250,7 +249,7 @@ namespace DotIA.Desktop.Forms
 
             contentPanel.Controls.Add(statsPanel);
 
-            // ===== TABS PANEL =====
+            // painel das abas
             tabsPanel = new Panel
             {
                 Dock = DockStyle.Top,
@@ -274,7 +273,7 @@ namespace DotIA.Desktop.Forms
             tabsPanel.Controls.Add(btnTabRelatorios);
             contentPanel.Controls.Add(tabsPanel);
 
-            // ===== TAB CONTENT =====
+            // conteudo das abas
             tabContent = new Panel
             {
                 Dock = DockStyle.Fill,
@@ -289,30 +288,29 @@ namespace DotIA.Desktop.Forms
 
             MudarAba(0);
 
-            // Reorganização da Ordem Z
+            // ordem dos controles
             contentPanel.Controls.SetChildIndex(tabContent, 0);
             contentPanel.Controls.SetChildIndex(tabsPanel, 1);
             contentPanel.Controls.SetChildIndex(statsPanel, 2);
 
             headerPanel.BringToFront();
 
-            // Chama posicionamento inicial do header
             AtualizarPosicaoHeader();
 
             ResumeLayout();
         }
 
-        // CORREÇÃO HEADER: Método para evitar sobreposição
+        // atualiza posicao do header
         private void AtualizarPosicaoHeader()
         {
             int marginRight = 40;
-            int spacing = 20; // Espaço entre botão e nome
+            int spacing = 20;
 
-            // 1. Posiciona o botão sair à direita
+            // botao sair na direita
             btnSair.Location = new Point(headerPanel.Width - btnSair.Width - marginRight, 22);
 
-            // 2. Posiciona o Label do usuário à esquerda do botão Sair
-            lblUser.Location = new Point(btnSair.Left - lblUser.Width - spacing, 28); // Y ajustado para centralizar verticalmente
+            // nome do usuario do lado do botao
+            lblUser.Location = new Point(btnSair.Left - lblUser.Width - spacing, 28);
         }
 
         private Button CriarBotaoTab(string texto, int index)
@@ -455,7 +453,7 @@ namespace DotIA.Desktop.Forms
             tabContent.Controls.Add(panelRelatorios);
         }
 
-        // Helper para criar o painel de título das abas
+        // cria titulo das abas
         private Panel CriarTituloPanel(string texto)
         {
             var pnl = new Panel { Size = new Size(500, 35), Location = new Point(0, 0), BackColor = Color.Transparent };
@@ -472,7 +470,7 @@ namespace DotIA.Desktop.Forms
             return pnl;
         }
 
-        // Helper para criar o container da grid com bordas arredondadas
+        // container da grid
         private Panel CriarContainerGrid()
         {
             var pnl = new Panel
@@ -486,7 +484,7 @@ namespace DotIA.Desktop.Forms
             return pnl;
         }
 
-        // MELHORIA VISUAL: Configuração bonita da DataGridView
+        // config da datagridview
         private DataGridView CriarDataGridView()
         {
             var dgv = new DataGridView
@@ -496,7 +494,6 @@ namespace DotIA.Desktop.Forms
                 ForeColor = TextColor,
                 GridColor = PanelBorder,
                 BorderStyle = BorderStyle.None,
-                // Remove linhas verticais e deixa só horizontais para visual moderno
                 CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal,
                 ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None,
                 AllowUserToAddRows = false,
@@ -508,33 +505,33 @@ namespace DotIA.Desktop.Forms
                 MultiSelect = false,
                 RowHeadersVisible = false,
                 EnableHeadersVisualStyles = false,
-                ColumnHeadersHeight = 50, // Header mais alto
-                RowTemplate = { Height = 50 } // Linhas mais altas
+                ColumnHeadersHeight = 50,
+                RowTemplate = { Height = 50 }
             };
 
-            // Estilo do Cabeçalho
+            // estilo do header
             dgv.ColumnHeadersDefaultCellStyle.BackColor = PanelBg2;
             dgv.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
             dgv.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 10, FontStyle.Bold);
-            dgv.ColumnHeadersDefaultCellStyle.Padding = new Padding(15, 0, 0, 0); // Padding lateral
+            dgv.ColumnHeadersDefaultCellStyle.Padding = new Padding(15, 0, 0, 0);
             dgv.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
 
-            // Estilo das Células
+            // estilo das celulas
             dgv.DefaultCellStyle.BackColor = PanelBg;
             dgv.DefaultCellStyle.ForeColor = TextColor;
-            dgv.DefaultCellStyle.SelectionBackColor = GridSelectionColor; // Roxo suave
+            dgv.DefaultCellStyle.SelectionBackColor = GridSelectionColor;
             dgv.DefaultCellStyle.SelectionForeColor = Color.White;
-            dgv.DefaultCellStyle.Padding = new Padding(15, 0, 0, 0); // Padding lateral
+            dgv.DefaultCellStyle.Padding = new Padding(15, 0, 0, 0);
             dgv.DefaultCellStyle.Font = new Font("Segoe UI", 10);
             dgv.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
 
-            // Linhas alternadas sutis
+            // linhas alternadas
             dgv.AlternatingRowsDefaultCellStyle.BackColor = DarkerBg;
 
             return dgv;
         }
 
-        // MELHORIA VISUAL: Desenho customizado da ListBox (Top Usuários)
+        // desenho customizado da listbox
         private void LstTopUsuarios_DrawItem(object? sender, DrawItemEventArgs e)
         {
             if (e.Index < 0) return;
@@ -568,7 +565,7 @@ namespace DotIA.Desktop.Forms
             e.DrawFocusRectangle();
         }
 
-        // ===== PAINT HANDLERS =====
+        // paint handlers
 
         private void HeaderPanel_Paint(object? sender, PaintEventArgs e)
         {
@@ -681,7 +678,7 @@ namespace DotIA.Desktop.Forms
             return path;
         }
 
-        // ===== NAVEGAÇÃO =====
+        // navegacao entre abas
 
         private void MudarAba(int index)
         {
@@ -698,7 +695,7 @@ namespace DotIA.Desktop.Forms
             else if (index == 2) CarregarRelatoriosAsync();
         }
 
-        // ===== DADOS =====
+        // dados
 
         private void ConfigurarTimers()
         {

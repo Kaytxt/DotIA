@@ -24,9 +24,7 @@ namespace DotIA.Web.Controllers
             return View();
         }
 
-        // ═══════════════════════════════════════════════════════════
-        // DASHBOARD
-        // ═══════════════════════════════════════════════════════════
+        // dashboard
 
         [HttpGet]
         public async Task<IActionResult> ObterDashboard()
@@ -39,9 +37,7 @@ namespace DotIA.Web.Controllers
             return Json(dashboard);
         }
 
-        // ═══════════════════════════════════════════════════════════
-        // USUÁRIOS
-        // ═══════════════════════════════════════════════════════════
+        // usuarios
 
         [HttpGet]
         public async Task<IActionResult> ObterUsuarios()
@@ -104,9 +100,7 @@ namespace DotIA.Web.Controllers
             return Json(tickets);
         }
 
-        // ═══════════════════════════════════════════════════════════
-        // TICKETS
-        // ═══════════════════════════════════════════════════════════
+        // tickets
 
         [HttpGet]
         public async Task<IActionResult> ObterTodosTickets()
@@ -161,9 +155,7 @@ namespace DotIA.Web.Controllers
             return Json(new { sucesso });
         }
 
-        // ═══════════════════════════════════════════════════════════
-        // RELATÓRIOS
-        // ═══════════════════════════════════════════════════════════
+        // relatorios
 
         [HttpGet]
         public async Task<IActionResult> ObterRelatorioDepartamentos()
@@ -203,9 +195,7 @@ namespace DotIA.Web.Controllers
         }
     }
 
-    // ═══════════════════════════════════════════════════════════
-    // MODELS
-    // ═══════════════════════════════════════════════════════════
+    // models
 
     public class AtualizarUsuarioRequest
     {

@@ -39,7 +39,7 @@ namespace DotIA.Web.Controllers
             return Json(new { sucesso });
         }
 
-        // ✅ NOVO: Obter ticket específico para polling
+        // busca ticket especifico
         [HttpGet("Tecnico/ObterTicket/{ticketId}")]
         public async Task<IActionResult> ObterTicket(int ticketId)
         {

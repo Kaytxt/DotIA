@@ -148,7 +148,7 @@
                                             <RoundRectangle CornerRadius="5,18,18,18"/>
                                         </Border.StrokeShape>
                                         <Border.Triggers>
-                                            <DataTrigger TargetType="Border" Binding="{Binding NomeRemetente}" Value="Técnico 🔧">
+                                            <DataTrigger TargetType="Border" Binding="{Binding NomeRemetente}" Value="Técnico">
                                                 <Setter Property="IsVisible" Value="False"/>
                                             </DataTrigger>
                                         </Border.Triggers>
@@ -184,7 +184,7 @@
                                             <RoundRectangle CornerRadius="5,15,15,15"/>
                                         </Border.StrokeShape>
                                         <Border.Triggers>
-                                            <DataTrigger TargetType="Border" Binding="{Binding NomeRemetente}" Value="DotIA 🤖">
+                                            <DataTrigger TargetType="Border" Binding="{Binding NomeRemetente}" Value="DotIA">
                                                 <Setter Property="IsVisible" Value="False"/>
                                             </DataTrigger>
                                         </Border.Triggers>

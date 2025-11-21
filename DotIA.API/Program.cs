@@ -6,26 +6,24 @@ var builder = WebApplication.CreateBuilder(args);
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
-// ═══════════════════════════════════════════════════════════════════
-// CONFIGURAR SERVICES
-// ═══════════════════════════════════════════════════════════════════
+// configs dos services
 
-// Configurar o DbContext com PostgreSQL
+// db context com postgres
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("ConexaoDotIA")));
 
-// Adicionar Controllers
+// adiciona os controllers
 builder.Services.AddControllers();
 
-// Configurar Swagger/OpenAPI
+// swagger pra testar a api
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Registrar HttpClient e OpenAI Service
+// httpclient e service do openai
 builder.Services.AddHttpClient<IOpenAIService, OpenAIService>();
 builder.Services.AddScoped<IOpenAIService, OpenAIService>();
 
-// Configurar CORS para permitir acesso do frontend
+// cors liberado (depois ver se restringe)
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
@@ -36,15 +34,9 @@ builder.Services.AddCors(options =>
     });
 });
 
-// ═══════════════════════════════════════════════════════════════════
-// BUILD APP
-// ═══════════════════════════════════════════════════════════════════
-
 var app = builder.Build();
 
-// ═══════════════════════════════════════════════════════════════════
-// VERIFICAR/CRIAR BANCO DE DADOS
-// ═══════════════════════════════════════════════════════════════════
+// checa se o banco ta funcionando
 
 using (var scope = app.Services.CreateScope())
 {
@@ -53,7 +45,6 @@ using (var scope = app.Services.CreateScope())
     {
         var context = services.GetRequiredService<ApplicationDbContext>();
 
-        // Verificar se o banco existe e criar se necessário
         if (context.Database.CanConnect())
         {
             Console.WriteLine("✅ Conexão com banco de dados estabelecida!");
@@ -75,10 +66,7 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-// ═══════════════════════════════════════════════════════════════════
-// CONFIGURAR MIDDLEWARE
-// ═══════════════════════════════════════════════════════════════════
-
+// middleware
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -88,10 +76,6 @@ if (app.Environment.IsDevelopment())
 app.UseCors("AllowAll");
 app.UseAuthorization();
 app.MapControllers();
-
-// ═══════════════════════════════════════════════════════════════════
-// INICIAR APLICAÇÃO
-// ═══════════════════════════════════════════════════════════════════
 
 Console.WriteLine("🚀 DotIA API iniciada!");
 Console.WriteLine($"📍 Swagger UI: http://localhost:5100/swagger");

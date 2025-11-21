@@ -17,10 +17,7 @@ namespace DotIA.API.Controllers
             _context = context;
         }
 
-        // ═══════════════════════════════════════════════════════════
-        // DASHBOARD - ESTATÍSTICAS
-        // ═══════════════════════════════════════════════════════════
-
+        // estatisticas do dashboard
         [HttpGet("dashboard")]
         public async Task<ActionResult> ObterDashboard()
         {
@@ -30,16 +27,16 @@ namespace DotIA.API.Controllers
                 var totalTickets = await _context.Tickets.CountAsync();
                 var ticketsAbertos = await _context.Tickets.CountAsync(t => t.IdStatus == 1);
                 var ticketsResolvidos = await _context.Tickets.CountAsync(t => t.IdStatus == 2);
-                // ✅ Conta chats em aberto e resolvidos pelo técnico (Status 1, 3 e 4)
+                // contagem de chats (status 1, 3 e 4)
                 var totalChats = await _context.ChatsHistorico.CountAsync(c => c.Status == 1 || c.Status == 3 || c.Status == 4);
                 var chatsResolvidos = await _context.ChatsHistorico.CountAsync(c => (c.Status == 2 || c.Status == 4) && !string.IsNullOrEmpty(c.Resposta));
 
-                // Tickets resolvidos hoje
+                // quantos resolvidos hoje
                 var hoje = DateTime.UtcNow.Date;
                 var ticketsResolvidosHoje = await _context.Tickets
                     .CountAsync(t => t.IdStatus == 2 && t.DataEncerramento.HasValue && t.DataEncerramento.Value.Date == hoje);
 
-                // Top 5 usuários com mais tickets
+                // top 5 users
                 var topUsuarios = await _context.Tickets
                     .GroupBy(t => t.IdSolicitante)
                     .Select(g => new
@@ -83,10 +80,7 @@ namespace DotIA.API.Controllers
             }
         }
 
-        // ═══════════════════════════════════════════════════════════
-        // TICKETS - MONITORAMENTO E RESPOSTA
-        // ═══════════════════════════════════════════════════════════
-
+        // lista de tickets
         [HttpGet("tickets/todos")]
         public async Task<ActionResult> ObterTodosTickets()
         {
@@ -177,7 +171,7 @@ namespace DotIA.API.Controllers
                     return NotFound(new { erro = "Ticket não encontrado" });
                 }
 
-                // Adiciona resposta do gerente
+                // resposta do gerente
                 if (!string.IsNullOrEmpty(request.Resposta))
                 {
                     var timestamp = DateTime.UtcNow.ToString("dd/MM/yyyy HH:mm");
@@ -193,19 +187,19 @@ namespace DotIA.API.Controllers
                     }
                 }
 
-                // Se marcar como resolvido
+                // marca como resolvido
                 if (request.MarcarComoResolvido)
                 {
-                    ticket.IdStatus = 2; // Resolvido
+                    ticket.IdStatus = 2;
                     ticket.DataEncerramento = DateTime.UtcNow;
 
-                    // Atualiza o chat relacionado
+                    // atualiza o chat tb
                     var chat = await _context.ChatsHistorico
                         .FirstOrDefaultAsync(c => c.IdTicket == ticket.Id);
 
                     if (chat != null)
                     {
-                        chat.Status = 4; // Resolvido
+                        chat.Status = 4;
                     }
                 }
 
@@ -225,10 +219,7 @@ namespace DotIA.API.Controllers
             }
         }
 
-        // ═══════════════════════════════════════════════════════════
-        // GERENCIAMENTO DE USUÁRIOS
-        // ═══════════════════════════════════════════════════════════
-
+        // gerenciar usuarios
         [HttpGet("usuarios")]
         public async Task<ActionResult> ListarUsuarios()
         {
@@ -299,7 +290,7 @@ namespace DotIA.API.Controllers
                     return NotFound(new { erro = "Usuário não encontrado" });
                 }
 
-                // Verifica se o email já está em uso por outro usuário
+                // checa se email ja existe
                 if (!string.IsNullOrEmpty(request.Email) && request.Email != usuario.Email)
                 {
                     var emailExiste = await _context.Solicitantes
@@ -386,25 +377,25 @@ namespace DotIA.API.Controllers
                     return NotFound(new { erro = "Usuário não encontrado" });
                 }
 
-                // Remove todos os chats do usuário
+                // deleta os chats
                 var chats = await _context.ChatsHistorico
                     .Where(c => c.IdSolicitante == usuarioId)
                     .ToListAsync();
                 _context.ChatsHistorico.RemoveRange(chats);
 
-                // Remove todos os tickets do usuário
+                // deleta os tickets
                 var tickets = await _context.Tickets
                     .Where(t => t.IdSolicitante == usuarioId)
                     .ToListAsync();
                 _context.Tickets.RemoveRange(tickets);
 
-                // Remove histórico útil
+                // deleta historico
                 var historico = await _context.HistoricoUtil
                     .Where(h => h.IdSolicitante == usuarioId)
                     .ToListAsync();
                 _context.HistoricoUtil.RemoveRange(historico);
 
-                // Remove o usuário
+                // deleta o user
                 _context.Solicitantes.Remove(usuario);
 
                 await _context.SaveChangesAsync();
@@ -421,10 +412,7 @@ namespace DotIA.API.Controllers
             }
         }
 
-        // ═══════════════════════════════════════════════════════════
-        // TICKETS POR USUÁRIO
-        // ═══════════════════════════════════════════════════════════
-
+        // tickets de um usuario especifico
         [HttpGet("usuarios/{usuarioId}/tickets")]
         public async Task<ActionResult> ObterTicketsUsuario(int usuarioId)
         {
@@ -460,10 +448,7 @@ namespace DotIA.API.Controllers
             }
         }
 
-        // ═══════════════════════════════════════════════════════════
-        // RELATÓRIOS
-        // ═══════════════════════════════════════════════════════════
-
+        // relatorio por departamento
         [HttpGet("relatorio-departamentos")]
         public async Task<ActionResult> RelatorioPorDepartamento()
         {
@@ -504,13 +489,13 @@ namespace DotIA.API.Controllers
                     return NotFound(new { erro = "Usuário não encontrado" });
                 }
 
-                // Verifica se já existe como técnico
+                // ve se ja e tecnico
                 var tecnicoExistente = await _context.Tecnicos
                     .FirstOrDefaultAsync(t => t.Email == solicitante.Email);
 
                 if (request.Cargo == "Solicitante")
                 {
-                    // Remove da tabela de técnicos se existir
+                    // remove de tecnicos se tiver
                     if (tecnicoExistente != null)
                     {
                         _context.Tecnicos.Remove(tecnicoExistente);
@@ -522,12 +507,12 @@ namespace DotIA.API.Controllers
 
                     if (tecnicoExistente != null)
                     {
-                        // Atualiza cargo existente
+                        // atualiza cargo
                         tecnicoExistente.IsGerente = isGerente;
                     }
                     else
                     {
-                        // Cria novo técnico/gerente
+                        // cria novo tecnico/gerente
                         var novoTecnico = new Tecnico
                         {
                             Nome = solicitante.Nome,
@@ -560,9 +545,7 @@ namespace DotIA.API.Controllers
 
     }
 
-    // ═══════════════════════════════════════════════════════════
-    // MODELS
-    // ═══════════════════════════════════════════════════════════
+    // models
 
     public class AtualizarUsuarioRequest
     {

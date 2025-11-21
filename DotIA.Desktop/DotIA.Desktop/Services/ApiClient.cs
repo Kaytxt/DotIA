@@ -12,7 +12,7 @@ namespace DotIA.Desktop.Services
     {
         private const string BASE_URL = "http://localhost:5100";
 
-        // Inicializa uma única vez
+        // http client estatico
         private static readonly HttpClient _httpClient = CreateClient();
 
         private static HttpClient CreateClient()
@@ -25,11 +25,10 @@ namespace DotIA.Desktop.Services
             return c;
         }
 
-        // Construtor vazio – não mexe mais no HttpClient
         public ApiClient() { }
 
 
-        // ─── LOGIN E REGISTRO ───
+        // login e registro
         public async Task<LoginResponse> LoginAsync(string email, string senha)
         {
             try
@@ -105,7 +104,7 @@ namespace DotIA.Desktop.Services
             }
         }
 
-        // ─── CHAT ───
+        // chat
         public async Task<ChatResponse> EnviarPerguntaAsync(int usuarioId, string pergunta, int? chatId = null)
         {
             try
@@ -258,7 +257,7 @@ namespace DotIA.Desktop.Services
             }
         }
 
-        // ─── TICKETS ───
+        // tickets
         public async Task<List<TicketDTO>> ObterTicketsPendentesAsync()
         {
             try
@@ -316,7 +315,7 @@ namespace DotIA.Desktop.Services
             }
         }
 
-        // ─── GERENTE ───
+        // gerente
         public async Task<DashboardDTO> ObterDashboardAsync()
         {
             try
@@ -519,9 +518,7 @@ namespace DotIA.Desktop.Services
         }
     }
 
-    // ═══════════════════════════════════════════════════════════════════
-    // DTOs - Modelos de Dados
-    // ═══════════════════════════════════════════════════════════════════
+    // DTOs
 
     public class LoginResponse
     {
@@ -626,7 +623,7 @@ namespace DotIA.Desktop.Services
         public int Status { get; set; }
     }
 
-    // DTOs do Gerente
+    // dtos do gerente
     public class DashboardDTO
     {
         public int TotalUsuarios { get; set; }

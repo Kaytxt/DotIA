@@ -29,7 +29,7 @@ namespace DotIA.API.Controllers
 
                 ChatHistorico historico;
 
-                // ✅ Se ChatId fornecido, continua conversa no mesmo chat
+                // se tem chatid continua na mesma conversa
                 if (request.ChatId.HasValue && request.ChatId.Value > 0)
                 {
                     historico = await _context.ChatsHistorico.FindAsync(request.ChatId.Value);
@@ -43,7 +43,7 @@ namespace DotIA.API.Controllers
                         });
                     }
 
-                    // Concatena nova pergunta e resposta no mesmo chat
+                    // junta a nova msg com as antigas
                     var timestamp = DateTime.UtcNow.ToString("dd/MM/yyyy HH:mm");
                     historico.Pergunta += $"\n\n[{timestamp}] {request.Pergunta}";
                     historico.Resposta += $"\n\n[{timestamp}] {resposta}";
@@ -53,7 +53,7 @@ namespace DotIA.API.Controllers
                 }
                 else
                 {
-                    // Cria novo chat
+                    // chat novo
                     historico = new ChatHistorico
                     {
                         IdSolicitante = request.UsuarioId,
@@ -89,7 +89,7 @@ namespace DotIA.API.Controllers
             }
         }
 
-        // ✅ Enviar mensagem do usuário para o técnico
+        // manda msg pro tecnico
         [HttpPost("enviar-para-tecnico")]
         public async Task<ActionResult> EnviarMensagemParaTecnico([FromBody] MensagemUsuarioRequest request)
         {
@@ -114,7 +114,7 @@ namespace DotIA.API.Controllers
                     return NotFound(new { erro = "Ticket não encontrado" });
                 }
 
-                // ✅ CONCATENA mensagem do usuário ao ticket
+                // adiciona a msg do usuario no ticket
                 var timestamp = DateTime.UtcNow.ToString("dd/MM/yyyy HH:mm");
                 var novaMensagem = $"[USUÁRIO - {timestamp}] {request.Mensagem}";
 
@@ -198,7 +198,7 @@ namespace DotIA.API.Controllers
 
                 if (request.FoiUtil)
                 {
-                    // Salva como útil
+                    // foi util, salva
                     _context.HistoricoUtil.Add(new HistoricoUtil
                     {
                         IdSolicitante = request.UsuarioId,
@@ -207,7 +207,6 @@ namespace DotIA.API.Controllers
                         DataHora = DateTime.UtcNow
                     });
 
-                    // Atualiza status do chat para concluído
                     if (chat != null)
                     {
                         chat.Status = 2; // Concluído
@@ -215,7 +214,7 @@ namespace DotIA.API.Controllers
                 }
                 else
                 {
-                    // Cria ticket para técnico resolver
+                    // nao foi util, abre ticket
                     var ticket = new Ticket
                     {
                         IdSolicitante = request.UsuarioId,
@@ -228,9 +227,8 @@ namespace DotIA.API.Controllers
                     };
 
                     _context.Tickets.Add(ticket);
-                    await _context.SaveChangesAsync(); // Salva para obter o ID
+                    await _context.SaveChangesAsync();
 
-                    // Atualiza status do chat para pendente e vincula ticket
                     if (chat != null)
                     {
                         chat.Status = 3; // Pendente com Técnico
@@ -269,7 +267,6 @@ namespace DotIA.API.Controllers
                     return BadRequest(new { erro = "A descrição do problema é obrigatória" });
                 }
 
-                // Cria o ticket
                 var ticket = new Ticket
                 {
                     IdSolicitante = request.UsuarioId,
@@ -284,7 +281,7 @@ namespace DotIA.API.Controllers
                 _context.Tickets.Add(ticket);
                 await _context.SaveChangesAsync();
 
-                // Cria o chat histórico vinculado ao ticket
+                // cria historico do chat
                 var chatHistorico = new ChatHistorico
                 {
                     IdSolicitante = request.UsuarioId,
@@ -327,7 +324,7 @@ namespace DotIA.API.Controllers
                     return NotFound(new { erro = "Chat não encontrado" });
                 }
 
-                // Se tem ticket vinculado, buscar a solução
+                // verifica se tem ticket
                 if (chat.IdTicket.HasValue)
                 {
                     var ticket = await _context.Tickets.FindAsync(chat.IdTicket.Value);
@@ -381,7 +378,7 @@ namespace DotIA.API.Controllers
                     return NotFound(new { erro = "Chat não encontrado" });
                 }
 
-                // Se tem ticket, buscar informações do ticket
+                // pega info do ticket se tiver
                 object ticketInfo = null;
                 if (chat.IdTicket.HasValue)
                 {
@@ -445,7 +442,7 @@ namespace DotIA.API.Controllers
                     return NotFound(new { erro = "Chat não encontrado" });
                 }
 
-                // Se tem ticket vinculado, também exclui o ticket
+                // deleta o ticket junto se tiver
                 if (chat.IdTicket.HasValue)
                 {
                     var ticket = await _context.Tickets.FindAsync(chat.IdTicket.Value);
