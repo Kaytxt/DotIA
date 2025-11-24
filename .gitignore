@@ -2,3 +2,6 @@
 obj/
 bin/
 .vs
+DotIA.API/appsettings.json
+DotIA.API/appsettings.json
+DotIA.API/bin/Debug/net9.0/appsettings.json

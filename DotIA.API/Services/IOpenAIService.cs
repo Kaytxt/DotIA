@@ -23,16 +23,17 @@ namespace DotIA.API.Services
         {
             try
             {
-                var endpoint = _configuration["AzureOpenAI:Endpoint"];
-                var apiKey = _configuration["AzureOpenAI:ApiKey"];
+                var apiKey = _configuration["OpenAI:ApiKey"];
+                var modelo = _configuration["OpenAI:Model"] ?? "gpt-4o-mini";
 
-                if (string.IsNullOrEmpty(endpoint) || string.IsNullOrEmpty(apiKey))
+                if (string.IsNullOrEmpty(apiKey))
                 {
-                    return "⚠️ Configuração da Azure OpenAI não encontrada.";
+                    return "⚠️ Configuração da OpenAI não encontrada. Por favor, configure a chave da API.";
                 }
 
                 var requestBody = new
                 {
+                    model = modelo,
                     messages = new[]
                     {
                         new { role = "system", content = @"Você é DotIA, uma assistente virtual especializada em suporte técnico de TI integrada ao sistema de gestão de chamados da empresa. Seu papel é ajudar usuários com problemas técnicos, dúvidas sobre tecnologia e orientações sobre o uso de sistemas corporativos.
@@ -85,9 +86,12 @@ Seu objetivo: Resolver problemas técnicos de forma rápida e eficiente, mantend
 
                 var json = JsonSerializer.Serialize(requestBody);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
-                content.Headers.Add("api-key", apiKey);
 
-                var response = await _httpClient.PostAsync(endpoint, content);
+                // usa o endpoint da openai original
+                _httpClient.DefaultRequestHeaders.Clear();
+                _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiKey}");
+
+                var response = await _httpClient.PostAsync("https://api.openai.com/v1/chat/completions", content);
                 var result = await response.Content.ReadAsStringAsync();
 
                 if (response.IsSuccessStatusCode)

@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Kauan Douglas\\Desktop\\Kaytxt\\DotIABait\\DotIA.Desktop\\DotIA.Desktop\\DotIA.Desktop.csproj": {}
+    "C:\\Users\\kauan\\Desktop\\DotIA\\DotIA.Desktop\\DotIA.Desktop\\DotIA.Desktop.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Kauan Douglas\\Desktop\\Kaytxt\\DotIABait\\DotIA.Desktop\\DotIA.Desktop\\DotIA.Desktop.csproj": {
+    "C:\\Users\\kauan\\Desktop\\DotIA\\DotIA.Desktop\\DotIA.Desktop\\DotIA.Desktop.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Kauan Douglas\\Desktop\\Kaytxt\\DotIABait\\DotIA.Desktop\\DotIA.Desktop\\DotIA.Desktop.csproj",
+        "projectUniqueName": "C:\\Users\\kauan\\Desktop\\DotIA\\DotIA.Desktop\\DotIA.Desktop\\DotIA.Desktop.csproj",
         "projectName": "DotIA.Desktop",
-        "projectPath": "C:\\Users\\Kauan Douglas\\Desktop\\Kaytxt\\DotIABait\\DotIA.Desktop\\DotIA.Desktop\\DotIA.Desktop.csproj",
-        "packagesPath": "C:\\Users\\Kauan Douglas\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Kauan Douglas\\Desktop\\Kaytxt\\DotIABait\\DotIA.Desktop\\DotIA.Desktop\\obj\\",
+        "projectPath": "C:\\Users\\kauan\\Desktop\\DotIA\\DotIA.Desktop\\DotIA.Desktop\\DotIA.Desktop.csproj",
+        "packagesPath": "C:\\Users\\kauan\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\kauan\\Desktop\\DotIA\\DotIA.Desktop\\DotIA.Desktop\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\Kauan Douglas\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\kauan\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -45,7 +45,7 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "10.0.100"
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net8.0-windows7.0": {
@@ -79,7 +79,7 @@
               "privateAssets": "none"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.100/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.305/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
