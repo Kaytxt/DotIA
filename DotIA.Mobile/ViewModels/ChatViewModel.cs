@@ -165,9 +165,10 @@ namespace DotIA.Mobile.ViewModels
             for (int i = 0; i < lista1.Count; i++)
             {
                 if (lista1[i].Id != lista2[i].Id ||
-                    lista1[i].Status != lista2[i].Status ||
-                    lista1[i].Resposta != lista2[i].Resposta ||
-                    lista1[i].Solucao != lista2[i].Solucao) // ✅ Compara Solucao
+                        lista1[i].Status != lista2[i].Status ||
+                        lista1[i].Resposta != lista2[i].Resposta ||
+                        lista1[i].Solucao != lista2[i].Solucao ||
+                        lista1[i].Titulo != lista2[i].Titulo)
                 {
                     return false;
                 }
@@ -857,17 +858,17 @@ namespace DotIA.Mobile.ViewModels
                 if (sucesso)
                 {
                     MensagemParaTecnico = string.Empty;
-                    await Shell.Current.DisplayAlert("Sucesso", "Mensagem enviada ao técnico!", "OK");
+                    await Application.Current!.MainPage!.DisplayAlert("Sucesso", "Mensagem enviada ao técnico!", "OK");
                     await CarregarHistoricoAsync();
                 }
                 else
                 {
-                    await Shell.Current.DisplayAlert("Erro", "Erro ao enviar mensagem.", "OK");
+                    await Application.Current!.MainPage!.DisplayAlert("Erro", "Erro ao enviar mensagem.", "OK");
                 }
             }
             catch (Exception ex)
             {
-                await Shell.Current.DisplayAlert("Erro", $"Erro: {ex.Message}", "OK");
+                await Application.Current!.MainPage!.DisplayAlert("Erro", $"Erro: {ex.Message}", "OK");
             }
         }
 
@@ -943,7 +944,7 @@ namespace DotIA.Mobile.ViewModels
         [RelayCommand]
         private async Task ExcluirChatAsync(int chatId)
         {
-            var confirmacao = await Shell.Current.DisplayAlert(
+            var confirmacao = await Application.Current!.MainPage!.DisplayAlert(
                 "Confirmação",
                 "Deseja realmente excluir este chat?",
                 "Sim",
@@ -962,12 +963,12 @@ namespace DotIA.Mobile.ViewModels
                 }
                 else
                 {
-                    await Shell.Current.DisplayAlert("Erro", "Erro ao excluir chat.", "OK");
+                    await Application.Current!.MainPage!.DisplayAlert("Erro", "Erro ao excluir chat.", "OK");
                 }
             }
             catch (Exception ex)
             {
-                await Shell.Current.DisplayAlert("Erro", $"Erro: {ex.Message}", "OK");
+                await Application.Current!.MainPage!.DisplayAlert("Erro", $"Erro: {ex.Message}", "OK");
             }
         }
 

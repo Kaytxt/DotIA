@@ -418,16 +418,14 @@
                                     <SwipeView>
                                         <SwipeView.RightItems>
                                             <SwipeItems>
-                                                <SwipeItem Text="Editar"
-                                                          IconImageSource="✏️"
-                                                          BackgroundColor="#3b82f6"
-                                                          Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:ChatViewModel}}, Path=EditarTituloChatCommand}"
-                                                          CommandParameter="{Binding .}"/>
-                                                <SwipeItem Text="Excluir"
-                                                          IconImageSource="🗑️"
-                                                          BackgroundColor="#dc2626"
-                                                          Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:ChatViewModel}}, Path=ExcluirChatCommand}"
-                                                          CommandParameter="{Binding Id}"/>
+                                                <SwipeItem Text="✏ Editar"
+                                                  BackgroundColor="#3b82f6"
+                                                  Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:ChatViewModel}}, Path=EditarTituloChatCommand}"
+                                                  CommandParameter="{Binding .}"/>
+                                                                                        <SwipeItem Text="🗑 Excluir"
+                                                  BackgroundColor="#dc2626"
+                                                  Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:ChatViewModel}}, Path=ExcluirChatCommand}"
+                                                  CommandParameter="{Binding Id}"/>
                                             </SwipeItems>
                                         </SwipeView.RightItems>
                                         <Border BackgroundColor="{StaticResource BackgroundDark}"
