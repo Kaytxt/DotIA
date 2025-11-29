@@ -1,3 +1,4 @@
+using DotIA.Mobile.Models;
 using DotIA.Mobile.ViewModels;
 
 namespace DotIA.Mobile.Views;
@@ -79,5 +80,51 @@ public partial class ChatPage : ContentPage
     {
         base.OnDisappearing();
         _viewModel.StopAutoRefresh();
+    }
+
+    private DateTime _lastPointerPressedTime;
+    private ChatHistoricoDTO? _lastPressedChat;
+
+    private async void OnChatItemPointerPressed(object? sender, PointerEventArgs e)
+    {
+        if (sender is not Border border || border.BindingContext is not ChatHistoricoDTO chat)
+            return;
+
+        _lastPressedChat = chat;
+        _lastPointerPressedTime = DateTime.Now;
+
+        // Aguarda 500ms para detectar long press
+        await Task.Delay(500);
+
+        // Verifica se ainda está pressionado (long press)
+        if (_lastPressedChat == chat && (DateTime.Now - _lastPointerPressedTime).TotalMilliseconds >= 500)
+        {
+            await MostrarMenuContextoChat(chat);
+        }
+    }
+
+    private async Task MostrarMenuContextoChat(ChatHistoricoDTO chat)
+    {
+        var action = await DisplayActionSheet(
+            chat.TituloExibicao,
+            "Cancelar",
+            "Excluir Chat",
+            "Editar Título"
+        );
+
+        if (action == "Editar Título")
+        {
+            if (BindingContext is ChatViewModel viewModel)
+            {
+                await viewModel.EditarTituloChatCommand.ExecuteAsync(chat);
+            }
+        }
+        else if (action == "Excluir Chat")
+        {
+            if (BindingContext is ChatViewModel viewModel)
+            {
+                await viewModel.ExcluirChatCommand.ExecuteAsync(chat.Id);
+            }
+        }
     }
 }

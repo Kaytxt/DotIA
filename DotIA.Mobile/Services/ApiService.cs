@@ -8,7 +8,7 @@ namespace DotIA.Mobile.Services
     public class ApiService
     {
         private readonly HttpClient _httpClient;
-        private const string BaseUrl = "http://192.168.137.1:5100"; // Android Emulator -> localhost
+        private const string BaseUrl = "http://192.168.15.55:5100";
         // IMPORTANTE: Para dispositivo físico, troque por "http://SEU_IP_LOCAL:5100"
 
         public ApiService()

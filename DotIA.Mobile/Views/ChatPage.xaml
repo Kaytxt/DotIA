@@ -431,34 +431,38 @@
                                             </SwipeItems>
                                         </SwipeView.RightItems>
                                         <Border BackgroundColor="{StaticResource BackgroundDark}"
-                                                Stroke="{StaticResource BorderColor}"
-                                                StrokeThickness="1"
-                                                Margin="0,2"
-                                                Padding="12">
+        Stroke="{StaticResource BorderColor}"
+        StrokeThickness="1"
+        Margin="0,2"
+        Padding="12">
                                             <Border.StrokeShape>
                                                 <RoundRectangle CornerRadius="10"/>
                                             </Border.StrokeShape>
                                             <Border.GestureRecognizers>
+                                                <!-- Toque simples: selecionar chat -->
                                                 <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:ChatViewModel}}, Path=SelecionarChatCommand}"
-                                                                     CommandParameter="{Binding .}"
-                                                                     Tapped="OnMenuItemClicked"/>
+                             CommandParameter="{Binding .}"
+                             Tapped="OnMenuItemClicked"/>
+
+                                                <!-- Pressionar e segurar: abrir menu de contexto -->
+                                                <PointerGestureRecognizer PointerPressed="OnChatItemPointerPressed" />
                                             </Border.GestureRecognizers>
                                             <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,Auto">
                                                 <!-- Título -->
                                                 <Label Grid.Row="0" Grid.Column="0"
-                                                       Text="{Binding TituloExibicao}"
-                                                       TextColor="White"
-                                                       FontSize="14"
-                                                       LineBreakMode="TailTruncation"
-                                                       MaxLines="1"
-                                                       Margin="0,0,8,0"/>
+               Text="{Binding TituloExibicao}"
+               TextColor="White"
+               FontSize="14"
+               LineBreakMode="TailTruncation"
+               MaxLines="1"
+               Margin="0,0,8,0"/>
 
                                                 <!-- Badge de Status -->
                                                 <Border Grid.Row="0" Grid.Column="1"
-                                                        BackgroundColor="#fbbf24"
-                                                        Padding="6,3"
-                                                        VerticalOptions="Center"
-                                                        StrokeThickness="0">
+                BackgroundColor="#fbbf24"
+                Padding="6,3"
+                VerticalOptions="Center"
+                StrokeThickness="0">
                                                     <Border.StrokeShape>
                                                         <RoundRectangle CornerRadius="8"/>
                                                     </Border.StrokeShape>
@@ -477,19 +481,20 @@
                                                         </DataTrigger>
                                                     </Border.Triggers>
                                                     <Label Text="{Binding StatusTexto}"
-                                                           TextColor="White"
-                                                           FontSize="9"
-                                                           FontAttributes="Bold"/>
+                   TextColor="White"
+                   FontSize="9"
+                   FontAttributes="Bold"/>
                                                 </Border>
 
                                                 <!-- Data e Hora -->
                                                 <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
-                                                       Text="{Binding DataHora, StringFormat='{0:dd/MM HH:mm}'}"
-                                                       TextColor="#64748b"
-                                                       FontSize="11"
-                                                       Margin="0,3,0,0"/>
+               Text="{Binding DataHora, StringFormat='{0:dd/MM HH:mm}'}"
+               TextColor="#64748b"
+               FontSize="11"
+               Margin="0,3,0,0"/>
                                             </Grid>
                                         </Border>
+
                                     </SwipeView>
                                 </DataTemplate>
                             </CollectionView.ItemTemplate>
