@@ -84,3 +84,35 @@ C:\Users\Kauan Douglas\Desktop\Kaytxt\DotIABait\DotIA.Desktop\DotIA.Desktop\obj\
 C:\Users\Kauan Douglas\Desktop\Kaytxt\DotIABait\DotIA.Desktop\DotIA.Desktop\obj\Debug\net8.0-windows\DotIA.Desktop.pdb
 C:\Users\Kauan Douglas\Desktop\Kaytxt\DotIABait\DotIA.Desktop\DotIA.Desktop\obj\Debug\net8.0-windows\DotIA.Desktop.genruntimeconfig.cache
 C:\Users\Kauan Douglas\Desktop\Kaytxt\DotIABait\DotIA.Desktop\DotIA.Desktop\obj\Debug\net8.0-windows\ref\DotIA.Desktop.dll
+C:\Users\luizg\Desktop\DotIA\DotIA.Desktop\DotIA.Desktop\bin\Debug\net8.0-windows\Resources\dotia-logo.png
+C:\Users\luizg\Desktop\DotIA\DotIA.Desktop\DotIA.Desktop\bin\Debug\net8.0-windows\Resources\icon-balao.png
+C:\Users\luizg\Desktop\DotIA\DotIA.Desktop\DotIA.Desktop\bin\Debug\net8.0-windows\Resources\icon-bot.png
+C:\Users\luizg\Desktop\DotIA\DotIA.Desktop\DotIA.Desktop\bin\Debug\net8.0-windows\Resources\icon-check.png
+C:\Users\luizg\Desktop\DotIA\DotIA.Desktop\DotIA.Desktop\bin\Debug\net8.0-windows\Resources\icon-grafico.png
+C:\Users\luizg\Desktop\DotIA\DotIA.Desktop\DotIA.Desktop\bin\Debug\net8.0-windows\Resources\icon-pessoa.png
+C:\Users\luizg\Desktop\DotIA\DotIA.Desktop\DotIA.Desktop\bin\Debug\net8.0-windows\Resources\icon-tecnico.png
+C:\Users\luizg\Desktop\DotIA\DotIA.Desktop\DotIA.Desktop\bin\Debug\net8.0-windows\Resources\icon-ticket.png
+C:\Users\luizg\Desktop\DotIA\DotIA.Desktop\DotIA.Desktop\bin\Debug\net8.0-windows\Resources\icon-user.png
+C:\Users\luizg\Desktop\DotIA\DotIA.Desktop\DotIA.Desktop\bin\Debug\net8.0-windows\DotIA.Desktop.exe
+C:\Users\luizg\Desktop\DotIA\DotIA.Desktop\DotIA.Desktop\bin\Debug\net8.0-windows\DotIA.Desktop.deps.json
+C:\Users\luizg\Desktop\DotIA\DotIA.Desktop\DotIA.Desktop\bin\Debug\net8.0-windows\DotIA.Desktop.runtimeconfig.json
+C:\Users\luizg\Desktop\DotIA\DotIA.Desktop\DotIA.Desktop\bin\Debug\net8.0-windows\DotIA.Desktop.dll
+C:\Users\luizg\Desktop\DotIA\DotIA.Desktop\DotIA.Desktop\bin\Debug\net8.0-windows\DotIA.Desktop.pdb
+C:\Users\luizg\Desktop\DotIA\DotIA.Desktop\DotIA.Desktop\bin\Debug\net8.0-windows\Newtonsoft.Json.dll
+C:\Users\luizg\Desktop\DotIA\DotIA.Desktop\DotIA.Desktop\obj\Debug\net8.0-windows\DotIA.Desktop.csproj.AssemblyReference.cache
+C:\Users\luizg\Desktop\DotIA\DotIA.Desktop\DotIA.Desktop\obj\Debug\net8.0-windows\DotIA.Desktop.Form1.resources
+C:\Users\luizg\Desktop\DotIA\DotIA.Desktop\DotIA.Desktop\obj\Debug\net8.0-windows\DotIA.Desktop.Forms.ChatForm.resources
+C:\Users\luizg\Desktop\DotIA\DotIA.Desktop\DotIA.Desktop\obj\Debug\net8.0-windows\DotIA.Desktop.Forms.GerenteForm.resources
+C:\Users\luizg\Desktop\DotIA\DotIA.Desktop\DotIA.Desktop\obj\Debug\net8.0-windows\DotIA.Desktop.Forms.LoginForm.resources
+C:\Users\luizg\Desktop\DotIA\DotIA.Desktop\DotIA.Desktop\obj\Debug\net8.0-windows\DotIA.Desktop.csproj.GenerateResource.cache
+C:\Users\luizg\Desktop\DotIA\DotIA.Desktop\DotIA.Desktop\obj\Debug\net8.0-windows\DotIA.Desktop.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\luizg\Desktop\DotIA\DotIA.Desktop\DotIA.Desktop\obj\Debug\net8.0-windows\DotIA.Desktop.AssemblyInfoInputs.cache
+C:\Users\luizg\Desktop\DotIA\DotIA.Desktop\DotIA.Desktop\obj\Debug\net8.0-windows\DotIA.Desktop.AssemblyInfo.cs
+C:\Users\luizg\Desktop\DotIA\DotIA.Desktop\DotIA.Desktop\obj\Debug\net8.0-windows\DotIA.Desktop.csproj.CoreCompileInputs.cache
+C:\Users\luizg\Desktop\DotIA\DotIA.Desktop\DotIA.Desktop\obj\Debug\net8.0-windows\DotIA.Desktop.sourcelink.json
+C:\Users\luizg\Desktop\DotIA\DotIA.Desktop\DotIA.Desktop\obj\Debug\net8.0-windows\DotIA.De.D68CF1DA.Up2Date
+C:\Users\luizg\Desktop\DotIA\DotIA.Desktop\DotIA.Desktop\obj\Debug\net8.0-windows\DotIA.Desktop.dll
+C:\Users\luizg\Desktop\DotIA\DotIA.Desktop\DotIA.Desktop\obj\Debug\net8.0-windows\refint\DotIA.Desktop.dll
+C:\Users\luizg\Desktop\DotIA\DotIA.Desktop\DotIA.Desktop\obj\Debug\net8.0-windows\DotIA.Desktop.pdb
+C:\Users\luizg\Desktop\DotIA\DotIA.Desktop\DotIA.Desktop\obj\Debug\net8.0-windows\DotIA.Desktop.genruntimeconfig.cache
+C:\Users\luizg\Desktop\DotIA\DotIA.Desktop\DotIA.Desktop\obj\Debug\net8.0-windows\ref\DotIA.Desktop.dll

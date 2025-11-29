@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DotIA.Desktop")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4d5d1956aa8a8e0d8707bfdcbf18458a4aee7d26")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1b7099ffdb89cae3cc37520046b1ec9e59247f32")]
 [assembly: System.Reflection.AssemblyProductAttribute("DotIA.Desktop")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DotIA.Desktop")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
