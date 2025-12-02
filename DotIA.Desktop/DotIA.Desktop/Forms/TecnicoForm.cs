@@ -305,14 +305,15 @@ namespace DotIA.Desktop.Forms
             sidebar.Controls.Add(lblTicketsTitle);
             yPos += 35;
 
-            // Lista de Tickets
+            // Lista de Tickets - COM SCROLLBAR GARANTIDA
             var ticketsContainer = new Panel
             {
                 Location = new Point(0, yPos),
-                Size = new Size(420, Height - yPos - 80), // ✅ 420px
+                Size = new Size(420, Height - yPos - 90), // ✅ 420px - ajustado para dar espaço ao footer
                 AutoScroll = true,
                 BackColor = Color.Transparent,
-                Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left
+                Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left,
+                AutoScrollMinSize = new Size(0, 500) // Garante que a scrollbar apareça
             };
 
             ticketsList = new FlowLayoutPanel
@@ -327,28 +328,32 @@ namespace DotIA.Desktop.Forms
             ticketsContainer.Controls.Add(ticketsList);
             sidebar.Controls.Add(ticketsContainer);
 
-            // Footer (Botão Sair)
+            // Footer (Botão Sair) - GARANTIDO VISÍVEL NO RODAPÉ
             var footerPanel = new Panel
             {
                 Dock = DockStyle.Bottom,
-                Height = 80,
-                BackColor = CardBg
+                Height = 90,
+                BackColor = CardBg,
+                Padding = new Padding(10)
             };
             footerPanel.Paint += FooterPanel_Paint;
 
+            // Botão SAIR - VISÍVEL E FUNCIONAL
             btnSair = new Button
             {
                 Text = "🚪 Sair",
-                Location = new Point(20, 18),
-                Size = new Size(380, 45), // ✅ 380px
+                Location = new Point(20, 22),
+                Size = new Size(380, 50), // ✅ Aumentado para 50px de altura
                 FlatStyle = FlatStyle.Flat,
                 BackColor = Color.Transparent,
                 ForeColor = Color.White,
-                Font = new Font("Segoe UI", 11f, FontStyle.Bold),
-                Cursor = Cursors.Hand
+                Font = new Font("Segoe UI", 12f, FontStyle.Bold), // Fonte maior
+                Cursor = Cursors.Hand,
+                TabStop = true // Permite navegação por teclado
             };
             btnSair.FlatAppearance.BorderColor = BorderColor;
             btnSair.FlatAppearance.BorderSize = 2;
+            btnSair.FlatAppearance.MouseOverBackColor = Color.FromArgb(30, PrimaryGreen);
             btnSair.Paint += BtnSair_Paint;
             btnSair.Click += (s, e) =>
             {

@@ -70,12 +70,13 @@ namespace DotIA.Desktop.Forms
 
             Paint += RegistroForm_Paint;
 
-            // Scroll Panel (para conter o card)
+            // Scroll Panel (para conter o card) - COM SCROLLBAR VISÍVEL
             scrollPanel = new Panel
             {
                 Dock = DockStyle.Fill,
                 AutoScroll = true,
-                BackColor = Color.Transparent
+                BackColor = Color.Transparent,
+                AutoScrollMinSize = new Size(0, 1000) // Garante que a scrollbar apareça quando necessário
             };
             Controls.Add(scrollPanel);
 

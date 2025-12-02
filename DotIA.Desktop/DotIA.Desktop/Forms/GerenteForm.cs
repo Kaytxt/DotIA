@@ -216,13 +216,14 @@ namespace DotIA.Desktop.Forms
             headerPanel.Controls.Add(btnSair);
             Controls.Add(headerPanel);
 
-            // painel de conteudo
+            // painel de conteudo - COM SCROLLBAR
             contentPanel = new Panel
             {
                 Dock = DockStyle.Fill,
                 BackColor = DarkBg,
                 Padding = new Padding(40, 110, 40, 30),
-                AutoScroll = true
+                AutoScroll = true,
+                AutoScrollMinSize = new Size(0, 1000) // Garante que a scrollbar apareça
             };
             Controls.Add(contentPanel);
 
