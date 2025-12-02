@@ -7,7 +7,6 @@
              x:DataType="viewmodels:TecnicoViewModel"
              Title="DotIA Support">
 
-    <!-- Background -->
     <ContentPage.Background>
         <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
             <GradientStop Color="{StaticResource Background}" Offset="0.0" />
@@ -16,16 +15,12 @@
     </ContentPage.Background>
 
     <Grid RowDefinitions="Auto,*">
-
-        <!-- Header estilo WhatsApp -->
         <Border Grid.Row="0"
                 BackgroundColor="{StaticResource BackgroundLight}"
                 Padding="20,15"
                 StrokeThickness="0"
                 Shadow="{Shadow Brush=Black, Offset='0,2', Radius=8, Opacity=0.3}">
             <Grid ColumnDefinitions="Auto,*,Auto">
-
-                <!-- Logo/Nome -->
                 <HorizontalStackLayout Spacing="12">
                     <Border HeightRequest="45"
                             WidthRequest="45"
@@ -56,7 +51,6 @@
                     </VerticalStackLayout>
                 </HorizontalStackLayout>
 
-                <!-- Badge de Pendentes -->
                 <Border Grid.Column="1"
                         BackgroundColor="{StaticResource Error}"
                         Padding="10,6"
@@ -373,16 +367,14 @@
                                                 HorizontalOptions="Start"
                                                 MaximumWidthRequest="300"
                                                 StrokeThickness="0"
+                                                IsVisible="False"
                                                 Shadow="{Shadow Brush=Black, Offset='0,2', Radius=4, Opacity=0.2}">
                                             <Border.StrokeShape>
                                                 <RoundRectangle CornerRadius="16"/>
                                             </Border.StrokeShape>
                                             <Border.Triggers>
-                                                <DataTrigger TargetType="Border" Binding="{Binding IsUsuario}" Value="True">
-                                                    <Setter Property="IsVisible" Value="False"/>
-                                                </DataTrigger>
-                                                <DataTrigger TargetType="Border" Binding="{Binding NomeRemetente}" Value="Técnico">
-                                                    <Setter Property="IsVisible" Value="False"/>
+                                                <DataTrigger TargetType="Border" Binding="{Binding NomeRemetente}" Value="DotIA">
+                                                    <Setter Property="IsVisible" Value="True"/>
                                                 </DataTrigger>
                                             </Border.Triggers>
                                             <VerticalStackLayout Spacing="8">
@@ -421,18 +413,27 @@
                                             </VerticalStackLayout>
                                         </Border>
 
-                                        <!-- Mensagem do Técnico (esquerda, verde claro) -->
+                                        <!-- Mensagem do Técnico (direita, gradiente roxo) -->
                                         <Border x:Name="BorderTecnico"
-                                                BackgroundColor="{StaticResource SuccessAlt}"
                                                 Padding="12"
-                                                HorizontalOptions="Start"
+                                                HorizontalOptions="End"
                                                 MaximumWidthRequest="300"
                                                 StrokeThickness="0"
+                                                IsVisible="False"
                                                 Shadow="{Shadow Brush=Black, Offset='0,2', Radius=4, Opacity=0.2}">
+                                            <Border.Background>
+                                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                    <GradientStop Color="{StaticResource Primary}" Offset="0.0" />
+                                                    <GradientStop Color="{StaticResource Secondary}" Offset="1.0" />
+                                                </LinearGradientBrush>
+                                            </Border.Background>
                                             <Border.StrokeShape>
-                                                <RoundRectangle CornerRadius="16"/>
+                                                <RoundRectangle CornerRadius="4,16,16,16"/>
                                             </Border.StrokeShape>
                                             <Border.Triggers>
+                                                <DataTrigger TargetType="Border" Binding="{Binding IsUsuario}" Value="False">
+                                                    <Setter Property="IsVisible" Value="True"/>
+                                                </DataTrigger>
                                                 <DataTrigger TargetType="Border" Binding="{Binding IsUsuario}" Value="True">
                                                     <Setter Property="IsVisible" Value="False"/>
                                                 </DataTrigger>
@@ -442,25 +443,11 @@
                                             </Border.Triggers>
                                             <VerticalStackLayout Spacing="8">
                                                 <!-- Nome do Remetente Técnico -->
-                                                <HorizontalStackLayout Spacing="8">
-                                                    <Border BackgroundColor="{StaticResource Success}"
-                                                            HeightRequest="24"
-                                                            WidthRequest="24"
-                                                            StrokeThickness="0">
-                                                        <Border.StrokeShape>
-                                                            <RoundRectangle CornerRadius="12"/>
-                                                        </Border.StrokeShape>
-                                                        <Image Source="icon_tecnico.png"
-                                                               Margin="4"
-                                                               HorizontalOptions="Center"
-                                                               VerticalOptions="Center"/>
-                                                    </Border>
-                                                    <Label Text="{Binding NomeRemetente}"
-                                                           TextColor="{StaticResource SuccessLight}"
-                                                           FontSize="13"
-                                                           FontAttributes="Bold"
-                                                           VerticalOptions="Center"/>
-                                                </HorizontalStackLayout>
+                                                <Label Text="Você"
+                                                       TextColor="#e9d5ff"
+                                                       FontSize="13"
+                                                       FontAttributes="Bold"
+                                                       HorizontalOptions="End"/>
 
                                                 <!-- Texto da Mensagem -->
                                                 <Label Text="{Binding Texto}"
@@ -470,7 +457,7 @@
 
                                                 <!-- Horário -->
                                                 <Label Text="{Binding DataHora, StringFormat='{0:dd/MM HH:mm}'}"
-                                                       TextColor="{StaticResource SuccessLight2}"
+                                                       TextColor="#f3e8ff"
                                                        FontSize="11"
                                                        HorizontalOptions="End"/>
                                             </VerticalStackLayout>

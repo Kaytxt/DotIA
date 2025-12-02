@@ -8,7 +8,7 @@ namespace DotIA.Mobile.Services
     public class ApiService
     {
         private readonly HttpClient _httpClient;
-        private const string BaseUrl = "https://dotia-api.azurewebsites.net";
+        private const string BaseUrl = "http://10.0.2.2:5100";
         // 10.0.2.2 aponta pro localhost da máquina host quando roda no emulador
         // pra testar no celular físico tem que trocar pro IP da rede tipo 192.168.x.x
 
@@ -406,4 +406,3 @@ namespace DotIA.Mobile.Services
         }
     }
 }
-

@@ -1,4 +1,4 @@
-// DotIA.Desktop/DotIA.Desktop/Services/ApiClient.cs
+﻿// DotIA.Desktop/DotIA.Desktop/Services/ApiClient.cs
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -10,7 +10,7 @@ namespace DotIA.Desktop.Services
 {
     public class ApiClient
     {
-        private const string BASE_URL = "https://dotia-api.azurewebsites.net";
+        private const string BASE_URL = "http://localhost:5100";
 
         // http client estatico
         private static readonly HttpClient _httpClient = CreateClient();

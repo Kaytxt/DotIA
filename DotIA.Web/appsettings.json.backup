@@ -1,6 +1,6 @@
 {
   "ApiSettings": {
-    "BaseUrl": "https://dotia-api.azurewebsites.net/api"
+    "BaseUrl": "http://localhost:5100/api"
   },
   "Logging": {
     "LogLevel": {

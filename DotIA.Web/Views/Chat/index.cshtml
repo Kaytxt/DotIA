@@ -9,7 +9,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"]</title>
 
-    <!-- Vendors -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet" />
 
@@ -500,14 +499,212 @@
       background:rgba(59,130,246,.1);
     }
 
+    /* ===== Menu Hambúrguer (Mobile) ===== */
+    .mobile-menu-btn{
+      display:none;
+      position:fixed;
+      top:20px;
+      left:20px;
+      z-index:1001;
+      width:48px;
+      height:48px;
+      border:none;
+      border-radius:12px;
+      background:linear-gradient(135deg,var(--primary-purple),var(--secondary-purple));
+      color:#fff;
+      font-size:24px;
+      cursor:pointer;
+      align-items:center;
+      justify-content:center;
+      box-shadow:0 4px 12px rgba(141,75,255,.4);
+      transition:.3s;
+    }
+    .mobile-menu-btn:active{
+      transform:scale(.95);
+    }
+    .mobile-menu-btn i{
+      transition:.3s;
+    }
+
+    /* Backdrop */
+    .sidebar-backdrop{
+      display:none;
+      position:fixed;
+      top:0;
+      left:0;
+      right:0;
+      bottom:0;
+      background:rgba(0,0,0,.7);
+      z-index:999;
+      opacity:0;
+      transition:opacity .3s;
+    }
+    .sidebar-backdrop.active{
+      opacity:1;
+    }
+
     /* ===== Responsivo ===== */
     @@media (max-width:768px){
-      .chat-container{ grid-template-columns:1fr; }
-      .sidebar{ display:none; }
+      .mobile-menu-btn{
+        display:flex;
+      }
+
+      .chat-container{
+        grid-template-columns:1fr;
+      }
+
+      /* Sidebar como overlay no mobile */
+      .sidebar{
+        position:fixed;
+        top:0;
+        left:0;
+        bottom:0;
+        width:280px;
+        max-width:85vw;
+        z-index:1000;
+        transform:translateX(-100%);
+        transition:transform .3s ease-out;
+        box-shadow:2px 0 12px rgba(0,0,0,.5);
+      }
+      .sidebar.open{
+        transform:translateX(0);
+      }
+
+      /* Chat header ajustado para mobile */
+      .chat-header{
+        padding:20px 20px 20px 80px;
+      }
+
+      .chat-title{
+        font-size:18px;
+      }
+
+      /* Mensagens otimizadas para mobile */
+      .message-content{
+        max-width:85%;
+      }
+
+      .message-bubble{
+        padding:12px 16px;
+        font-size:15px;
+      }
+
+      .message-avatar{
+        width:36px;
+        height:36px;
+      }
+      .message.bot .message-avatar,
+      .message.tech .message-avatar{
+        width:42px;
+        height:42px;
+      }
+
+      /* Input area otimizado para mobile */
+      .input-area{
+        padding:15px 20px;
+      }
+
+      .input-wrapper{
+        padding:12px 15px;
+        gap:10px;
+      }
+
+      .input-icon{
+        width:40px;
+        height:40px;
+      }
+
+      #messageInput{
+        font-size:16px;
+      }
+
+      .btn-send{
+        padding:10px 20px;
+        font-size:14px;
+      }
+
+      /* Welcome screen otimizado */
+      .welcome-icon{
+        width:120px;
+        height:120px;
+      }
+
+      .welcome-title{
+        font-size:28px;
+      }
+
+      /* Sidebar ajustes internos */
+      .sidebar-header{
+        padding:15px;
+      }
+
+      .logo-icon{
+        width:48px;
+        height:48px;
+      }
+
+      .logo-text{
+        font-size:20px;
+      }
+
+      .refresh-button,
+      .btn-new-chat,
+      .btn-open-ticket{
+        margin:15px;
+      }
+
+      .live-indicator{
+        margin:0 15px 10px;
+        font-size:11px;
+      }
+
+      /* Botões de feedback menores no mobile */
+      .btn-feedback-chat{
+        padding:12px 16px;
+        font-size:14px;
+      }
+      .btn-feedback-chat i{
+        font-size:24px;
+      }
+
+      /* Messages container com padding reduzido */
+      .messages-container{
+        padding:20px 15px;
+      }
+    }
+
+    /* Ajustes para telas muito pequenas */
+    @@media (max-width:400px){
+      .mobile-menu-btn{
+        width:44px;
+        height:44px;
+        top:15px;
+        left:15px;
+      }
+
+      .chat-header{
+        padding:15px 15px 15px 70px;
+      }
+
+      .message-content{
+        max-width:90%;
+      }
+
+      .btn-send{
+        padding:10px 16px;
+      }
+
+      .feedback-buttons-chat{
+        flex-direction:column;
+      }
+
+      .btn-feedback-chat{
+        max-width:100%;
+      }
     }
     </style>
 
-    <!-- SVG defs reutilizáveis (balão + filtro neon) -->
+    <!-- SVGs reutilizáveis -->
     <svg width="0" height="0" style="position:absolute">
         <defs>
             <filter id="neonGlow" x="-50%" y="-50%" width="200%" height="200%">
@@ -520,7 +717,6 @@
                 </feMerge>
             </filter>
 
-            <!-- Ícone de balão sem fundo -->
             <symbol id="icon-bubble" viewBox="0 0 64 64">
                 <path d="M14 14h32a8 8 0 0 1 8 8v12a8 8 0 0 1-8 8H32l-9 9v-9H14a8 8 0 0 1-8-8V22a8 8 0 0 1 8-8z"
                       fill="none" stroke="currentColor" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round" />
@@ -530,13 +726,17 @@
 </head>
 
 <body>
+    <button class="mobile-menu-btn" id="mobileMenuBtn" onclick="toggleMobileMenu()">
+        <i class="bi bi-list"></i>
+    </button>
+
+    <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeMobileMenu()"></div>
+
     <div class="chat-container">
-        <!-- =========== SIDEBAR =========== -->
-        <div class="sidebar">
+        <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <div class="logo-container">
                     <div class="logo-icon">
-                        <!-- cache-buster -->
                         <img class="neon-bot" src='@Url.Content("~/img/dotia-logo.png")?v=2' alt="DotIA" />
                     </div>
                     <div class="logo-text">DotIA</div>
@@ -578,7 +778,6 @@
             </div>
         </div>
 
-        <!-- =========== CHAT AREA =========== -->
         <div class="chat-area">
             <div class="chat-header">
                 <div class="chat-title">
@@ -650,7 +849,6 @@
         </div>
     </div>
 
-    <!-- ===== Modals ===== -->
     <div class="modal fade" id="editChatModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -711,10 +909,8 @@ Exemplo:
         </div>
     </div>
 
-    <!-- ===== Scripts ===== -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-    /* ==== JS original mantido ==== */
     let chatAtualId=null, chatAtualStatus=null, pollingInterval=null,
         chatEditandoId=null, mensagensProcessadas=[], historicoAnterior=[],
         autoRefreshInterval=null;
@@ -1240,6 +1436,54 @@ Exemplo:
       if(pollingInterval) clearInterval(pollingInterval);
       if(autoRefreshInterval) clearInterval(autoRefreshInterval);
     });
+
+    /* ===== Funções do Menu Mobile ===== */
+    function toggleMobileMenu(){
+      const sidebar=document.getElementById('sidebar');
+      const backdrop=document.getElementById('sidebarBackdrop');
+      const btn=document.getElementById('mobileMenuBtn');
+
+      sidebar.classList.toggle('open');
+
+      if(sidebar.classList.contains('open')){
+        backdrop.style.display='block';
+        setTimeout(()=>backdrop.classList.add('active'),10);
+        btn.querySelector('i').className='bi bi-x';
+      }else{
+        backdrop.classList.remove('active');
+        setTimeout(()=>backdrop.style.display='none',300);
+        btn.querySelector('i').className='bi bi-list';
+      }
+    }
+
+    function closeMobileMenu(){
+      const sidebar=document.getElementById('sidebar');
+      const backdrop=document.getElementById('sidebarBackdrop');
+      const btn=document.getElementById('mobileMenuBtn');
+
+      sidebar.classList.remove('open');
+      backdrop.classList.remove('active');
+      setTimeout(()=>backdrop.style.display='none',300);
+      btn.querySelector('i').className='bi bi-list';
+    }
+
+    // Fecha o menu quando clicar em um item do histórico (mobile)
+    const historyClickOriginal = window.carregarChat;
+    window.carregarChat = function(chat) {
+      if(window.innerWidth <= 768) {
+        closeMobileMenu();
+      }
+      return historyClickOriginal.call(this, chat);
+    };
+
+    // Fecha o menu quando clicar em "Novo Chat" (mobile)
+    const novoChatOriginal = window.novoChat;
+    window.novoChat = function() {
+      if(window.innerWidth <= 768) {
+        closeMobileMenu();
+      }
+      return novoChatOriginal.call(this);
+    };
     </script>
 </body>
 </html>

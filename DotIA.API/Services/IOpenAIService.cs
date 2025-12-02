@@ -23,20 +23,16 @@ namespace DotIA.API.Services
         {
             try
             {
+                // Verifica se vai usar Azure OpenAI ou OpenAI original
+                var useAzure = _configuration["OpenAI:UseAzure"]?.ToLower() == "true";
                 var apiKey = _configuration["OpenAI:ApiKey"];
-                var modelo = _configuration["OpenAI:Model"] ?? "gpt-4o-mini";
 
                 if (string.IsNullOrEmpty(apiKey))
                 {
                     return "⚠️ Configuração da OpenAI não encontrada. Por favor, configure a chave da API.";
                 }
 
-                var requestBody = new
-                {
-                    model = modelo,
-                    messages = new[]
-                    {
-                        new { role = "system", content = @"Você é DotIA, uma assistente virtual especializada em suporte técnico de TI integrada ao sistema de gestão de chamados da empresa. Seu papel é ajudar usuários com problemas técnicos, dúvidas sobre tecnologia e orientações sobre o uso de sistemas corporativos.
+                var systemPrompt = @"Você é DotIA, uma assistente virtual especializada em suporte técnico de TI integrada ao sistema de gestão de chamados da empresa. Seu papel é ajudar usuários com problemas técnicos, dúvidas sobre tecnologia e orientações sobre o uso de sistemas corporativos.
 
 Áreas de atuação:
 • Problemas com computadores, impressoras e periféricos
@@ -77,7 +73,13 @@ Formato de resposta ideal:
 3. Terceiro passo claro
 [Pergunte se funcionou ou ofereça alternativa]
 
-Seu objetivo: Resolver problemas técnicos de forma rápida e eficiente, mantendo os usuários produtivos e reduzindo a carga de tickets para os técnicos humanos." },
+Seu objetivo: Resolver problemas técnicos de forma rápida e eficiente, mantendo os usuários produtivos e reduzindo a carga de tickets para os técnicos humanos.";
+
+                var requestBody = new
+                {
+                    messages = new[]
+                    {
+                        new { role = "system", content = systemPrompt },
                         new { role = "user", content = pergunta }
                     },
                     max_tokens = 800,
@@ -87,11 +89,47 @@ Seu objetivo: Resolver problemas técnicos de forma rápida e eficiente, mantend
                 var json = JsonSerializer.Serialize(requestBody);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                // usa o endpoint da openai original
                 _httpClient.DefaultRequestHeaders.Clear();
-                _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiKey}");
 
-                var response = await _httpClient.PostAsync("https://api.openai.com/v1/chat/completions", content);
+                string endpoint;
+
+                if (useAzure)
+                {
+                    // Azure OpenAI
+                    var azureEndpoint = _configuration["OpenAI:AzureEndpoint"];
+                    var deploymentName = _configuration["OpenAI:DeploymentName"];
+                    var apiVersion = _configuration["OpenAI:ApiVersion"] ?? "2024-08-01-preview";
+
+                    if (string.IsNullOrEmpty(azureEndpoint) || string.IsNullOrEmpty(deploymentName))
+                    {
+                        return "⚠️ Configuração do Azure OpenAI incompleta. Configure AzureEndpoint e DeploymentName.";
+                    }
+
+                    endpoint = $"{azureEndpoint.TrimEnd('/')}/openai/deployments/{deploymentName}/chat/completions?api-version={apiVersion}";
+                    _httpClient.DefaultRequestHeaders.Add("api-key", apiKey);
+                }
+                else
+                {
+                    // OpenAI original
+                    var modelo = _configuration["OpenAI:Model"] ?? "gpt-4o-mini";
+
+                    // Adiciona o campo "model" apenas para OpenAI original
+                    var requestWithModel = new
+                    {
+                        model = modelo,
+                        messages = requestBody.messages,
+                        max_tokens = requestBody.max_tokens,
+                        temperature = requestBody.temperature
+                    };
+
+                    json = JsonSerializer.Serialize(requestWithModel);
+                    content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                    endpoint = "https://api.openai.com/v1/chat/completions";
+                    _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiKey}");
+                }
+
+                var response = await _httpClient.PostAsync(endpoint, content);
                 var result = await response.Content.ReadAsStringAsync();
 
                 if (response.IsSuccessStatusCode)
@@ -106,7 +144,7 @@ Seu objetivo: Resolver problemas técnicos de forma rápida e eficiente, mantend
                     return resposta ?? "Não consegui gerar resposta.";
                 }
 
-                return $"❌ Erro API: {response.StatusCode}";
+                return $"❌ Erro API: {response.StatusCode} - {result}";
             }
             catch (Exception ex)
             {

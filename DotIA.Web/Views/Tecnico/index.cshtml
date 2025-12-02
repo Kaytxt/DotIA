@@ -584,23 +584,185 @@
             color: #ffffff !important;
         }
 
+        /* ===== Menu Hambúrguer (Mobile) ===== */
+        .mobile-menu-btn{
+            display:none;
+            position:fixed;
+            top:20px;
+            left:20px;
+            z-index:1001;
+            width:48px;
+            height:48px;
+            border:none;
+            border-radius:12px;
+            background:linear-gradient(135deg,var(--primary-green),var(--secondary-green));
+            color:#fff;
+            font-size:24px;
+            cursor:pointer;
+            align-items:center;
+            justify-content:center;
+            box-shadow:0 4px 12px rgba(16,185,129,.4);
+            transition:.3s;
+        }
+        .mobile-menu-btn:active{
+            transform:scale(.95);
+        }
+
+        /* Backdrop */
+        .sidebar-backdrop{
+            display:none;
+            position:fixed;
+            top:0;
+            left:0;
+            right:0;
+            bottom:0;
+            background:rgba(0,0,0,.7);
+            z-index:999;
+            opacity:0;
+            transition:opacity .3s;
+        }
+        .sidebar-backdrop.active{
+            opacity:1;
+        }
+
         /* Responsivo */
         @@media (max-width:768px) {
+            .mobile-menu-btn{
+                display:flex;
+            }
+
             .tech-container {
                 grid-template-columns: 1fr;
             }
 
+            /* Sidebar como overlay no mobile */
             .sidebar {
-                display: none;
+                position:fixed;
+                top:0;
+                left:0;
+                bottom:0;
+                width:280px;
+                max-width:85vw;
+                z-index:1000;
+                transform:translateX(-100%);
+                transition:transform .3s ease-out;
+                box-shadow:2px 0 12px rgba(0,0,0,.5);
+            }
+            .sidebar.open{
+                transform:translateX(0);
+            }
+
+            /* Work header ajustado para mobile */
+            .work-header {
+                padding:20px 20px 20px 80px;
+            }
+
+            /* Mensagens otimizadas para mobile */
+            .message-box {
+                padding:15px;
+                margin-bottom:15px;
+            }
+
+            .message-avatar {
+                width:36px;
+                height:36px;
+            }
+
+            .conversation-area {
+                padding:20px 15px;
+            }
+
+            /* Solution area otimizado */
+            .solution-area {
+                padding:15px 20px;
+            }
+
+            .solution-container {
+                padding:15px;
+            }
+
+            .action-buttons {
+                flex-direction:column;
+            }
+
+            .btn-respond,
+            .btn-resolve {
+                width:100%;
+            }
+
+            /* Sidebar ajustes internos */
+            .sidebar-header {
+                padding:15px;
+            }
+
+            .logo-icon {
+                width:40px;
+                height:40px;
+            }
+
+            .logo-text {
+                font-size:20px;
+            }
+
+            .refresh-button {
+                margin:15px;
+            }
+
+            .live-indicator {
+                margin:0 15px 10px;
+                font-size:11px;
+            }
+
+            .stats-card {
+                margin:15px;
+                padding:15px;
+            }
+
+            .tickets-container {
+                padding:0 15px;
+            }
+        }
+
+        /* Ajustes para telas muito pequenas */
+        @@media (max-width:400px) {
+            .mobile-menu-btn {
+                width:44px;
+                height:44px;
+                top:15px;
+                left:15px;
+            }
+
+            .work-header {
+                padding:15px 15px 15px 70px;
+            }
+
+            .message-box {
+                padding:12px;
+            }
+
+            .solution-area {
+                padding:15px;
+            }
+
+            .solution-container {
+                padding:12px;
             }
         }
     </style>
 </head>
 
 <body>
+    <!-- Botão Menu Mobile -->
+    <button class="mobile-menu-btn" id="mobileMenuBtn" onclick="toggleMobileMenu()">
+        <i class="bi bi-list"></i>
+    </button>
+
+    <!-- Backdrop para fechar sidebar no mobile -->
+    <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeMobileMenu()"></div>
+
     <div class="tech-container">
         <!-- SIDEBAR -->
-        <div class="sidebar">
+        <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <div class="logo-container">
                     <!-- ÍCONE do título (caminho corrigido) -->
@@ -1192,6 +1354,45 @@
                 }
             }, 3000);
         }
+
+        /* ===== Funções do Menu Mobile ===== */
+        function toggleMobileMenu(){
+            const sidebar=document.getElementById('sidebar');
+            const backdrop=document.getElementById('sidebarBackdrop');
+            const btn=document.getElementById('mobileMenuBtn');
+
+            sidebar.classList.toggle('open');
+
+            if(sidebar.classList.contains('open')){
+                backdrop.style.display='block';
+                setTimeout(()=>backdrop.classList.add('active'),10);
+                btn.querySelector('i').className='bi bi-x';
+            }else{
+                backdrop.classList.remove('active');
+                setTimeout(()=>backdrop.style.display='none',300);
+                btn.querySelector('i').className='bi bi-list';
+            }
+        }
+
+        function closeMobileMenu(){
+            const sidebar=document.getElementById('sidebar');
+            const backdrop=document.getElementById('sidebarBackdrop');
+            const btn=document.getElementById('mobileMenuBtn');
+
+            sidebar.classList.remove('open');
+            backdrop.classList.remove('active');
+            setTimeout(()=>backdrop.style.display='none',300);
+            btn.querySelector('i').className='bi bi-list';
+        }
+
+        // Fecha o menu quando clicar em um ticket (mobile)
+        const selecionarTicketOriginal = window.selecionarTicket;
+        window.selecionarTicket = async function(ticket, isAutoRefresh=false) {
+            if(window.innerWidth <= 768 && !isAutoRefresh) {
+                closeMobileMenu();
+            }
+            return selecionarTicketOriginal.call(this, ticket, isAutoRefresh);
+        };
     </script>
 </body>
 </html>

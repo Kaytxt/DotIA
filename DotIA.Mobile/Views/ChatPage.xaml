@@ -223,7 +223,7 @@
                             <Border.StrokeShape>
                                 <RoundRectangle CornerRadius="18"/>
                             </Border.StrokeShape>
-                            <Label Text="●  ●  ●"
+                            <Label Text="..."
                                    TextColor="{StaticResource Primary}"
                                    FontSize="20"
                                    FontAttributes="Bold"/>
@@ -248,7 +248,7 @@
                             <Border.StrokeShape>
                                 <RoundRectangle CornerRadius="20"/>
                             </Border.StrokeShape>
-                            <Button Text="👍 Esta resposta foi útil"
+                            <Button Text="Esta resposta foi útil"
                                     TextColor="#10b981"
                                     FontSize="14"
                                     BackgroundColor="Transparent"
@@ -261,7 +261,7 @@
                             <Border.StrokeShape>
                                 <RoundRectangle CornerRadius="20"/>
                             </Border.StrokeShape>
-                            <Button Text="👎 Não foi útil"
+                            <Button Text="Não foi útil"
                                     TextColor="#ef4444"
                                     FontSize="14"
                                     BackgroundColor="Transparent"
@@ -284,7 +284,7 @@
                             <Border.StrokeShape>
                                 <RoundRectangle CornerRadius="10"/>
                             </Border.StrokeShape>
-                            <Label Text="✅ Chat finalizado! Este chat foi concluído e não pode mais receber mensagens."
+                            <Label Text="Chat finalizado! Este chat foi concluído e não pode mais receber mensagens."
                                    TextColor="White"
                                    FontSize="13"
                                    HorizontalOptions="Center"
@@ -396,7 +396,7 @@
                             <Border.StrokeShape>
                                 <RoundRectangle CornerRadius="12"/>
                             </Border.StrokeShape>
-                            <Button Text="✏  Nova Conversa"
+                            <Button Text="Nova Conversa"
                                     TextColor="White"
                                     BackgroundColor="Transparent"
                                     FontSize="16"
@@ -418,11 +418,11 @@
                                     <SwipeView>
                                         <SwipeView.RightItems>
                                             <SwipeItems>
-                                                <SwipeItem Text="✏ Editar"
+                                                <SwipeItem Text="Editar"
                                                   BackgroundColor="#3b82f6"
                                                   Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:ChatViewModel}}, Path=EditarTituloChatCommand}"
                                                   CommandParameter="{Binding .}"/>
-                                                                                        <SwipeItem Text="🗑 Excluir"
+                                                <SwipeItem Text="Excluir"
                                                   BackgroundColor="#dc2626"
                                                   Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:ChatViewModel}}, Path=ExcluirChatCommand}"
                                                   CommandParameter="{Binding Id}"/>
@@ -505,17 +505,45 @@
                 <VerticalStackLayout Grid.Row="2"
                                     Spacing="5"
                                     Padding="10">
-                    <Button Text="🎫 Abrir Ticket Direto"
-                            BackgroundColor="#f59e0b"
-                            TextColor="White"
-                            CornerRadius="8"
-                            Command="{Binding AbrirTicketDiretoCommand}"
-                            Clicked="OnMenuItemClicked"/>
-                    <Button Text="🚪 Sair"
-                            BackgroundColor="#dc2626"
-                            TextColor="White"
-                            CornerRadius="8"
-                            Command="{Binding LogoutCommand}"/>
+                    <Border Padding="0"
+                            Margin="0,0,0,5"
+                            StrokeThickness="0">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="#f59e0b" Offset="0.0" />
+                                <GradientStop Color="#d97706" Offset="1.0" />
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="12"/>
+                        </Border.StrokeShape>
+                        <Button Text="Abrir Ticket Direto"
+                                TextColor="White"
+                                BackgroundColor="Transparent"
+                                FontSize="15"
+                                FontAttributes="Bold"
+                                Command="{Binding AbrirTicketDiretoCommand}"
+                                Clicked="OnMenuItemClicked"/>
+                    </Border>
+
+                    <Border Padding="0"
+                            StrokeThickness="0">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="#dc2626" Offset="0.0" />
+                                <GradientStop Color="#b91c1c" Offset="1.0" />
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="12"/>
+                        </Border.StrokeShape>
+                        <Button Text="Sair"
+                                TextColor="White"
+                                BackgroundColor="Transparent"
+                                FontSize="15"
+                                FontAttributes="Bold"
+                                Command="{Binding LogoutCommand}"/>
+                    </Border>
                 </VerticalStackLayout>
 
             </Grid>

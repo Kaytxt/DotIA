@@ -67,18 +67,28 @@ using (var scope = app.Services.CreateScope())
 }
 
 // middleware
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+// swagger habilitado em todos os ambientes pra facilitar testes
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseCors("AllowAll");
 app.UseAuthorization();
 app.MapControllers();
 
+// health check endpoint
+app.MapGet("/health", () => Results.Ok(new
+{
+    Status = "Healthy",
+    Timestamp = DateTime.UtcNow,
+    Environment = app.Environment.EnvironmentName
+}));
+
+// log de startup
+var urls = app.Urls.Any() ? string.Join(", ", app.Urls) : "http://localhost:5100";
 Console.WriteLine("🚀 DotIA API iniciada!");
-Console.WriteLine($"📍 Swagger UI: http://localhost:5100/swagger");
-Console.WriteLine($"📍 API Base: http://localhost:5100/api");
+Console.WriteLine($"🌍 Ambiente: {app.Environment.EnvironmentName}");
+Console.WriteLine($"📍 URLs: {urls}");
+Console.WriteLine($"📖 Swagger UI: {urls}/swagger");
+Console.WriteLine($"❤️  Health Check: {urls}/health");
 
 app.Run();
