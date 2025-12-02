@@ -14,11 +14,23 @@ namespace DotIA.Mobile.Services
 
         public ApiService()
         {
+#if DEBUG
+            // Bypass SSL validation em modo Debug (apenas para desenvolvimento)
+            var handler = new HttpClientHandler();
+            handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
+
+            _httpClient = new HttpClient(handler)
+            {
+                BaseAddress = new Uri(BaseUrl),
+                Timeout = TimeSpan.FromSeconds(60)
+            };
+#else
             _httpClient = new HttpClient
             {
                 BaseAddress = new Uri(BaseUrl),
                 Timeout = TimeSpan.FromSeconds(60)
             };
+#endif
 
             System.Diagnostics.Debug.WriteLine($"ApiService criado com BaseUrl: {BaseUrl}");
         }
